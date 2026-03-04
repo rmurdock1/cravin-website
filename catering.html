@@ -46,6 +46,198 @@
     }
   }
   </script>
+
+  <style>
+    /* Catering Menu Styles */
+    .catering-menu-section {
+      padding: 80px 0;
+      background: var(--bg);
+      transition: background-color 0.3s ease;
+    }
+
+    .catering-menu-section .section-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .catering-menu-section .section-subtitle {
+      max-width: 560px;
+      margin: 12px auto 0;
+    }
+
+    .catering-menu-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .catering-menu-item:hover {
+      border-color: var(--border-light);
+      box-shadow: var(--card-hover-shadow);
+      transform: translateY(-2px);
+    }
+
+    .catering-menu-item .item-name {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 400;
+      flex: 1;
+      min-width: 0;
+    }
+    .catering-menu-item .item-note {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-top: 2px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .catering-menu-item .item-prices {
+      display: flex;
+      gap: 24px;
+      flex-shrink: 0;
+      align-items: center;
+    }
+
+    .catering-menu-item .price-col {
+      text-align: center;
+      min-width: 80px;
+    }
+
+    .catering-menu-item .price-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .catering-menu-item .price-value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--warm);
+    }
+
+    .catering-menu-item .price-value.na {
+      color: var(--text-dim);
+      font-size: 16px;
+    }
+
+    .catering-menu-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    /* Extras have single price */
+    .catering-menu-item .price-single {
+      text-align: right;
+      min-width: 80px;
+    }
+
+    .catering-menu-item .price-single .price-value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--warm);
+    }
+
+    /* Order section */
+    .catering-order-section {
+      padding: 80px 0;
+      background: var(--bg-elevated);
+      transition: background-color 0.3s ease;
+    }
+
+    .catering-order-section .section-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .catering-order-section .section-subtitle {
+      max-width: 560px;
+      margin: 12px auto 0;
+    }
+
+    .catering-order-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .catering-location-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+    .catering-location-card:hover {
+      border-color: var(--border-light);
+      box-shadow: var(--card-hover-shadow);
+    }
+
+    .catering-location-card h3 {
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+
+    .catering-location-card .card-address {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .catering-location-card .card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .catering-location-card .card-actions .btn {
+      width: 100%;
+      justify-content: center;
+      text-align: center;
+    }
+
+    /* Hero CTA group */
+    .hero-cta-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .catering-order-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .catering-order-grid { grid-template-columns: 1fr; }
+      .catering-menu-item { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .catering-menu-item .item-prices { width: 100%; justify-content: flex-start; gap: 32px; }
+      .catering-menu-item .price-col { text-align: left; min-width: auto; }
+      .catering-menu-item .price-single { text-align: left; }
+      .hero-cta-group { flex-direction: column; align-items: center; }
+      .hero-cta-group .btn { width: 100%; max-width: 300px; justify-content: center; }
+    }
+
+    [data-theme="light"] .catering-menu-item { box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    [data-theme="light"] .catering-location-card { box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    [data-theme="light"] .catering-menu-item .price-value { color: #9A7228; }
+  </style>
 </head>
 <body>
 
@@ -96,64 +288,529 @@
   <section class="page-hero" id="main-content">
     <div class="container">
       <h1>Catering</h1>
-      <p class="page-hero-subtitle">Authentic Jamaican flavors for your next event. From 10 to 500 guests.</p>
-      <div style="margin-top: 20px;">
-        <a href="https://www.ezcater.com/catering/pvt/cravin-jamaican-cuisine-3" class="btn btn-outline-green" target="_blank" rel="noopener noreferrer">Order Catering on EZCater &rarr;</a>
+      <p class="page-hero-subtitle">Authentic Jamaican flavors for your next event. Half pans, full pans, and custom menus for 10 to 500 guests.</p>
+      <div class="hero-cta-group">
+        <a href="#catering-form" class="btn btn-warm">Request a Quote</a>
+        <a href="#ezcater-locations" class="btn btn-outline-green">Order via EZCater</a>
       </div>
     </div>
   </section>
 
-  <!-- CATERING PACKAGES -->
-  <section class="catering-packages">
+  <!-- CATERING MENU -->
+  <section class="catering-menu-section">
     <div class="container">
-      <div class="packages-grid">
 
-        <!-- Essentials -->
-        <div class="package-card">
-          <h3>Essentials</h3>
-          <div class="package-price">$15</div>
-          <div class="package-per">per person &middot; 10 guest minimum</div>
-          <ul class="package-includes">
-            <li>Choice of 2 entrees</li>
-            <li>Rice & peas or white rice</li>
-            <li>Cabbage or plantains</li>
-            <li>Disposable plates & utensils</li>
-            <li>Serving setup</li>
-          </ul>
-          <a href="#catering-form" class="btn btn-outline-warm">Get Quote</a>
+      <div class="section-header">
+        <span class="section-label">Our Catering Menu</span>
+        <h2 class="section-title">Pan Sizes &amp; Pricing</h2>
+        <p class="section-subtitle">All items available in half pan and full pan sizes. Perfect for events of 10 to 500 guests.</p>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="menu-tabs" role="tablist" aria-label="Catering menu categories">
+        <button class="menu-tab active" data-category="entrees" role="tab" aria-selected="true" type="button">Entrees</button>
+        <button class="menu-tab" data-category="sides" role="tab" aria-selected="false" type="button">Sides</button>
+        <button class="menu-tab" data-category="pasta" role="tab" aria-selected="false" type="button">Pasta</button>
+        <button class="menu-tab" data-category="extras" role="tab" aria-selected="false" type="button">Extras</button>
+      </div>
+
+      <!-- Catering Menu Grid -->
+      <div class="catering-menu-grid">
+
+        <!-- ==============================
+             ENTREES
+             ============================== -->
+
+        <div class="catering-menu-item" data-category="entrees">
+          <div class="item-name">Brown Stew Chicken</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$95</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$159</span>
+            </div>
+          </div>
         </div>
 
-        <!-- Premium -->
-        <div class="package-card featured">
-          <h3>Premium</h3>
-          <div class="package-price">$22</div>
-          <div class="package-per">per person &middot; 15 guest minimum</div>
-          <ul class="package-includes">
-            <li>Choice of 3 entrees</li>
-            <li>Rice & peas AND white rice</li>
-            <li>Cabbage AND plantains</li>
-            <li>Mac & cheese</li>
-            <li>Choice of 2 beverages</li>
-            <li>Full-service setup & cleanup</li>
-            <li>Chafing dishes & serving ware</li>
-          </ul>
-          <a href="#catering-form" class="btn btn-warm">Get Quote</a>
+        <div class="catering-menu-item" data-category="entrees">
+          <div class="item-name">Curry Chicken</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$95</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$159</span>
+            </div>
+          </div>
         </div>
 
-        <!-- Custom -->
-        <div class="package-card">
-          <h3>Custom</h3>
-          <div class="package-price">Custom</div>
-          <div class="package-per">tailored to your event</div>
-          <ul class="package-includes">
-            <li>Fully customized menu</li>
-            <li>Appetizers & desserts available</li>
-            <li>Specialty drinks & punch</li>
-            <li>On-site chef option</li>
-            <li>Event coordinator</li>
-            <li>White-glove service</li>
-          </ul>
-          <a href="#catering-form" class="btn btn-outline-warm">Contact Us</a>
+        <div class="catering-menu-item" data-category="entrees">
+          <div class="item-name">Fried Chicken</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$95</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$159</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="entrees">
+          <div class="item-name">Jerk Chicken</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$105</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$175</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="entrees">
+          <div class="item-name">Curry Goat</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$160</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$300</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="entrees">
+          <div class="item-name">Oxtail</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$180</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$340</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="entrees">
+          <div>
+            <div class="item-name">Whiting Fish</div>
+            <div class="item-note">Half: 38 pcs &middot; Full: 65-70 pcs</div>
+          </div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$115</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$205</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="entrees">
+          <div class="item-name">Jerk Wings</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$115</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$225</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="entrees">
+          <div class="item-name">Jerk Salmon</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$140</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$225</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="entrees">
+          <div class="item-name">Curry Shrimp</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$165</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$280</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="entrees">
+          <div class="item-name">Veggie Stew</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$95</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$159</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="entrees">
+          <div class="item-name">Stew Peas</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$130</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value na">&mdash;</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==============================
+             SIDES
+             ============================== -->
+
+        <div class="catering-menu-item" data-category="sides" style="display:none;">
+          <div class="item-name">Mac N Cheese</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$70</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$110</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="sides" style="display:none;">
+          <div class="item-name">Rice &amp; Peas</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$55</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$95</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="sides" style="display:none;">
+          <div class="item-name">White Rice</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$40</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$65</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="sides" style="display:none;">
+          <div class="item-name">Plantains</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$45</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$65</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="sides" style="display:none;">
+          <div class="item-name">Cabbage</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$49</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$80</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="sides" style="display:none;">
+          <div class="item-name">Salad</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$40</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$65</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="sides" style="display:none;">
+          <div class="item-name">Boiled Food</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value na">&mdash;</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$75</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="sides" style="display:none;">
+          <div class="item-name">Ackee</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$125</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$225</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="sides" style="display:none;">
+          <div class="item-name">Callaloo</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$85</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value na">&mdash;</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="sides" style="display:none;">
+          <div class="item-name">Salt Fish</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$105</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value na">&mdash;</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="sides" style="display:none;">
+          <div class="item-name">Fritas</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$85</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value na">&mdash;</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="sides" style="display:none;">
+          <div class="item-name">Fruit Salad</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value na">&mdash;</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$75</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="sides" style="display:none;">
+          <div>
+            <div class="item-name">Fried Dumplin</div>
+            <div class="item-note">Half: 25 pcs &middot; Full: 50 pcs</div>
+          </div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$40</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$70</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==============================
+             PASTA
+             ============================== -->
+
+        <div class="catering-menu-item" data-category="pasta" style="display:none;">
+          <div class="item-name">Rasta Pasta</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value">$70</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$130</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="pasta" style="display:none;">
+          <div class="item-name">Rasta Pasta w/ Shrimp</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value na">&mdash;</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$185</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="pasta" style="display:none;">
+          <div class="item-name">Rasta Pasta w/ Jerk Chicken</div>
+          <div class="item-prices">
+            <div class="price-col">
+              <span class="price-label">Half Pan</span>
+              <span class="price-value na">&mdash;</span>
+            </div>
+            <div class="price-col">
+              <span class="price-label">Full Pan</span>
+              <span class="price-value">$165</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==============================
+             EXTRAS
+             ============================== -->
+
+        <div class="catering-menu-item" data-category="extras" style="display:none;">
+          <div class="item-name">Cocktail Patties (Dozen)</div>
+          <div class="item-prices">
+            <div class="price-single">
+              <span class="price-value">$17</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="extras" style="display:none;">
+          <div class="item-name">Cocktail Patties (Half Dozen)</div>
+          <div class="item-prices">
+            <div class="price-single">
+              <span class="price-value">$9</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catering-menu-item" data-category="extras" style="display:none;">
+          <div class="item-name">Plantain Round Tin</div>
+          <div class="item-prices">
+            <div class="price-single">
+              <span class="price-value">$15.75</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- .catering-menu-grid -->
+
+      <!-- Menu Note -->
+      <div class="menu-note">
+        <p>Prices subject to change. Please contact us for custom menu requests and large event pricing.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ORDER CATERING -->
+  <section class="catering-order-section" id="ezcater-locations">
+    <div class="container">
+
+      <div class="section-header">
+        <span class="section-label">Place Your Order</span>
+        <h2 class="section-title">Book Your Catering</h2>
+        <p class="section-subtitle">Order directly with us for the best pricing, or use EZCater for easy online ordering.</p>
+      </div>
+
+      <div class="catering-order-grid">
+
+        <!-- Ossining -->
+        <div class="catering-location-card">
+          <h3>Ossining</h3>
+          <p class="card-address">109 Main Street<br>Ossining, NY 10562</p>
+          <div class="card-actions">
+            <a href="tel:+19144327776" class="btn btn-warm">Call to Order: (914) 432-7776</a>
+            <a href="#catering-form" class="btn btn-outline-warm">Request Quote</a>
+            <a href="https://www.ezcater.com/catering/pvt/cravin-jamaican-cuisine-ossining" class="btn btn-outline-green btn-sm" target="_blank" rel="noopener noreferrer">Order on EZCater &rarr;</a>
+          </div>
+        </div>
+
+        <!-- White Plains -->
+        <div class="catering-location-card">
+          <h3>White Plains</h3>
+          <p class="card-address">74 Mamaroneck Ave<br>White Plains, NY 10601</p>
+          <div class="card-actions">
+            <a href="tel:+19143585111" class="btn btn-warm">Call to Order: (914) 358-5111</a>
+            <a href="#catering-form" class="btn btn-outline-warm">Request Quote</a>
+            <a href="https://www.ezcater.com/catering/pvt/cravin-jamaican-cuisine-white-plains" class="btn btn-outline-green btn-sm" target="_blank" rel="noopener noreferrer">Order on EZCater &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Mount Vernon -->
+        <div class="catering-location-card">
+          <h3>Mount Vernon</h3>
+          <p class="card-address">529 Gramatan Ave<br>Mount Vernon, NY 10552</p>
+          <div class="card-actions">
+            <a href="tel:+19145889202" class="btn btn-warm">Call to Order: (914) 588-9202</a>
+            <a href="#catering-form" class="btn btn-outline-warm">Request Quote</a>
+            <a href="https://www.ezcater.com/catering/pvt/cravin-jamaican-cuisine-mount-vernon" class="btn btn-outline-green btn-sm" target="_blank" rel="noopener noreferrer">Order on EZCater &rarr;</a>
+          </div>
         </div>
 
       </div>
@@ -199,6 +856,16 @@
         <h2>Request a Quote</h2>
         <p>Tell us about your event and we'll get back to you within 1 business day.</p>
         <form class="form-grid" action="#" method="post">
+
+          <div class="form-group form-full">
+            <label for="catering-location">Preferred Location</label>
+            <select id="catering-location" name="catering_location" required>
+              <option value="" disabled selected>Select a location</option>
+              <option value="ossining">Ossining &mdash; 109 Main Street</option>
+              <option value="white-plains">White Plains &mdash; 74 Mamaroneck Ave</option>
+              <option value="mount-vernon">Mount Vernon &mdash; 529 Gramatan Ave</option>
+            </select>
+          </div>
 
           <div class="form-group">
             <label for="full-name">Full Name</label>
@@ -319,5 +986,30 @@
 
   <script src="js/theme.js"></script>
   <script src="js/nav.js"></script>
+  <script>
+    // Catering menu tab filtering
+    (function() {
+      var tabs = document.querySelectorAll('.catering-menu-section .menu-tab');
+      var items = document.querySelectorAll('.catering-menu-item');
+      tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          tabs.forEach(function(t) {
+            t.classList.remove('active');
+            t.setAttribute('aria-selected', 'false');
+          });
+          tab.classList.add('active');
+          tab.setAttribute('aria-selected', 'true');
+          var cat = tab.getAttribute('data-category');
+          items.forEach(function(item) {
+            if (item.getAttribute('data-category') === cat) {
+              item.style.display = '';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
