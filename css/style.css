@@ -225,6 +225,9 @@ ul { list-style: none; }
 [data-theme="light"] .theme-toggle .icon-sun { display: none; }
 [data-theme="light"] .theme-toggle .icon-moon { display: block; }
 
+/* Mobile theme toggle — hidden on desktop, shown next to hamburger on mobile */
+.mobile-theme-toggle { display: none; }
+
 /* ========== NAV ========== */
 nav {
   position: fixed;
@@ -1377,6 +1380,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 160px; }
 
 @media (max-width: 768px) {
   .nav-links { display: none; }
+  .mobile-theme-toggle { display: flex; margin-left: auto; margin-right: 12px; }
   .mobile-menu-btn { display: flex; }
   .hero h1 { max-width: 100%; }
   .hero-stats { gap: 24px; flex-wrap: wrap; }

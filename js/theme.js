@@ -1,10 +1,10 @@
 /* Theme toggle (dark/light mode) */
 (function() {
-  const toggle = document.querySelector('.theme-toggle');
-  const html = document.documentElement;
+  var toggles = document.querySelectorAll('.theme-toggle');
+  var html = document.documentElement;
 
   function getPreferred() {
-    const saved = localStorage.getItem('cravin-theme');
+    var saved = localStorage.getItem('cravin-theme');
     if (saved) return saved;
     return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
   }
@@ -16,12 +16,12 @@
 
   setTheme(getPreferred());
 
-  if (toggle) {
+  toggles.forEach(function(toggle) {
     toggle.addEventListener('click', function() {
-      const current = html.getAttribute('data-theme');
+      var current = html.getAttribute('data-theme');
       setTheme(current === 'dark' ? 'light' : 'dark');
     });
-  }
+  });
 
   window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
     if (!localStorage.getItem('cravin-theme')) {
