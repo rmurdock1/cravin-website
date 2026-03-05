@@ -89,6 +89,13 @@
       flex: 1;
       min-width: 0;
     }
+    .catering-menu-item .item-name-group {
+      flex: 1;
+      min-width: 0;
+    }
+    .catering-menu-item .item-name-group .item-name {
+      flex: none;
+    }
     .catering-menu-item .item-note {
       font-size: 13px;
       color: var(--text-dim);
@@ -893,7 +900,7 @@
         </div>
 
         <div class="catering-menu-item" data-category="entrees" data-item-id="whiting-fish" data-item-name="Whiting Fish" data-price-half="11500" data-price-full="20500">
-          <div>
+          <div class="item-name-group">
             <div class="item-name">Whiting Fish</div>
             <div class="item-note">Half: 38 pcs &middot; Full: 65-70 pcs</div>
           </div>
