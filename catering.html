@@ -211,32 +211,195 @@
       text-align: center;
     }
 
-    /* Hero CTA group */
-    .hero-cta-group {
+    /* ==============================
+       HERO PATH CARDS
+       ============================== */
+    .hero-paths {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 32px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-path-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+      text-align: center;
+      transition: all 0.3s;
       display: flex;
-      gap: 12px;
-      margin-top: 24px;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .hero-path-card:hover {
+      border-color: var(--border-light);
+      box-shadow: var(--card-hover-shadow);
+      transform: translateY(-2px);
+    }
+    .hero-path-card .path-icon {
+      font-size: 28px;
+      margin-bottom: 4px;
+    }
+    .hero-path-card .path-title {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 18px;
+      color: var(--text);
+    }
+    .hero-path-card .path-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      flex: 1;
+    }
+    .hero-path-card .btn {
+      margin-top: 8px;
+      width: 100%;
       justify-content: center;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    /* ==============================
+       CONTACT STRIP
+       ============================== */
+    .catering-contact-strip {
+      padding: 40px 0;
+      background: var(--bg-elevated);
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+    .catering-contact-strip h3 {
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+    .contact-strip-row {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
       flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .contact-strip-row a {
+      color: var(--warm);
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .contact-strip-row a:hover { color: var(--warm-light); }
+    .catering-contact-strip .strip-email {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .catering-contact-strip .strip-email a {
+      color: var(--green);
+      text-decoration: none;
+    }
+    .catering-contact-strip .strip-email a:hover { color: var(--green-light); }
+
+    /* ==============================
+       QUANTITY BADGES ON MENU ITEMS
+       ============================== */
+    .catering-menu-item { position: relative; }
+    .cart-item-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--warm);
+      color: #111110;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 2;
+    }
+    .cart-inline-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .cart-inline-controls .qty-btn {
+      width: 26px;
+      height: 26px;
+      font-size: 13px;
+    }
+    .cart-inline-controls .qty-value {
+      font-size: 13px;
+      font-weight: 600;
+      min-width: 18px;
+      text-align: center;
+    }
+    .cart-inline-controls .size-summary {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-left: 6px;
+    }
+
+    /* In-cart highlight: left accent border instead of full border */
+    .catering-menu-item.in-cart {
+      border-left: 3px solid var(--warm);
+      border-color: var(--border);
+      border-left-color: var(--warm);
+    }
+
+    /* ==============================
+       TOAST NOTIFICATION
+       ============================== */
+    .cart-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100%);
+      background: var(--warm);
+      color: #111110;
+      padding: 12px 24px;
+      border-radius: 60px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      z-index: 200;
+      white-space: nowrap;
+      opacity: 0;
+      animation: toastSlideUp 2.5s ease forwards;
+    }
+    @keyframes toastSlideUp {
+      0% { transform: translateX(-50%) translateY(100%); opacity: 0; }
+      10% { transform: translateX(-50%) translateY(0); opacity: 1; }
+      80% { transform: translateX(-50%) translateY(0); opacity: 1; }
+      100% { transform: translateX(-50%) translateY(0); opacity: 0; }
     }
 
     /* Responsive */
     @media (max-width: 1024px) {
-      .catering-order-grid { grid-template-columns: 1fr 1fr; }
+      .hero-paths { grid-template-columns: repeat(3, 1fr); gap: 12px; }
     }
     @media (max-width: 768px) {
-      .catering-order-grid { grid-template-columns: 1fr; }
+      .hero-paths { grid-template-columns: 1fr; max-width: 360px; }
       .catering-menu-item { flex-direction: column; align-items: flex-start; gap: 12px; }
       .catering-menu-item .item-prices { width: 100%; justify-content: flex-start; gap: 32px; }
       .catering-menu-item .price-col { text-align: left; min-width: auto; }
       .catering-menu-item .price-single { text-align: left; }
-      .hero-cta-group { flex-direction: column; align-items: center; }
-      .hero-cta-group .btn { width: 100%; max-width: 300px; justify-content: center; }
+      .contact-strip-row { flex-direction: column; gap: 12px; }
+      .cart-item-badge { top: -6px; right: -6px; width: 22px; height: 22px; font-size: 11px; }
     }
 
     [data-theme="light"] .catering-menu-item { box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-    [data-theme="light"] .catering-location-card { box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
     [data-theme="light"] .catering-menu-item .price-value { color: #9A7228; }
+    [data-theme="light"] .hero-path-card { box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    [data-theme="light"] .cart-item-badge { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    [data-theme="light"] .cart-toast { box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
 
     /* ==============================
        QUOTE BUILDER — Cart Controls
@@ -489,9 +652,11 @@
       border: none;
       font-family: 'DM Sans', sans-serif;
       transition: all 0.3s;
+      white-space: nowrap;
     }
     .floating-cart-pill.visible { display: flex; }
     .floating-cart-pill:hover { background: var(--warm-light); transform: translateY(-2px); }
+    .pill-label-short { display: none; }
     .cart-badge {
       background: #111110;
       color: var(--warm);
@@ -528,8 +693,12 @@
         right: 50%;
         transform: translateX(50%);
         bottom: 72px;
+        font-size: 13px;
+        padding: 10px 20px;
       }
       .floating-cart-pill:hover { transform: translateX(50%) translateY(-2px); }
+      .pill-label-full { display: none; }
+      .pill-label-short { display: inline; }
       .form-tabs { gap: 6px; }
       .form-tab { padding: 10px 20px; font-size: 13px; }
       .cart-item-row { flex-wrap: wrap; }
@@ -541,8 +710,8 @@
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <!-- Sticky Order Button -->
-  <a href="order.html" class="sticky-order" aria-label="Order food online">
+  <!-- Sticky Order Button (hidden on catering page — clashes with floating cart pill) -->
+  <a href="order.html" class="sticky-order" aria-label="Order food online" style="display:none;">
     Order Online <span class="arrow" aria-hidden="true">&rarr;</span>
   </a>
 
@@ -591,9 +760,25 @@
     <div class="container">
       <h1>Catering</h1>
       <p class="page-hero-subtitle">Authentic Jamaican flavors for your next event. Half pans, full pans, and custom menus for 10 to 500 guests.</p>
-      <div class="hero-cta-group">
-        <a href="#catering-form" class="btn btn-warm">Build Your Order</a>
-        <a href="#ezcater-locations" class="btn btn-outline-green">Order via EZCater</a>
+      <div class="hero-paths">
+        <div class="hero-path-card">
+          <div class="path-icon" aria-hidden="true">&#128722;</div>
+          <div class="path-title">Build Your Order</div>
+          <p class="path-desc">Select items, sizes &amp; quantities from our catering menu</p>
+          <a href="#catering-menu-top" class="btn btn-warm btn-sm">Browse Menu &darr;</a>
+        </div>
+        <div class="hero-path-card">
+          <div class="path-icon" aria-hidden="true">&#9993;</div>
+          <div class="path-title">Quick Inquiry</div>
+          <p class="path-desc">Send us a message with your event details and we'll follow up</p>
+          <a href="#catering-form" class="btn btn-outline-warm btn-sm" id="hero-quick-inquiry-link">Send Inquiry &darr;</a>
+        </div>
+        <div class="hero-path-card">
+          <div class="path-icon" aria-hidden="true">&#8599;</div>
+          <div class="path-title">Order on EZCater</div>
+          <p class="path-desc">Order directly through EZCater for easy online ordering</p>
+          <a href="https://www.ezcater.com/catering/pvt/cravin-jamaican-cuisine-3" class="btn btn-outline-green btn-sm" target="_blank" rel="noopener noreferrer">Go to EZCater &rarr;</a>
+        </div>
       </div>
     </div>
   </section>
@@ -1070,88 +1255,7 @@
     </div>
   </section>
 
-  <!-- ORDER CATERING -->
-  <section class="catering-order-section" id="ezcater-locations">
-    <div class="container">
-
-      <div class="section-header">
-        <span class="section-label">Place Your Order</span>
-        <h2 class="section-title">Book Your Catering</h2>
-        <p class="section-subtitle">Order directly with us for the best pricing, or use EZCater for easy online ordering.</p>
-      </div>
-
-      <div class="catering-order-grid">
-
-        <!-- Ossining -->
-        <div class="catering-location-card">
-          <h3>Ossining</h3>
-          <p class="card-address">109 Main Street<br>Ossining, NY 10562</p>
-          <div class="card-actions">
-            <a href="tel:+19144327776" class="btn btn-warm">Call to Order: (914) 432-7776</a>
-            <a href="#catering-form" class="btn btn-outline-warm">Request Quote</a>
-            <a href="https://www.ezcater.com/catering/pvt/cravin-jamaican-cuisine-ossining" class="btn btn-outline-green btn-sm" target="_blank" rel="noopener noreferrer">Order on EZCater &rarr;</a>
-          </div>
-        </div>
-
-        <!-- White Plains -->
-        <div class="catering-location-card">
-          <h3>White Plains</h3>
-          <p class="card-address">74 Mamaroneck Ave<br>White Plains, NY 10601</p>
-          <div class="card-actions">
-            <a href="tel:+19143585111" class="btn btn-warm">Call to Order: (914) 358-5111</a>
-            <a href="#catering-form" class="btn btn-outline-warm">Request Quote</a>
-            <a href="https://www.ezcater.com/catering/pvt/cravin-jamaican-cuisine-white-plains" class="btn btn-outline-green btn-sm" target="_blank" rel="noopener noreferrer">Order on EZCater &rarr;</a>
-          </div>
-        </div>
-
-        <!-- Mount Vernon -->
-        <div class="catering-location-card">
-          <h3>Mount Vernon</h3>
-          <p class="card-address">529 Gramatan Ave<br>Mount Vernon, NY 10552</p>
-          <div class="card-actions">
-            <a href="tel:+19145889202" class="btn btn-warm">Call to Order: (914) 588-9202</a>
-            <a href="#catering-form" class="btn btn-outline-warm">Request Quote</a>
-            <a href="https://www.ezcater.com/catering/pvt/cravin-jamaican-cuisine-mount-vernon" class="btn btn-outline-green btn-sm" target="_blank" rel="noopener noreferrer">Order on EZCater &rarr;</a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- TESTIMONIALS -->
-  <section class="testimonials">
-    <div class="container">
-      <span class="section-label">What Our Clients Say</span>
-      <h2 class="section-title">Trusted for Events Big & Small</h2>
-      <div class="testimonials-grid">
-
-        <div class="testimonial-card">
-          <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <p class="testimonial-text">&ldquo;Some of the best food I've ever had. I get the Jerk Chicken and Brown Stew Chicken with rice and peas. The plantains are amazing too. Highly recommend!&rdquo;</p>
-          <div class="testimonial-author">Marisa S.</div>
-          <div class="testimonial-event">Regular Customer</div>
-        </div>
-
-        <div class="testimonial-card">
-          <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <p class="testimonial-text">&ldquo;Love this place!!! Curry chicken is really good and the oxtails are amazing! Great customer service and the food is always fresh.&rdquo;</p>
-          <div class="testimonial-author">Rebeca V.</div>
-          <div class="testimonial-event">Regular Customer</div>
-        </div>
-
-        <div class="testimonial-card">
-          <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <p class="testimonial-text">&ldquo;Everything is so fresh and delicious. The jerk chicken is perfectly seasoned and the portions are generous. Best Jamaican food in Westchester!&rdquo;</p>
-          <div class="testimonial-author">Daniel P.</div>
-          <div class="testimonial-event">Regular Customer</div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- CATERING QUOTE / INQUIRY FORM -->
+  <!-- CATERING QUOTE / INQUIRY FORM (moved directly after menu for proximity) -->
   <section class="catering-form-section" id="catering-form">
     <div class="container">
       <div class="catering-form-card">
@@ -1308,10 +1412,55 @@
     </div>
   </section>
 
+  <!-- TESTIMONIALS (moved after form, near footer) -->
+  <section class="testimonials">
+    <div class="container">
+      <span class="section-label">What Our Clients Say</span>
+      <h2 class="section-title">Trusted for Events Big &amp; Small</h2>
+      <div class="testimonials-grid">
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="testimonial-text">&ldquo;Some of the best food I've ever had. I get the Jerk Chicken and Brown Stew Chicken with rice and peas. The plantains are amazing too. Highly recommend!&rdquo;</p>
+          <div class="testimonial-author">Marisa S.</div>
+          <div class="testimonial-event">Regular Customer</div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="testimonial-text">&ldquo;Love this place!!! Curry chicken is really good and the oxtails are amazing! Great customer service and the food is always fresh.&rdquo;</p>
+          <div class="testimonial-author">Rebeca V.</div>
+          <div class="testimonial-event">Regular Customer</div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="testimonial-text">&ldquo;Everything is so fresh and delicious. The jerk chicken is perfectly seasoned and the portions are generous. Best Jamaican food in Westchester!&rdquo;</p>
+          <div class="testimonial-author">Daniel P.</div>
+          <div class="testimonial-event">Regular Customer</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT STRIP (compact replacement for location cards) -->
+  <section class="catering-contact-strip">
+    <div class="container">
+      <h3>Questions? Call Us Directly</h3>
+      <div class="contact-strip-row">
+        <a href="tel:+19144327776">Ossining: (914) 432-7776</a>
+        <a href="tel:+19143585111">White Plains: (914) 358-5111</a>
+        <a href="tel:+19145889202">Mount Vernon: (914) 588-9202</a>
+      </div>
+      <p class="strip-email">Or email <a href="mailto:cravinjc@gmail.com">cravinjc@gmail.com</a></p>
+    </div>
+  </section>
+
   <!-- Floating Cart Pill -->
-  <button class="floating-cart-pill" id="floating-cart-pill" type="button" aria-label="View your order">
+  <button class="floating-cart-pill" id="floating-cart-pill" type="button" aria-label="View and submit your order">
     <span class="cart-badge" id="pill-count">0</span>
-    <span id="pill-total">$0</span> &middot; View Order
+    <span id="pill-total">$0</span> &middot; <span class="pill-label-full">View &amp; Submit Order</span><span class="pill-label-short">View Order</span>
   </button>
 
   <!-- FOOTER -->

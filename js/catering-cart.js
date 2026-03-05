@@ -127,6 +127,19 @@
   var menuItems = document.querySelectorAll('.catering-menu-item');
 
   // ==============================
+  // TOAST NOTIFICATION
+  // ==============================
+  function showToast(message) {
+    var toast = document.createElement('div');
+    toast.className = 'cart-toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(function() {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 2800);
+  }
+
+  // ==============================
   // INJECT ADD BUTTONS INTO MENU ITEMS
   // ==============================
   menuItems.forEach(function(item) {
@@ -190,7 +203,7 @@
       document.querySelectorAll('.catering-menu-item.adding').forEach(function(other) {
         if (other !== item) {
           other.classList.remove('adding');
-          var otherQty = other.querySelector('.qty-value');
+          var otherQty = other.querySelector('.cart-add-controls .qty-value');
           if (otherQty) otherQty.textContent = '1';
         }
       });
@@ -254,13 +267,10 @@
       qtyDisplay.textContent = '1';
       sizeBtns.forEach(function(s, i) { s.classList.toggle('active', i === 0); });
 
-      // Update add button to show "Added"
-      addBtn.textContent = '✓ Added';
-      addBtn.classList.add('added');
-      setTimeout(function() {
-        addBtn.textContent = '+ Add';
-        addBtn.classList.remove('added');
-      }, 2000);
+      // Show toast notification
+      var sizeText = sizeLabel(selectedSize);
+      var toastMsg = itemName + (sizeText ? ' (' + sizeText + ')' : '') + ' added to order';
+      showToast(toastMsg);
     });
   });
 
@@ -328,9 +338,11 @@
   // ==============================
   // UPDATE FLOATING PILL
   // ==============================
+  var pillHiddenByObserver = false;
+
   function updateFloatingPill() {
     var count = getItemCount();
-    if (count > 0) {
+    if (count > 0 && !pillHiddenByObserver) {
       pillCount.textContent = count;
       pillTotal.textContent = formatCurrency(getTotal());
       floatingPill.classList.add('visible');
@@ -347,6 +359,30 @@
         formSection.scrollIntoView({ behavior: 'smooth' });
       }
     });
+  }
+
+  // ==============================
+  // INTERSECTION OBSERVER — hide pill when form visible
+  // ==============================
+  var formSection = document.getElementById('catering-form');
+  if (formSection && floatingPill && 'IntersectionObserver' in window) {
+    var pillObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          pillHiddenByObserver = true;
+          floatingPill.classList.remove('visible');
+        } else {
+          pillHiddenByObserver = false;
+          // Re-show pill if cart has items
+          if (getItemCount() > 0) {
+            pillCount.textContent = getItemCount();
+            pillTotal.textContent = formatCurrency(getTotal());
+            floatingPill.classList.add('visible');
+          }
+        }
+      });
+    }, { threshold: 0.1 });
+    pillObserver.observe(formSection);
   }
 
   // ==============================
@@ -372,6 +408,107 @@
         if (cart[i].id === itemId) { inCart = true; break; }
       }
       item.classList.toggle('in-cart', inCart);
+    });
+  }
+
+  // ==============================
+  // QUANTITY BADGES ON MENU ITEMS
+  // ==============================
+  function updateMenuItemBadges() {
+    // Build a map: itemId -> { totalQty, entries: [{ size, qty }] }
+    var itemMap = {};
+    for (var i = 0; i < cart.length; i++) {
+      var ci = cart[i];
+      if (!itemMap[ci.id]) {
+        itemMap[ci.id] = { totalQty: 0, entries: [] };
+      }
+      itemMap[ci.id].totalQty += ci.qty;
+      itemMap[ci.id].entries.push({ size: ci.size, qty: ci.qty });
+    }
+
+    menuItems.forEach(function(menuItem) {
+      var itemId = menuItem.getAttribute('data-item-id');
+      if (!itemId) return;
+
+      // Remove existing badge and inline controls
+      var existingBadge = menuItem.querySelector('.cart-item-badge');
+      if (existingBadge) existingBadge.parentNode.removeChild(existingBadge);
+      var existingControls = menuItem.querySelector('.cart-inline-controls');
+      if (existingControls) existingControls.parentNode.removeChild(existingControls);
+
+      var data = itemMap[itemId];
+      if (!data) return; // not in cart
+
+      // Create badge
+      var badge = document.createElement('div');
+      badge.className = 'cart-item-badge';
+      badge.textContent = data.totalQty;
+      menuItem.appendChild(badge);
+
+      // Create inline controls (compact +/- below item name)
+      var inlineCtrl = document.createElement('div');
+      inlineCtrl.className = 'cart-inline-controls';
+
+      // Build size summary text
+      var sizeParts = [];
+      for (var j = 0; j < data.entries.length; j++) {
+        var e = data.entries[j];
+        var sl = sizeLabel(e.size);
+        if (sl) {
+          sizeParts.push(e.qty + 'x ' + sl);
+        } else {
+          sizeParts.push(e.qty + 'x');
+        }
+      }
+
+      inlineCtrl.innerHTML =
+        '<button type="button" class="qty-btn inline-dec" aria-label="Remove one">&minus;</button>' +
+        '<span class="qty-value">' + data.totalQty + '</span>' +
+        '<button type="button" class="qty-btn inline-inc" aria-label="Add one">+</button>' +
+        '<span class="size-summary">' + sizeParts.join(', ') + '</span>';
+
+      // Find the item-name element to insert after
+      var nameEl = menuItem.querySelector('.item-name');
+      if (nameEl && nameEl.parentNode === menuItem) {
+        // Insert after the item-name div
+        if (nameEl.nextSibling) {
+          menuItem.insertBefore(inlineCtrl, nameEl.nextSibling);
+        } else {
+          menuItem.appendChild(inlineCtrl);
+        }
+      } else if (nameEl) {
+        // Name is inside a wrapper div (e.g., whiting fish with notes)
+        var wrapper = nameEl.parentNode;
+        wrapper.appendChild(inlineCtrl);
+      } else {
+        menuItem.appendChild(inlineCtrl);
+      }
+
+      // Bind inline +/- events
+      // Use the last entry's size for quick +/- (most recently added size)
+      var lastEntry = data.entries[data.entries.length - 1];
+
+      inlineCtrl.querySelector('.inline-dec').addEventListener('click', function() {
+        // Find last entry that still exists
+        var le = null;
+        for (var k = cart.length - 1; k >= 0; k--) {
+          if (cart[k].id === itemId) { le = cart[k]; break; }
+        }
+        if (le) {
+          updateQty(le.id, le.size, le.qty - 1);
+        }
+      });
+
+      inlineCtrl.querySelector('.inline-inc').addEventListener('click', function() {
+        // Increment last entry
+        var le = null;
+        for (var k = cart.length - 1; k >= 0; k--) {
+          if (cart[k].id === itemId) { le = cart[k]; break; }
+        }
+        if (le) {
+          updateQty(le.id, le.size, le.qty + 1);
+        }
+      });
     });
   }
 
@@ -417,6 +554,7 @@
     updateFloatingPill();
     updateHiddenFields();
     updateMenuItemStates();
+    updateMenuItemBadges();
     updateSubmitState();
     saveToSession();
   }
@@ -428,20 +566,36 @@
   var panelBuild = document.getElementById('panel-build-order');
   var panelQuick = document.getElementById('panel-quick-inquiry');
 
+  function switchToTab(tabName) {
+    formTabs.forEach(function(t) {
+      var isTarget = t.getAttribute('data-form-tab') === tabName;
+      t.classList.toggle('active', isTarget);
+      t.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+    });
+    if (panelBuild) panelBuild.style.display = tabName === 'build-order' ? '' : 'none';
+    if (panelQuick) panelQuick.style.display = tabName === 'quick-inquiry' ? '' : 'none';
+  }
+
   formTabs.forEach(function(tab) {
     tab.addEventListener('click', function() {
-      formTabs.forEach(function(t) {
-        t.classList.remove('active');
-        t.setAttribute('aria-selected', 'false');
-      });
-      tab.classList.add('active');
-      tab.setAttribute('aria-selected', 'true');
-
-      var target = tab.getAttribute('data-form-tab');
-      if (panelBuild) panelBuild.style.display = target === 'build-order' ? '' : 'none';
-      if (panelQuick) panelQuick.style.display = target === 'quick-inquiry' ? '' : 'none';
+      switchToTab(tab.getAttribute('data-form-tab'));
     });
   });
+
+  // ==============================
+  // HERO QUICK INQUIRY LINK
+  // ==============================
+  var heroQuickLink = document.getElementById('hero-quick-inquiry-link');
+  if (heroQuickLink) {
+    heroQuickLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      switchToTab('quick-inquiry');
+      var formEl = document.getElementById('catering-form');
+      if (formEl) {
+        formEl.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
 
   // ==============================
   // INIT
