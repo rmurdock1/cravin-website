@@ -787,6 +787,25 @@ footer {
   gap: 20px;
 }
 
+.menu-category-divider {
+  grid-column: 1 / -1;
+  padding: 12px 0 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+.menu-category-divider h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--warm);
+  margin: 0;
+}
+.menu-category-divider p {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+}
+
 .menu-item-card {
   background: var(--bg-card);
   border: 1px solid var(--border);

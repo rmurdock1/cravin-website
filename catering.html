@@ -271,6 +271,45 @@
     }
 
     /* ==============================
+       PAN SIZE SERVING GUIDE
+       ============================== */
+    .pan-size-guide {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      margin: 24px auto 32px;
+      padding: 16px 32px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--warm);
+      border-radius: 10px;
+      max-width: 460px;
+    }
+    .pan-size-guide-item { text-align: center; }
+    .pan-size-guide-label {
+      display: block;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+    .pan-size-guide-serves {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--warm);
+    }
+    .pan-size-guide-divider {
+      width: 1px;
+      height: 36px;
+      background: var(--border);
+    }
+
+    /* ==============================
        CONTACT STRIP
        ============================== */
     .catering-contact-strip {
@@ -399,6 +438,8 @@
       .catering-menu-item .price-col { text-align: left; min-width: auto; }
       .catering-menu-item .price-single { text-align: left; }
       .contact-strip-row { flex-direction: column; gap: 12px; }
+      .pan-size-guide { max-width: 320px; padding: 14px 24px; gap: 20px; }
+      .pan-size-guide-serves { font-size: 16px; }
       .cart-item-badge { top: -6px; right: -6px; width: 22px; height: 22px; font-size: 11px; }
     }
 
@@ -730,9 +771,9 @@
       </a>
       <div class="nav-links">
         <a href="menu.html">Menu</a>
+        <a href="catering.html" class="active">Catering</a>
         <a href="about.html">Our Story</a>
         <a href="locations.html">Locations</a>
-        <a href="catering.html" class="active">Catering</a>
         <a href="contact.html">Contact</a>
         <a href="order.html" class="nav-cta">Order Online</a>
         <button class="theme-toggle" aria-label="Toggle light/dark mode" type="button">
@@ -755,9 +796,9 @@
   <!-- Mobile Menu -->
   <div class="mobile-menu" aria-label="Mobile navigation">
     <a href="menu.html">Menu</a>
+    <a href="catering.html">Catering</a>
     <a href="about.html">Our Story</a>
     <a href="locations.html">Locations</a>
-    <a href="catering.html">Catering</a>
     <a href="contact.html">Contact</a>
     <a href="order.html" class="btn btn-warm">Order Online</a>
   </div>
@@ -766,7 +807,7 @@
   <section class="page-hero" id="main-content">
     <div class="container">
       <h1>Catering</h1>
-      <p class="page-hero-subtitle">Authentic Jamaican flavors for your next event. Half pans, full pans, and custom menus for 10 to 500 guests.</p>
+      <p class="page-hero-subtitle">Authentic Jamaican flavors for your next event. Half pans serve 10–15, full pans serve 40–50 — custom menus for up to 500 guests.</p>
       <div class="hero-paths">
         <div class="hero-path-card">
           <div class="path-icon" aria-hidden="true">&#128722;</div>
@@ -797,7 +838,20 @@
       <div class="section-header">
         <span class="section-label">Our Catering Menu</span>
         <h2 class="section-title">Pan Sizes &amp; Pricing</h2>
-        <p class="section-subtitle">All items available in half pan and full pan sizes. Perfect for events of 10 to 500 guests.</p>
+        <p class="section-subtitle">Choose your pan size to match your guest count. Half pans and full pans available across our full menu.</p>
+      </div>
+
+      <!-- Pan Size Serving Guide -->
+      <div class="pan-size-guide">
+        <div class="pan-size-guide-item">
+          <span class="pan-size-guide-label">Half Pan</span>
+          <span class="pan-size-guide-serves">Feeds 10–15</span>
+        </div>
+        <div class="pan-size-guide-divider" aria-hidden="true"></div>
+        <div class="pan-size-guide-item">
+          <span class="pan-size-guide-label">Full Pan</span>
+          <span class="pan-size-guide-serves">Feeds 40–50</span>
+        </div>
       </div>
 
       <!-- Category Filter Tabs -->
@@ -1283,7 +1337,7 @@
           <!-- Cart Summary -->
           <div class="cart-summary" id="cart-summary" aria-live="polite">
             <div class="cart-empty-state" id="cart-empty">
-              <p>Your order is empty. Browse the menu above and add items to build your quote.</p>
+              <p>Your order is empty. Browse the menu above and add items — half pans feed 10–15 guests, full pans feed 40–50.</p>
               <a href="#catering-menu-top" class="btn btn-outline-green btn-sm">Browse Menu &uarr;</a>
             </div>
             <div class="cart-items-list" id="cart-items-list" style="display:none;"></div>
@@ -1291,7 +1345,7 @@
               <span>Estimated Total</span>
               <span class="cart-total-value" id="cart-total-value">$0</span>
             </div>
-            <p class="cart-note">Final pricing confirmed after review. Prices subject to change.</p>
+            <p class="cart-note">Half pans feed 10–15 guests, full pans feed 40–50. Final pricing confirmed after review.</p>
           </div>
 
           <!-- Contact Info -->
@@ -1329,6 +1383,14 @@
             <div class="form-group form-full">
               <label for="bo-notes">Special Requests / Notes</label>
               <textarea id="bo-notes" name="special_requests" rows="3" placeholder="Dietary needs, delivery details, etc."></textarea>
+            </div>
+            <div class="form-group form-full">
+              <label for="bo-utensils">Need plates, cups & serving utensils?</label>
+              <select id="bo-utensils" name="utensils_needed">
+                <option value="" selected>Select (optional)</option>
+                <option value="yes">Yes, please include utensils</option>
+                <option value="no">No, we have our own</option>
+              </select>
             </div>
 
             <!-- Honeypot -->
@@ -1402,6 +1464,14 @@
               <label for="qi-requests">Dietary Notes / Special Requests</label>
               <textarea id="qi-requests" name="special_requests" rows="4"></textarea>
             </div>
+            <div class="form-group form-full">
+              <label for="qi-utensils">Need plates, cups & serving utensils?</label>
+              <select id="qi-utensils" name="utensils_needed">
+                <option value="" selected>Select (optional)</option>
+                <option value="yes">Yes, please include utensils</option>
+                <option value="no">No, we have our own</option>
+              </select>
+            </div>
 
             <!-- Honeypot -->
             <div class="hp-field" aria-hidden="true">
@@ -1456,11 +1526,9 @@
     <div class="container">
       <h3>Questions? Call Us Directly</h3>
       <div class="contact-strip-row">
-        <a href="tel:+19144327776">Ossining: (914) 432-7776</a>
-        <a href="tel:+19143585111">White Plains: (914) 358-5111</a>
-        <a href="tel:+19145889202">Mount Vernon: (914) 588-9202</a>
+        <a href="tel:+19144327776">(914) 432-7776</a>
       </div>
-      <p class="strip-email">Or email <a href="mailto:cravinjc@gmail.com">cravinjc@gmail.com</a></p>
+      <p class="strip-email">Or email <a href="mailto:catering@cravinjc.com">catering@cravinjc.com</a></p>
     </div>
   </section>
 

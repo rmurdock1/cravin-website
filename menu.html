@@ -113,9 +113,9 @@
       </a>
       <div class="nav-links">
         <a href="menu.html" class="active">Menu</a>
+        <a href="catering.html">Catering</a>
         <a href="about.html">Our Story</a>
         <a href="locations.html">Locations</a>
-        <a href="catering.html">Catering</a>
         <a href="contact.html">Contact</a>
         <a href="order.html" class="nav-cta">Order Online</a>
         <button class="theme-toggle" aria-label="Toggle light/dark mode" type="button">
@@ -138,9 +138,9 @@
   <!-- Mobile Menu -->
   <div class="mobile-menu" aria-label="Mobile navigation">
     <a href="menu.html">Menu</a>
+    <a href="catering.html">Catering</a>
     <a href="about.html">Our Story</a>
     <a href="locations.html">Locations</a>
-    <a href="catering.html">Catering</a>
     <a href="contact.html">Contact</a>
     <a href="order.html" class="btn btn-warm">Order Online</a>
   </div>
@@ -173,6 +173,10 @@
              BREAKFAST
              All dishes (except Porridge) include boiled yam, banana, and dumplings.
              ============================== -->
+        <div class="menu-category-divider" data-divider-category="breakfast">
+          <h2>Breakfast</h2>
+          <p>All dishes (except Porridge) include boiled yam, banana, and dumplings.</p>
+        </div>
 
         <div class="menu-item-card" data-category="breakfast">
           <div class="menu-item-header">
@@ -256,6 +260,10 @@
              LUNCH & DINNER
              All served with choice of rice & peas or white rice, plus cabbage or plantains.
              ============================== -->
+        <div class="menu-category-divider" data-divider-category="lunch-dinner">
+          <h2>Lunch &amp; Dinner</h2>
+          <p>All served with choice of rice &amp; peas or white rice, plus cabbage or plantains.</p>
+        </div>
 
         <div class="menu-item-card" data-category="lunch-dinner">
           <div class="menu-item-header">
@@ -409,6 +417,9 @@
         <!-- ==============================
              BAKED GOODS
              ============================== -->
+        <div class="menu-category-divider" data-divider-category="baked-goods">
+          <h2>Baked Goods</h2>
+        </div>
 
         <div class="menu-item-card" data-category="baked-goods">
           <div class="menu-item-header">
@@ -469,6 +480,9 @@
         <!-- ==============================
              BEVERAGES
              ============================== -->
+        <div class="menu-category-divider" data-divider-category="beverages">
+          <h2>Beverages</h2>
+        </div>
 
         <div class="menu-item-card" data-category="beverages">
           <div class="menu-item-header">
@@ -669,19 +683,24 @@
   <script src="js/nav.js"></script>
   <script>
     (function() {
-      const tabs = document.querySelectorAll('.menu-tab');
-      const cards = document.querySelectorAll('.menu-item-card');
+      var tabs = document.querySelectorAll('.menu-tab');
+      var cards = document.querySelectorAll('.menu-item-card');
+      var dividers = document.querySelectorAll('.menu-category-divider');
       tabs.forEach(function(tab) {
         tab.addEventListener('click', function() {
           tabs.forEach(function(t) { t.classList.remove('active'); });
           tab.classList.add('active');
-          const cat = tab.getAttribute('data-category');
+          var cat = tab.getAttribute('data-category');
           cards.forEach(function(card) {
             if (cat === 'all' || card.getAttribute('data-category') === cat) {
               card.style.display = '';
             } else {
               card.style.display = 'none';
             }
+          });
+          // Show dividers only when "All" is selected
+          dividers.forEach(function(div) {
+            div.style.display = cat === 'all' ? '' : 'none';
           });
         });
       });
