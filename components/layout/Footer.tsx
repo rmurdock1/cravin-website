@@ -35,19 +35,18 @@ export function Footer() {
             <Link href="/about">Our Story</Link>
             <Link href="/locations">Locations</Link>
             <Link href="/careers">Careers</Link>
-            <Link href="/about">Press</Link>
+            <Link href="/about#press">Press</Link>
           </div>
           <div className="footer-col">
             <h4>Support</h4>
             <Link href="/contact">Contact Us</Link>
             <Link href="/order">Order Online</Link>
             <Link href="/catering">Catering Inquiry</Link>
-            <Link href="#">Gift Cards</Link>
           </div>
         </div>
         <div className="footer-bottom">
           <p>&copy; {new Date().getFullYear()} Cravin Jamaican Cuisine. All rights reserved.</p>
-          <p>Privacy Policy &middot; Terms of Service</p>
+          <p>&nbsp;</p>
         </div>
       </div>
     </footer>

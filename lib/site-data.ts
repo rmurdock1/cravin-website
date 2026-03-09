@@ -149,6 +149,5 @@ export const navLinks = [
   { href: '/catering', label: 'Catering' },
   { href: '/about', label: 'Our Story' },
   { href: '/locations', label: 'Locations' },
-  { href: '/careers', label: 'Careers' },
   { href: '/contact', label: 'Contact' },
 ];

@@ -64,7 +64,7 @@ export default function AboutPage() {
       </section>
 
       {/* MEDIA COVERAGE */}
-      <section className="press-section">
+      <section className="press-section" id="press">
         <div className="container">
           <div className="values-header">
             <span className="section-label section-label-green">In The Spotlight</span>
@@ -175,6 +175,20 @@ export default function AboutPage() {
               </div>
             </div>
             <Link href="/locations" className="btn btn-warm">Visit Us</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* JOIN THE TEAM */}
+      <section className="careers-cta-section">
+        <div className="container">
+          <div className="careers-cta-banner">
+            <div className="careers-cta-text">
+              <span className="section-label">Join Us</span>
+              <h2>We&apos;re Hiring</h2>
+              <p>Love great food and great people? We&apos;re always looking for passionate team members across our three locations. Check out our open positions.</p>
+            </div>
+            <Link href="/careers" className="btn btn-warm">View Open Positions &rarr;</Link>
           </div>
         </div>
       </section>

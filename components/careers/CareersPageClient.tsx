@@ -15,13 +15,11 @@ function JobCard({
 
   return (
     <div className="careers-job-card" id={job.id}>
+      <div className="careers-job-location-label">{job.location}</div>
       <div className="careers-job-header">
         <div>
           <h3>{job.title}</h3>
-          <div className="careers-job-meta">
-            <span className="careers-tag">{job.location}</span>
-            <span className="careers-tag careers-tag-type">{job.type}</span>
-          </div>
+          <span className="careers-tag careers-tag-type">{job.type}</span>
         </div>
         <button
           className="btn btn-outline-green careers-toggle-btn"
@@ -135,10 +133,6 @@ export function CareersPageClient() {
           <div className="careers-listings-header">
             <span className="section-label">Open Positions</span>
             <h2 className="section-title">Current Openings</h2>
-            <p className="section-subtitle">
-              {jobListings.length} positions available across our Westchester
-              County locations.
-            </p>
           </div>
           <div className="careers-listings-grid">
             {jobListings.map((job) => (

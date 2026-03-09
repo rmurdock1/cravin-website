@@ -1499,6 +1499,46 @@ html { scroll-behavior: smooth; scroll-padding-top: 160px; }
   flex-wrap: wrap;
 }
 
+/* Join Us CTA (About page) */
+.careers-cta-section {
+  padding: 60px 0;
+  background: var(--bg-elevated);
+}
+.careers-cta-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+}
+.careers-cta-text h2 {
+  font-family: 'DM Serif Display', serif;
+  margin-bottom: 8px;
+}
+.careers-cta-text p {
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 520px;
+}
+.careers-cta-banner .btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+[data-theme="light"] .careers-cta-section { background: #f7f5f0; }
+[data-theme="light"] .careers-cta-banner { background: #fff; }
+@media (max-width: 768px) {
+  .careers-cta-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 32px 24px;
+  }
+  .careers-cta-text p { max-width: 100%; }
+}
+
 /* ============================================
    CAREERS PAGE
    ============================================ */
@@ -1558,6 +1598,17 @@ html { scroll-behavior: smooth; scroll-padding-top: 160px; }
 }
 .careers-job-card:hover {
   border-color: var(--warm);
+}
+.careers-job-location-label {
+  display: inline-block;
+  background: rgba(74, 157, 110, 0.15);
+  color: var(--green-light);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: 12px;
 }
 .careers-job-header {
   display: flex;
