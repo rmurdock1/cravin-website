@@ -665,12 +665,56 @@
 [data-theme="light"] .cart-badge { background: #1a1918; }
 
 /* ==============================
+   STICKY CATEGORY TABS BAR
+   ============================== */
+.catering-tabs-bar {
+  position: sticky;
+  top: 107px;
+  z-index: 90;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+  transition: background-color 0.3s ease;
+}
+
+/* Larger tabs for catering page */
+.catering-tabs-bar .menu-tabs {
+  gap: 10px;
+  margin-bottom: 0;
+}
+.catering-tabs-bar .menu-tab {
+  font-size: 15px;
+  padding: 12px 32px;
+  letter-spacing: 0.01em;
+}
+
+/* ==============================
    RESPONSIVE
    ============================== */
 @media (max-width: 1024px) {
   .hero-paths { grid-template-columns: repeat(3, 1fr); gap: 12px; }
 }
 @media (max-width: 768px) {
+  .catering-tabs-bar {
+    padding: 12px 0;
+  }
+  .catering-tabs-bar .menu-tabs {
+    gap: 6px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0 16px;
+  }
+  .catering-tabs-bar .menu-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .catering-tabs-bar .menu-tab {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 14px;
+    padding: 12px 22px;
+  }
   .hero-paths { grid-template-columns: 1fr; max-width: 360px; }
   .catering-menu-item { flex-direction: column; align-items: flex-start; gap: 12px; }
   .catering-menu-item .item-prices { width: 100%; justify-content: flex-start; gap: 32px; }

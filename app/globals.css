@@ -835,6 +835,7 @@ footer {
   color: var(--green);
 }
 .menu-tag-warm { background: var(--warm-dim); color: var(--warm); }
+.menu-tag-highlight { background: var(--warm-dim); color: var(--warm); }
 
 .menu-note {
   text-align: center;

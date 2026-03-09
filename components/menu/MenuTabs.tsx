@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { menuCategories, menuItems, type MenuCategory } from '@/lib/menu-data';
 
 function MenuItemCard({ item }: { item: typeof menuItems[number] }) {
@@ -66,11 +66,11 @@ export function MenuTabs() {
       {/* Menu Grid */}
       <div className="menu-grid">
         {activeCategory === 'all' ? (
-          // Show category dividers when viewing all
+          // Show category dividers when viewing all — use Fragment to keep items as direct grid children
           menuCategories.map((cat) => {
             const catItems = menuItems.filter((item) => item.category === cat.id);
             return (
-              <div key={cat.id}>
+              <Fragment key={cat.id}>
                 <div className="menu-category-divider" data-divider-category={cat.id}>
                   <h2>{cat.label}</h2>
                   {cat.description && <p>{cat.description}</p>}
@@ -78,7 +78,7 @@ export function MenuTabs() {
                 {catItems.map((item) => (
                   <MenuItemCard key={item.name} item={item} />
                 ))}
-              </div>
+              </Fragment>
             );
           })
         ) : (

@@ -255,22 +255,29 @@ export function CateringPageClient() {
             </div>
           </div>
 
-          {/* Category Tabs */}
-          <div className="menu-tabs" role="tablist" aria-label="Catering menu categories">
-            {cateringCategories.map((cat) => (
-              <button
-                key={cat.id}
-                className={`menu-tab ${activeCategory === cat.id ? 'active' : ''}`}
-                role="tab"
-                aria-selected={activeCategory === cat.id}
-                type="button"
-                onClick={() => setActiveCategory(cat.id)}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
+        </div>
 
+        {/* Sticky Category Tabs */}
+        <div className="catering-tabs-bar">
+          <div className="container">
+            <div className="menu-tabs" role="tablist" aria-label="Catering menu categories">
+              {cateringCategories.map((cat) => (
+                <button
+                  key={cat.id}
+                  className={`menu-tab ${activeCategory === cat.id ? 'active' : ''}`}
+                  role="tab"
+                  aria-selected={activeCategory === cat.id}
+                  type="button"
+                  onClick={() => setActiveCategory(cat.id)}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="container">
           {/* Menu Grid */}
           <div className="catering-menu-grid">
             {filteredItems.map((item) => (
@@ -383,6 +390,10 @@ export function CateringPageClient() {
                     <input type="tel" id="bo-phone" name="phone" required />
                   </div>
                   <div className="form-group">
+                    <label htmlFor="bo-company">Company or Organization</label>
+                    <input type="text" id="bo-company" name="company" placeholder="Leave blank if personal" />
+                  </div>
+                  <div className="form-group">
                     <label htmlFor="bo-location">Preferred Location</label>
                     <select id="bo-location" name="catering_location">
                       <option value="">Any / Not sure</option>
@@ -435,6 +446,10 @@ export function CateringPageClient() {
                   <div className="form-group">
                     <label htmlFor="qi-phone">Phone *</label>
                     <input type="tel" id="qi-phone" name="phone" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="qi-company">Company or Organization</label>
+                    <input type="text" id="qi-company" name="company" placeholder="Leave blank if personal" />
                   </div>
                   <div className="form-group">
                     <label htmlFor="qi-date">Approximate Event Date</label>
