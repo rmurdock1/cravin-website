@@ -29,6 +29,19 @@ export const metadata: Metadata = {
   description: 'Authentic Jamaican cuisine at 3 New York locations. Jerk chicken, oxtail, ackee & saltfish, catering for events. Order online for pickup or delivery.',
   keywords: ['Jamaican food', 'jerk chicken', 'Jamaican restaurant New York', 'Caribbean cuisine', 'Ossining', 'White Plains', 'Mount Vernon', 'catering'],
   metadataBase: new URL('https://www.cravinjc.com'),
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  manifest: '/site.webmanifest',
   openGraph: {
     type: 'website',
     locale: 'en_US',

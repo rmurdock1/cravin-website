@@ -92,7 +92,7 @@ export function CareersPageClient() {
         <div className="container">
           <h1>Join the Cravin Family</h1>
           <p className="page-hero-subtitle">
-            We&apos;re growing — and we want passionate people who love great
+            We&apos;re growing, and we want passionate people who love great
             food and great service. Check out our open positions below.
           </p>
         </div>
@@ -106,7 +106,7 @@ export function CareersPageClient() {
               <h3>Family Culture</h3>
               <p>
                 We&apos;re a family business. Everyone here looks out for each
-                other — from the kitchen to the counter.
+                other, from the kitchen to the counter.
               </p>
             </div>
             <div className="careers-why-card">
@@ -119,7 +119,7 @@ export function CareersPageClient() {
             <div className="careers-why-card">
               <h3>Room to Grow</h3>
               <p>
-                Three locations and counting. We promote from within — many of
+                Three locations and counting. We promote from within, and many of
                 our managers started as line cooks.
               </p>
             </div>
@@ -262,7 +262,7 @@ export function CareersPageClient() {
 
               <div className="careers-form-group">
                 <label htmlFor="careers-resume">
-                  Resume (PDF, DOC, or DOCX — max 5MB)
+                  Resume (PDF, DOC, or DOCX, max 5MB)
                 </label>
                 <input
                   type="file"

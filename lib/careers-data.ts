@@ -96,7 +96,7 @@ export const jobListings: JobListing[] = [
     location: 'All Locations',
     type: 'flexible',
     description:
-      'Deliver Cravin\'s food to customers across Westchester County. Flexible hours — great as a primary or supplemental gig.',
+      'Deliver Cravin\'s food to customers across Westchester County. Flexible hours, great as a primary or supplemental gig.',
     responsibilities: [
       'Pick up and deliver orders accurately and on time',
       'Maintain a clean, professional appearance',
@@ -111,7 +111,7 @@ export const jobListings: JobListing[] = [
       'Knowledge of Westchester County roads a plus',
     ],
     perks: [
-      'Flexible hours — set your own schedule',
+      'Flexible hours, set your own schedule',
       'Keep 100% of tips',
       'Free meal per shift',
       'Mileage compensation',

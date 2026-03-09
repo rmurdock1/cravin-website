@@ -1024,7 +1024,7 @@ footer {
 .form-group select { cursor: pointer; }
 .form-group textarea { resize: vertical; min-height: 100px; }
 
-.form-submit { text-align: center; margin-top: 32px; }
+.form-submit { text-align: center; margin-top: 32px; grid-column: 1 / -1; }
 .form-submit .btn { padding: 16px 48px; font-size: 15px; }
 
 /* Honeypot */

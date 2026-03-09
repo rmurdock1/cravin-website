@@ -5,7 +5,7 @@ import { socialLinks } from '@/lib/site-data';
 
 export const metadata: Metadata = {
   title: 'Our Story',
-  description: "Learn about Cravin Jamaican Cuisine — Peter Murdock's journey from Ossining to three Westchester County locations since 2015.",
+  description: "Learn about Cravin Jamaican Cuisine. Peter Murdock's journey from Ossining to three Westchester County locations since 2015.",
 };
 
 export default function AboutPage() {

@@ -57,8 +57,11 @@ function CateringMenuItem({
     setQty(1);
   }
 
-  // Inline controls for items already in cart
-  const inCartItems = cartItems.filter((ci) => ci.id === item.id);
+  // Inline controls for items already in cart (half pan first, then full)
+  const sizeOrder: Record<string, number> = { half: 0, full: 1, single: 2 };
+  const inCartItems = cartItems
+    .filter((ci) => ci.id === item.id)
+    .sort((a, b) => (sizeOrder[a.size] ?? 9) - (sizeOrder[b.size] ?? 9));
 
   return (
     <div
@@ -206,7 +209,7 @@ export function CateringPageClient() {
       <section className="page-hero" id="main-content">
         <div className="container">
           <h1>Catering</h1>
-          <p className="page-hero-subtitle">Authentic Jamaican flavors for your next event. Half pans serve 10–15, full pans serve 40–50 — custom menus for up to 500 guests.</p>
+          <p className="page-hero-subtitle">Authentic Jamaican flavors for your next event. Half pans serve 10–15, full pans serve 40–50. Custom menus for up to 500 guests.</p>
           <div className="hero-paths">
             <div className="hero-path-card">
               <div className="path-icon" aria-hidden="true">&#128722;</div>
@@ -324,13 +327,17 @@ export function CateringPageClient() {
                 <div className="cart-summary" aria-live="polite">
                   {cart.length === 0 ? (
                     <div className="cart-empty-state">
-                      <p>Your order is empty. Browse the menu above and add items — half pans feed 10–15 guests, full pans feed 40–50.</p>
+                      <p>Your order is empty. Browse the menu above to get started. Half pans feed 10–15 guests, full pans feed 40–50.</p>
                       <a href="#catering-menu-top" className="btn btn-outline-green btn-sm">Browse Menu &uarr;</a>
                     </div>
                   ) : (
                     <>
                       <div className="cart-items-list">
-                        {cart.map((item) => (
+                        {[...cart].sort((a, b) => {
+                          if (a.name !== b.name) return a.name.localeCompare(b.name);
+                          const order: Record<string, number> = { half: 0, full: 1, single: 2 };
+                          return (order[a.size] ?? 9) - (order[b.size] ?? 9);
+                        }).map((item) => (
                           <div key={`${item.id}-${item.size}`} className="cart-item-row">
                             <div className="cart-item-info">
                               <div className="cart-item-name">{item.name}</div>
@@ -393,7 +400,15 @@ export function CateringPageClient() {
                     <input type="number" id="bo-guests" name="guest_count" min="10" max="500" required />
                   </div>
                   <div className="form-group full">
-                    <label htmlFor="bo-notes">Additional Notes</label>
+                    <label htmlFor="bo-utensils">Need plates, cups &amp; serving utensils?</label>
+                    <select id="bo-utensils" name="utensils_needed" defaultValue="">
+                      <option value="">Select (optional)</option>
+                      <option value="yes">Yes, please include utensils</option>
+                      <option value="no">No, we have our own</option>
+                    </select>
+                  </div>
+                  <div className="form-group full">
+                    <label htmlFor="bo-notes">Special Requests &amp; Notes</label>
                     <textarea id="bo-notes" name="notes" rows={3} placeholder="Dietary needs, event details, etc."></textarea>
                   </div>
                   <input type="text" name="website" className="hp-field" tabIndex={-1} autoComplete="off" />
@@ -426,6 +441,14 @@ export function CateringPageClient() {
                     <input type="date" id="qi-date" name="event_date" />
                   </div>
                   <div className="form-group full">
+                    <label htmlFor="qi-utensils">Need plates, cups &amp; serving utensils?</label>
+                    <select id="qi-utensils" name="utensils_needed" defaultValue="">
+                      <option value="">Select (optional)</option>
+                      <option value="yes">Yes, please include utensils</option>
+                      <option value="no">No, we have our own</option>
+                    </select>
+                  </div>
+                  <div className="form-group full">
                     <label htmlFor="qi-message">Tell us about your event *</label>
                     <textarea id="qi-message" name="message" rows={5} placeholder="Event type, number of guests, menu preferences..." required></textarea>
                   </div>
@@ -443,25 +466,27 @@ export function CateringPageClient() {
       {/* TESTIMONIALS */}
       <section className="testimonials">
         <div className="container">
-          <div className="testimonials-header">
-            <span className="section-label">What Our Clients Say</span>
-            <h2 className="section-title">Trusted by 435+ Events</h2>
-          </div>
+          <span className="section-label">What Our Clients Say</span>
+          <h2 className="section-title">Trusted for Events Big &amp; Small</h2>
+          <p className="section-subtitle" style={{ marginBottom: 12 }}>Rated <strong>4.9/5</strong> from 435+ catering orders on ezCater</p>
           <div className="testimonials-grid">
             <div className="testimonial-card">
               <div className="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-              <p>&ldquo;Cravin catered our company holiday party and the food was incredible. The jerk chicken and oxtail were the talk of the office for weeks.&rdquo;</p>
-              <span className="testimonial-author">- Marisa S.</span>
+              <p className="testimonial-text">&ldquo;The Jerk Chicken is out of this world! My guests practically attacked it and there were no leftovers in sight. Will absolutely use this catering team again. They arrived perfectly on time and the food was delicious!&rdquo;</p>
+              <div className="testimonial-author">Samantha</div>
+              <div className="testimonial-event">Event Catering &middot; via ezCater</div>
             </div>
             <div className="testimonial-card">
               <div className="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-              <p>&ldquo;We ordered catering for a family reunion and it was absolutely perfect. Everything was fresh, flavorful, and beautifully presented.&rdquo;</p>
-              <span className="testimonial-author">- Rebeca V.</span>
+              <p className="testimonial-text">&ldquo;This has to be the most moist jerk chicken I&apos;ve ever had. Our work group absolutely loved the food and the whiting, mac and cheese&hellip; chef&apos;s kiss!!!&rdquo;</p>
+              <div className="testimonial-author">Janet</div>
+              <div className="testimonial-event">Corporate Lunch &middot; via ezCater</div>
             </div>
             <div className="testimonial-card">
               <div className="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-              <p>&ldquo;Best Jamaican catering in Westchester, hands down. Peter and his team went above and beyond for our wedding reception.&rdquo;</p>
-              <span className="testimonial-author">- Daniel P.</span>
+              <p className="testimonial-text">&ldquo;The food arrived hot which is amazing. It was an absolute rave from everyone! Arrived on time, hot, and was thoroughly enjoyed by all. I highly recommend this restaurant.&rdquo;</p>
+              <div className="testimonial-author">Natalia</div>
+              <div className="testimonial-event">Event Coordinator &middot; via ezCater</div>
             </div>
           </div>
         </div>
@@ -470,14 +495,12 @@ export function CateringPageClient() {
       {/* CONTACT STRIP */}
       <section className="catering-contact-strip">
         <div className="container">
-          <h3>Ready to Order? Call Us Directly</h3>
+          <h3>Questions? Call Us Directly</h3>
           <div className="contact-strip-row">
-            {locations.map((loc) => (
-              <a key={loc.id} href={`tel:${loc.phone}`}>{loc.shortName}: {loc.phoneFormatted}</a>
-            ))}
+            <a href="tel:+19144327776">(914) 432-7776</a>
           </div>
           <p className="strip-email">
-            Or email <a href={`mailto:${locations[0].email}`}>{locations[0].email}</a>
+            Or email <a href="mailto:catering@cravinjc.com">catering@cravinjc.com</a>
           </p>
         </div>
       </section>
