@@ -21,8 +21,9 @@ export default function HomePage() {
           <div className="hero-content">
             <h1>Authentic Jamaican Cuisine</h1>
             <p className="hero-subtitle">
-              Jerk chicken grilled over pimento wood. Oxtail simmered for hours.
-              Ackee &amp; saltfish made the real way. Three locations in Westchester County.
+              Family-owned since 2015, serving Westchester County from three locations.
+              Every dish made from scratch with the finest ingredients &mdash; delivering
+              a real taste of Jamaica, with heart and hospitality.
             </p>
             <div className="hero-actions">
               <Link href="/order" className="btn btn-warm">Order Online &rarr;</Link>
