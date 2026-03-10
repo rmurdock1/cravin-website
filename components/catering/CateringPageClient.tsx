@@ -162,6 +162,7 @@ export function CateringPageClient() {
   const [activeFormTab, setActiveFormTab] = useState<'build-order' | 'quick-inquiry'>('build-order');
   const [toasts, setToasts] = useState<{ id: string; message: string }[]>([]);
   const formRef = useRef<HTMLDivElement>(null);
+  const tabsBarRef = useRef<HTMLDivElement>(null);
   const [pillVisible, setPillVisible] = useState(false);
 
   const itemQtyMap = getItemQuantities();
@@ -199,6 +200,17 @@ export function CateringPageClient() {
   function handleQuickInquiryClick() {
     setActiveFormTab('quick-inquiry');
     scrollToForm();
+  }
+
+  function handleCategoryChange(catId: string) {
+    setActiveCategory(catId);
+    // Scroll tabs bar into view if user is scrolled past it (prevents jump on short categories)
+    if (tabsBarRef.current) {
+      const tabsTop = tabsBarRef.current.getBoundingClientRect().top + window.scrollY - 107;
+      if (window.scrollY > tabsTop) {
+        window.scrollTo({ top: tabsTop, behavior: 'instant' });
+      }
+    }
   }
 
   const filteredItems = cateringItems.filter((item) => item.category === activeCategory);
@@ -258,7 +270,7 @@ export function CateringPageClient() {
         </div>
 
         {/* Sticky Category Tabs */}
-        <div className="catering-tabs-bar">
+        <div className="catering-tabs-bar" ref={tabsBarRef}>
           <div className="container">
             <div className="menu-tabs" role="tablist" aria-label="Catering menu categories">
               {cateringCategories.map((cat) => (
@@ -268,7 +280,7 @@ export function CateringPageClient() {
                   role="tab"
                   aria-selected={activeCategory === cat.id}
                   type="button"
-                  onClick={() => setActiveCategory(cat.id)}
+                  onClick={() => handleCategoryChange(cat.id)}
                 >
                   {cat.label}
                 </button>
@@ -410,11 +422,11 @@ export function CateringPageClient() {
                     <label htmlFor="bo-guests">Guest Count *</label>
                     <input type="number" id="bo-guests" name="guest_count" min="10" max="500" required />
                   </div>
-                  <div className="form-group full">
-                    <label htmlFor="bo-utensils">Need plates, cups &amp; serving utensils?</label>
+                  <div className="form-group">
+                    <label htmlFor="bo-utensils">Plates, cups &amp; utensils?</label>
                     <select id="bo-utensils" name="utensils_needed" defaultValue="">
                       <option value="">Select (optional)</option>
-                      <option value="yes">Yes, please include utensils</option>
+                      <option value="yes">Yes, please include</option>
                       <option value="no">No, we have our own</option>
                     </select>
                   </div>
@@ -455,11 +467,11 @@ export function CateringPageClient() {
                     <label htmlFor="qi-date">Approximate Event Date</label>
                     <input type="date" id="qi-date" name="event_date" />
                   </div>
-                  <div className="form-group full">
-                    <label htmlFor="qi-utensils">Need plates, cups &amp; serving utensils?</label>
+                  <div className="form-group">
+                    <label htmlFor="qi-utensils">Plates, cups &amp; utensils?</label>
                     <select id="qi-utensils" name="utensils_needed" defaultValue="">
                       <option value="">Select (optional)</option>
-                      <option value="yes">Yes, please include utensils</option>
+                      <option value="yes">Yes, please include</option>
                       <option value="no">No, we have our own</option>
                     </select>
                   </div>

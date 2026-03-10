@@ -761,22 +761,23 @@ footer {
 
 .menu-tabs {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 48px;
   flex-wrap: wrap;
   justify-content: center;
 }
 .menu-tab {
-  padding: 10px 24px;
+  padding: 12px 30px;
   border-radius: 60px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
   border: 1.5px solid var(--border-light);
   background: transparent;
   color: var(--text-muted);
+  letter-spacing: 0.01em;
 }
 .menu-tab:hover { border-color: var(--text-muted); color: var(--text); }
 .menu-tab.active { background: var(--warm); color: #111110; border-color: var(--warm); }
@@ -1458,7 +1459,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 160px; }
   .footer-grid { grid-template-columns: 1fr; gap: 24px; }
   .proof-grid { grid-template-columns: 1fr 1fr; }
   .menu-tabs { gap: 6px; }
-  .menu-tab { padding: 8px 16px; font-size: 12px; }
+  .menu-tab { padding: 10px 20px; font-size: 14px; }
   .location-storefront-block img { min-height: 200px; max-height: 240px; }
   .location-map-full { height: 220px; }
   .location-quicklinks .container { gap: 8px; }
