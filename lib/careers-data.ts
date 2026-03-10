@@ -13,32 +13,6 @@ export interface JobListing {
 
 export const jobListings: JobListing[] = [
   {
-    id: 'line-cook',
-    title: 'Line Cook',
-    location: 'All Locations',
-    type: 'full-time',
-    description:
-      'Prepare authentic Jamaican dishes with precision and care. You\'ll work alongside our kitchen team to deliver the bold, scratch-made flavors Cravin is known for.',
-    responsibilities: [
-      'Prepare menu items following Cravin recipes and quality standards',
-      'Maintain a clean, organized workstation during service',
-      'Assist with daily prep including marinades, sauces, and sides',
-      'Follow food safety and sanitation guidelines',
-      'Collaborate with the kitchen team during high-volume service',
-    ],
-    requirements: [
-      '1+ year of kitchen experience (Jamaican or Caribbean cuisine a plus)',
-      'Ability to work in a fast-paced environment',
-      'Reliable, punctual, and team-oriented',
-      'Must be available weekdays and weekends',
-    ],
-    perks: [
-      'Free shift meals',
-      'Flexible scheduling',
-      'Growth opportunities across 3 locations',
-    ],
-  },
-  {
     id: 'cashier',
     title: 'Cashier / Front of House',
     location: 'White Plains & Mount Vernon',
@@ -62,59 +36,6 @@ export const jobListings: JobListing[] = [
       'Free shift meals',
       'Tips',
       'Flexible scheduling',
-    ],
-  },
-  {
-    id: 'catering-assistant',
-    title: 'Catering Assistant',
-    location: 'All Locations',
-    type: 'part-time',
-    description:
-      'Help us deliver unforgettable catering experiences. You\'ll assist with food preparation, setup, and delivery for events ranging from corporate lunches to weddings.',
-    responsibilities: [
-      'Assist with large-batch food prep for catering orders',
-      'Pack and organize catering orders for transport',
-      'Help with on-site event setup and breakdown',
-      'Ensure catering presentations meet Cravin quality standards',
-      'Communicate with the catering manager on order details',
-    ],
-    requirements: [
-      'Reliable transportation (delivery assistance required)',
-      'Ability to lift 30+ lbs and stand for extended periods',
-      'Attention to detail and strong work ethic',
-      'Weekend and evening availability preferred',
-    ],
-    perks: [
-      'Free shift meals',
-      'Tips on catering deliveries',
-      'Opportunity to grow into catering management',
-    ],
-  },
-  {
-    id: 'delivery-driver',
-    title: 'Delivery Driver',
-    location: 'All Locations',
-    type: 'flexible',
-    description:
-      'Deliver Cravin\'s food to customers across Westchester County. Flexible hours, great as a primary or supplemental gig.',
-    responsibilities: [
-      'Pick up and deliver orders accurately and on time',
-      'Maintain a clean, professional appearance',
-      'Communicate with the restaurant on order status',
-      'Handle cash and card payments when applicable',
-      'Provide excellent customer service at the door',
-    ],
-    requirements: [
-      'Valid driver\'s license and reliable vehicle',
-      'Clean driving record',
-      'Smartphone with GPS capability',
-      'Knowledge of Westchester County roads a plus',
-    ],
-    perks: [
-      'Flexible hours, set your own schedule',
-      'Keep 100% of tips',
-      'Free meal per shift',
-      'Mileage compensation',
     ],
   },
 ];

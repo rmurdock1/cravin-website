@@ -1834,6 +1834,14 @@ footer {
   padding: 32px 24px;
   text-align: center;
 }
+.careers-why-icon {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+}
+.careers-why-icon svg {
+  opacity: 0.9;
+}
 .careers-why-card h3 {
   font-family: 'DM Serif Display', serif;
   font-size: 20px;

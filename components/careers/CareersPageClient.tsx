@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { jobListings, type JobListing } from '@/lib/careers-data';
-import { locations } from '@/lib/site-data';
 
 function JobCard({
   job,
@@ -103,6 +102,9 @@ export function CareersPageClient() {
         <div className="container">
           <div className="careers-why-grid">
             <div className="careers-why-card">
+              <div className="careers-why-icon" aria-hidden="true">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--warm)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+              </div>
               <h3>Family Culture</h3>
               <p>
                 We&apos;re a family business. Everyone here looks out for each
@@ -110,6 +112,9 @@ export function CareersPageClient() {
               </p>
             </div>
             <div className="careers-why-card">
+              <div className="careers-why-icon" aria-hidden="true">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              </div>
               <h3>Real Food, Real Skills</h3>
               <p>
                 Everything is made from scratch. You&apos;ll learn authentic
@@ -117,6 +122,9 @@ export function CareersPageClient() {
               </p>
             </div>
             <div className="careers-why-card">
+              <div className="careers-why-icon" aria-hidden="true">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--warm)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              </div>
               <h3>Room to Grow</h3>
               <p>
                 Three locations and counting. We promote from within, and many of
@@ -291,7 +299,7 @@ export function CareersPageClient() {
             <p>
               We&apos;re always looking for talented people. Send us your resume
               at{' '}
-              <a href={`mailto:${locations[0].email}`}>{locations[0].email}</a> and
+              <a href="mailto:hr@cravinjc.com">hr@cravinjc.com</a> and
               we&apos;ll keep you in mind for future openings.
             </p>
           </div>
