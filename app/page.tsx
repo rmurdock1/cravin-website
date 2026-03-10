@@ -19,7 +19,7 @@ export default function HomePage() {
         </div>
         <div className="container">
           <div className="hero-content">
-            <h1>Authentic Jamaican Cuisine, Served With Soul.</h1>
+            <h1>Authentic Jamaican Cuisine</h1>
             <p className="hero-subtitle">
               Jerk chicken grilled over pimento wood. Oxtail simmered for hours.
               Ackee &amp; saltfish made the real way. Three locations in Westchester County.
