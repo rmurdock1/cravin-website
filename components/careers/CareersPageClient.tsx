@@ -157,6 +157,9 @@ export function CareersPageClient() {
               action="/success"
               method="post"
               encType="multipart/form-data"
+              data-netlify="true"
+              netlify-honeypot="website"
+              name="careers-application"
             >
               {/* Honeypot */}
               <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">

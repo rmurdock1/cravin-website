@@ -1,0 +1,67 @@
+<!-- Hidden form definitions for Netlify Forms detection with Next.js -->
+<!-- Netlify's build bot scans static HTML for form names + fields -->
+<html>
+<head><title>Forms</title></head>
+<body>
+  <!-- Contact Form -->
+  <form name="contact" netlify netlify-honeypot="website" hidden>
+    <input name="name" />
+    <input name="email" />
+    <input name="phone" />
+    <input name="subject" />
+    <textarea name="message"></textarea>
+    <input name="website" />
+  </form>
+
+  <!-- Catering Build Order Form -->
+  <form name="catering-order" netlify netlify-honeypot="website" hidden>
+    <textarea name="cart_items"></textarea>
+    <input name="cart_total" />
+    <input name="form_type" />
+    <input name="full_name" />
+    <input name="email" />
+    <input name="phone" />
+    <input name="company" />
+    <input name="event_date" />
+    <input name="event_time" />
+    <input name="guest_count" />
+    <input name="event_type" />
+    <input name="delivery_location" />
+    <input name="utensils_needed" />
+    <textarea name="special_requests"></textarea>
+    <input name="website" />
+  </form>
+
+  <!-- Catering Quick Inquiry Form -->
+  <form name="catering-inquiry" netlify netlify-honeypot="website" hidden>
+    <input name="form_type" />
+    <input name="full_name" />
+    <input name="email" />
+    <input name="phone" />
+    <input name="company" />
+    <input name="event_date" />
+    <input name="guest_count" />
+    <textarea name="message"></textarea>
+    <input name="website" />
+  </form>
+
+  <!-- Newsletter Form -->
+  <form name="newsletter" netlify netlify-honeypot="website" hidden>
+    <input name="email" />
+    <input name="website" />
+  </form>
+
+  <!-- Careers Application Form -->
+  <form name="careers-application" netlify netlify-honeypot="website" hidden enctype="multipart/form-data">
+    <input name="full_name" />
+    <input name="email" />
+    <input name="phone" />
+    <input name="position" />
+    <input name="location" />
+    <input name="availability" />
+    <input name="resume" type="file" />
+    <textarea name="message"></textarea>
+    <input name="website" />
+  </form>
+</body>
+</html>

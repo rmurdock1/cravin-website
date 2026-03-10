@@ -86,10 +86,33 @@
   }
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: 160px; }
+
+/* Screen reader only — visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Honeypot field — hidden from users, catches bots */
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  height: 0;
+  width: 0;
+  z-index: -1;
+}
 
 body {
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-dm-sans, 'DM Sans'), system-ui, sans-serif;
   color: var(--text);
   background: var(--bg);
   line-height: 1.6;
@@ -98,7 +121,7 @@ body {
 }
 
 h1, h2, h3 {
-  font-family: 'DM Serif Display', Georgia, serif;
+  font-family: var(--font-dm-serif, 'DM Serif Display'), Georgia, serif;
   font-weight: 400;
   line-height: 1.15;
 }
@@ -481,10 +504,13 @@ nav .container {
 .story-bg {
   position: absolute;
   inset: 0;
-  background-image: url('../img/jerk-chicken-close.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+  overflow: hidden;
+}
+.story-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 .story-bg::after {
   content: '';
@@ -634,11 +660,15 @@ nav .container {
 }
 
 .catering-img {
-  background-image: url('../img/jerk-chicken-plate.jpg');
-  background-size: cover;
-  background-position: center;
   min-height: 400px;
   position: relative;
+  overflow: hidden;
+}
+.catering-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 .catering-img::after {
   content: '';
@@ -1056,7 +1086,6 @@ footer {
 .testimonial-event { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
 
 /* ========== LOCATIONS PAGE ========== */
-html { scroll-behavior: smooth; scroll-padding-top: 160px; }
 
 .location-quicklinks {
   background: var(--bg-elevated);
@@ -1366,6 +1395,9 @@ html { scroll-behavior: smooth; scroll-padding-top: 160px; }
   padding: 36px;
 }
 .contact-form-card h3 { font-size: 24px; margin-bottom: 24px; }
+
+.contact-social-section { margin-top: 32px; }
+.contact-social-heading { font-family: var(--font-dm-sans, 'DM Sans'), sans-serif; font-size: 14px; font-weight: 600; margin-bottom: 12px; }
 
 /* ========== LIGHT MODE OVERRIDES ========== */
 [data-theme="light"] .featured-card { box-shadow: 0 1px 3px rgba(0,0,0,0.04); }

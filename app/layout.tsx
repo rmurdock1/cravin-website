@@ -46,7 +46,12 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     siteName: 'Cravin Jamaican Cuisine',
-    images: [{ url: '/img/food-spread.jpeg' }],
+    images: [{
+      url: '/img/food-spread.jpeg',
+      width: 2500,
+      height: 2000,
+      alt: 'Authentic Jamaican food spread featuring jerk chicken, rice and peas, and plantain',
+    }],
   },
   twitter: {
     card: 'summary_large_image',

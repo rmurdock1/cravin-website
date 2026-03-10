@@ -384,7 +384,7 @@ export function CateringPageClient() {
                 </div>
 
                 {/* Build Order Form */}
-                <form className="form-grid" name="catering-order" method="POST" action="/success">
+                <form className="form-grid" name="catering-order" method="POST" action="/success" data-netlify="true" netlify-honeypot="website">
                   <textarea name="cart_items" style={{ display: 'none' }} aria-hidden="true" value={serializeForForm()} readOnly />
                   <input type="hidden" name="cart_total" value={formatCurrency(total)} />
                   <input type="hidden" name="form_type" value="build-order" />
@@ -445,7 +445,7 @@ export function CateringPageClient() {
             {/* QUICK INQUIRY PANEL */}
             {activeFormTab === 'quick-inquiry' && (
               <div id="panel-quick-inquiry" role="tabpanel">
-                <form className="form-grid" name="catering-inquiry" method="POST" action="/success">
+                <form className="form-grid" name="catering-inquiry" method="POST" action="/success" data-netlify="true" netlify-honeypot="website">
                   <input type="hidden" name="form_type" value="quick-inquiry" />
                   <div className="form-group">
                     <label htmlFor="qi-name">Full Name *</label>

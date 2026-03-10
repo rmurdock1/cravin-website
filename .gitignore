@@ -8,3 +8,13 @@ node_modules/
 out/
 next-env.d.ts
 *.tsbuildinfo
+
+# Unused raw photos (35MB+ of DSLR images not used in the app)
+public/img/our_story/
+
+# Legacy unused logos
+public/img/logo-cravin-converted.png
+public/img/logo-text-black.jpg
+public/img/logo-cravin.png
+public/img/logo-squarespace.png
+public/img/logo-circle-white.png

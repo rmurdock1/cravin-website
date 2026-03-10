@@ -56,8 +56,8 @@ export default function ContactPage() {
                 </p>
               </div>
 
-              <div style={{ marginTop: 32 }}>
-                <h4 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Follow Us</h4>
+              <div className="contact-social-section">
+                <h4 className="contact-social-heading">Follow Us</h4>
                 <div className="footer-social">
                   <a href={socialLinks.instagram} aria-label="Instagram" target="_blank" rel="noopener noreferrer">IG</a>
                   <a href={socialLinks.facebook} aria-label="Facebook" target="_blank" rel="noopener noreferrer">FB</a>
@@ -70,7 +70,7 @@ export default function ContactPage() {
             {/* Contact Form Card */}
             <div className="contact-form-card">
               <h3>Send Us a Message</h3>
-              <form name="contact" method="POST" action="/success">
+              <form name="contact" method="POST" action="/success" data-netlify="true" netlify-honeypot="website">
                 <div className="form-grid">
                   <div className="form-group">
                     <label htmlFor="contact-name">Full Name</label>

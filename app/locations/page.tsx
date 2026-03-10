@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { locations } from '@/lib/site-data';
+import { getLocationsJsonLd } from '@/lib/json-ld';
 
 export const metadata: Metadata = {
   title: 'Locations & Hours',
@@ -21,8 +22,17 @@ const mapEmbeds: Record<string, string> = {
 };
 
 export default function LocationsPage() {
+  const jsonLdArray = getLocationsJsonLd();
+
   return (
     <main>
+      {jsonLdArray.map((jsonLd, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      ))}
       {/* PAGE HERO */}
       <section className="page-hero" id="main-content">
         <div className="container">
@@ -58,8 +68,10 @@ export default function LocationsPage() {
                   <p><a href={`mailto:${loc.email}`}>{loc.email}</a></p>
                 </div>
                 <table className="hours-table">
-                  <tbody>
+                  <thead>
                     <tr><th>Day</th><th>Hours</th></tr>
+                  </thead>
+                  <tbody>
                     {loc.hours.map((h) => (
                       <tr key={h.day}><td>{h.day}</td><td>{h.hours}</td></tr>
                     ))}

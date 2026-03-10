@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { MenuTabs } from '@/components/menu/MenuTabs';
+import { getMenuJsonLd } from '@/lib/json-ld';
 
 export const metadata: Metadata = {
   title: 'Menu',
@@ -7,8 +8,14 @@ export const metadata: Metadata = {
 };
 
 export default function MenuPage() {
+  const jsonLd = getMenuJsonLd();
+
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* PAGE HERO */}
       <section className="page-hero" id="main-content">
         <div className="container">

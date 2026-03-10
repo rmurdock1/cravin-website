@@ -1,10 +1,17 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { locations, brand } from '@/lib/site-data';
+import { getRestaurantJsonLd } from '@/lib/json-ld';
 
 export default function HomePage() {
+  const jsonLd = getRestaurantJsonLd();
+
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* HERO */}
       <section className="hero" id="main-content">
         <div className="hero-bg">
@@ -98,7 +105,9 @@ export default function HomePage() {
 
       {/* STORY */}
       <section className="story">
-        <div className="story-bg" aria-hidden="true"></div>
+        <div className="story-bg" aria-hidden="true">
+          <Image src="/img/jerk-chicken-close.jpg" alt="" fill sizes="100vw" quality={75} />
+        </div>
         <div className="container">
           <div className="story-content">
             <span className="section-label">Our Story</span>
@@ -186,7 +195,9 @@ export default function HomePage() {
       <section className="catering">
         <div className="container">
           <div className="catering-card">
-            <div className="catering-img" role="img" aria-label="Jamaican catering spread"></div>
+            <div className="catering-img" role="img" aria-label="Jamaican catering spread">
+              <Image src="/img/jerk-chicken-plate.jpg" alt="" fill sizes="50vw" quality={75} />
+            </div>
             <div className="catering-content">
               <span className="section-label">Catering</span>
               <h2>Bring Jamaica To Your Next Event</h2>
@@ -221,9 +232,10 @@ export default function HomePage() {
             <span className="section-label">Stay Connected</span>
             <h2>Join the Cravin Family</h2>
             <p>Exclusive discounts, new menu drops, and event invites delivered to your inbox.</p>
-            <form className="newsletter-form" action="#" method="post">
-              <label htmlFor="newsletter-email-home" className="sr-only" style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}>Email address</label>
-              <input type="email" id="newsletter-email-home" placeholder="Your email address" required />
+            <form className="newsletter-form" name="newsletter" method="POST" action="/success" data-netlify="true" netlify-honeypot="website">
+              <label htmlFor="newsletter-email-home" className="sr-only">Email address</label>
+              <input type="email" id="newsletter-email-home" name="email" placeholder="Your email address" required />
+              <input type="text" name="website" className="hp-field" tabIndex={-1} autoComplete="off" />
               <button type="submit" className="btn btn-warm">Subscribe</button>
             </form>
             <div className="newsletter-perks">

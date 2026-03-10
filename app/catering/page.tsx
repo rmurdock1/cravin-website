@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { CateringPageClient } from '@/components/catering/CateringPageClient';
+import { getCateringJsonLd } from '@/lib/json-ld';
 
 export const metadata: Metadata = {
   title: 'Catering',
@@ -8,8 +9,14 @@ export const metadata: Metadata = {
 };
 
 export default function CateringPage() {
+  const jsonLd = getCateringJsonLd();
+
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <CateringPageClient />
     </main>
   );
