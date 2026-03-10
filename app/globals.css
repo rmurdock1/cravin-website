@@ -176,6 +176,21 @@ ul { list-style: none; }
   outline-offset: 2px;
 }
 
+/* Universal focus-visible for interactive elements missing explicit styles */
+.menu-tab:focus-visible,
+.form-tab:focus-visible,
+.order-platform:focus-visible,
+.quicklink:focus-visible,
+.press-article-card:focus-visible,
+.press-social a:focus-visible,
+.careers-toggle-btn:focus-visible,
+.careers-apply-btn:focus-visible,
+.proof-link:focus-visible {
+  outline: 2px solid var(--warm);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 .btn-warm { background: var(--warm); color: #111110; }
 .btn-warm:hover { background: var(--warm-light); transform: translateY(-1px); }
 

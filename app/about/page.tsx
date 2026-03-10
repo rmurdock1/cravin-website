@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import Image from 'next/image';
 import Link from 'next/link';
 import { socialLinks } from '@/lib/site-data';
@@ -216,6 +217,9 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* TikTok Embed Script */}
+      <Script src="https://www.tiktok.com/embed.js" strategy="lazyOnload" />
     </main>
   );
 }

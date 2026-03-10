@@ -446,6 +446,17 @@
 .size-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 .size-btn:disabled:hover { border-color: var(--border-light); color: var(--text-muted); }
 
+/* Focus-visible for catering interactive elements */
+.btn-add-to-cart:focus-visible,
+.size-btn:focus-visible,
+.qty-btn:focus-visible,
+.cart-confirm-add:focus-visible,
+.cart-cancel-add:focus-visible,
+.floating-pill:focus-visible {
+  outline: 2px solid var(--warm);
+  outline-offset: 2px;
+}
+
 /* Quantity controls */
 .cart-qty-controls { display: flex; align-items: center; gap: 8px; }
 .qty-btn {

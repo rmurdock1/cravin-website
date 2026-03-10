@@ -18,3 +18,10 @@ public/img/logo-text-black.jpg
 public/img/logo-cravin.png
 public/img/logo-squarespace.png
 public/img/logo-circle-white.png
+
+# Legacy root-level img/ (pre-migration duplicate, images live in public/img/)
+/img/
+
+# Legacy static site files (removed after Next.js migration)
+/css/
+/js/

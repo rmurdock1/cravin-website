@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { locations, brand } from '@/lib/site-data';
 
@@ -44,21 +45,27 @@ export default function OrderPage() {
                     <span className="platform-label">Call to Order</span>
                     <span className="platform-type">Pickup</span>
                   </a>
-                  <a href={loc.ordering.ubereats} className="order-platform" target="_blank" rel="noopener noreferrer">
-                    <span className="platform-icon platform-icon-ubereats" aria-hidden="true">UE</span>
-                    <span className="platform-label">Uber Eats</span>
-                    <span className="platform-type">Delivery</span>
-                  </a>
-                  <a href={loc.ordering.doordash} className="order-platform" target="_blank" rel="noopener noreferrer">
-                    <span className="platform-icon platform-icon-doordash" aria-hidden="true">DD</span>
-                    <span className="platform-label">DoorDash</span>
-                    <span className="platform-type">Delivery</span>
-                  </a>
-                  <a href={loc.ordering.grubhub} className="order-platform" target="_blank" rel="noopener noreferrer">
-                    <span className="platform-icon platform-icon-grubhub" aria-hidden="true">G</span>
-                    <span className="platform-label">Grubhub</span>
-                    <span className="platform-type">Delivery</span>
-                  </a>
+                  {loc.ordering.ubereats && (
+                    <a href={loc.ordering.ubereats} className="order-platform" target="_blank" rel="noopener noreferrer">
+                      <span className="platform-icon platform-icon-ubereats" aria-hidden="true">UE</span>
+                      <span className="platform-label">Uber Eats</span>
+                      <span className="platform-type">Delivery</span>
+                    </a>
+                  )}
+                  {loc.ordering.doordash && (
+                    <a href={loc.ordering.doordash} className="order-platform" target="_blank" rel="noopener noreferrer">
+                      <span className="platform-icon platform-icon-doordash" aria-hidden="true">DD</span>
+                      <span className="platform-label">DoorDash</span>
+                      <span className="platform-type">Delivery</span>
+                    </a>
+                  )}
+                  {loc.ordering.grubhub && (
+                    <a href={loc.ordering.grubhub} className="order-platform" target="_blank" rel="noopener noreferrer">
+                      <span className="platform-icon platform-icon-grubhub" aria-hidden="true">G</span>
+                      <span className="platform-label">Grubhub</span>
+                      <span className="platform-type">Delivery</span>
+                    </a>
+                  )}
                   <div className="order-phone">
                     <span>Or call:</span>
                     <a href={`tel:${loc.phone}`}>{loc.phoneFormatted}</a>
@@ -74,7 +81,9 @@ export default function OrderPage() {
       <section className="catering" style={{ paddingTop: 40 }}>
         <div className="container">
           <div className="catering-card">
-            <div className="catering-img" role="img" aria-label="Jamaican catering spread"></div>
+            <div className="catering-img" role="img" aria-label="Jamaican catering spread">
+              <Image src="/img/jerk-chicken-plate.jpg" alt="" fill sizes="50vw" quality={75} />
+            </div>
             <div className="catering-content">
               <span className="section-label">Large Orders?</span>
               <h2>Catering for Any Event</h2>
