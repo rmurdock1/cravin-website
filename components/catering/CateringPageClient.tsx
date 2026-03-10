@@ -10,8 +10,8 @@ import '@/app/catering.css';
 // ==============================
 // TOAST NOTIFICATION
 // ==============================
-function Toast({ message, key: k }: { message: string; key: string }) {
-  return <div className="cart-toast" key={k}>{message}</div>;
+function Toast({ message }: { message: string }) {
+  return <div className="cart-toast">{message}</div>;
 }
 
 // ==============================
@@ -240,6 +240,33 @@ export function CateringPageClient() {
               <div className="path-title">Order on EZCater</div>
               <p className="path-desc">Order directly through EZCater for easy online ordering</p>
               <a href={brand.ezcaterUrl} className="btn btn-outline-green btn-sm" target="_blank" rel="noopener noreferrer">Go to EZCater &rarr;</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TRUSTED BY — CLIENT LOGO WALL */}
+      <section className="trusted-by-section">
+        <div className="container">
+          <p className="trusted-by-label">Trusted by leading organizations for events big and small</p>
+          <div className="trusted-by-logos">
+            <div className="trusted-logo">
+              <img src="/img/logos/amazon.svg" alt="Amazon" loading="lazy" />
+            </div>
+            <div className="trusted-logo">
+              <img src="/img/logos/us-army.svg" alt="U.S. Army" loading="lazy" />
+            </div>
+            <div className="trusted-logo">
+              <img src="/img/logos/coca-cola.svg" alt="Coca-Cola" loading="lazy" />
+            </div>
+            <div className="trusted-logo">
+              <img src="/img/logos/northwell-health.png" alt="Northwell Health" loading="lazy" />
+            </div>
+            <div className="trusted-logo">
+              <img src="/img/logos/nyp.svg" alt="NewYork-Presbyterian" loading="lazy" />
+            </div>
+            <div className="trusted-logo">
+              <img src="/img/logos/childrens-village.svg" alt="The Children's Village" loading="lazy" />
             </div>
           </div>
         </div>
@@ -495,7 +522,7 @@ export function CateringPageClient() {
         <div className="container">
           <span className="section-label">What Our Clients Say</span>
           <h2 className="section-title">Trusted for Events Big &amp; Small</h2>
-          <p className="section-subtitle" style={{ marginBottom: 12 }}>Rated <strong>4.9/5</strong> from 435+ catering orders on ezCater</p>
+          <p className="section-subtitle" style={{ marginBottom: 12 }}>Rated <strong>4.9/5</strong> from 500+ catering orders on ezCater</p>
           <div className="testimonials-grid">
             <div className="testimonial-card">
               <div className="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>

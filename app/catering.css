@@ -3,6 +3,74 @@
    Extracted from catering.html inline <style>
    ============================== */
 
+/* ==============================
+   TRUSTED BY — CLIENT LOGO WALL
+   ============================== */
+.trusted-by-section {
+  padding: 40px 0 48px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+}
+.trusted-by-label {
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 28px;
+  font-weight: 500;
+}
+.trusted-by-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 36px 48px;
+}
+.trusted-logo {
+  opacity: 0.5;
+  filter: grayscale(100%);
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+.trusted-logo:hover {
+  opacity: 0.9;
+  filter: grayscale(0%);
+}
+.trusted-logo img {
+  height: 36px;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
+  display: block;
+  transition: filter 0.3s ease;
+}
+
+/* Dark mode (default): invert dark logos to white so they're visible */
+:root .trusted-logo img {
+  filter: brightness(0) invert(1);
+}
+:root .trusted-logo:hover img {
+  filter: none;
+}
+
+/* Light mode: no inversion needed */
+[data-theme="light"] .trusted-logo img {
+  filter: none;
+}
+
+@media (max-width: 768px) {
+  .trusted-by-section {
+    padding: 32px 0 36px;
+  }
+  .trusted-by-logos {
+    gap: 24px 32px;
+  }
+  .trusted-logo img {
+    height: 28px;
+    max-width: 120px;
+  }
+}
+
 /* Catering Menu Styles */
 .catering-menu-section {
   padding: 80px 0;

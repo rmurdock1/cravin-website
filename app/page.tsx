@@ -30,7 +30,7 @@ export default function HomePage() {
             </div>
             <div className="hero-stats">
               <div className="hero-stat">
-                <h3>435+</h3>
+                <h3>500+</h3>
                 <p>Events Catered</p>
               </div>
               <div className="hero-stat">
@@ -116,7 +116,8 @@ export default function HomePage() {
               Peter Murdock opened Cravin in Ossining in 2015 with one goal: cook
               real Jamaican food the way his family made it back home. A decade later,
               that same kitchen has grown into three locations across Westchester,
-              each one still cooking from scratch, every single day.
+              each one still cooking from scratch, every single day. Awarded the
+              Business Excellence Award by Westchester County in 2025.
             </p>
             <div className="story-values">
               <div className="story-value">
@@ -132,7 +133,7 @@ export default function HomePage() {
                 <p>Recipes</p>
               </div>
             </div>
-            <Link href="/about" className="btn btn-warm">Learn More</Link>
+            <Link href="/about" className="btn btn-warm">Our Story</Link>
           </div>
         </div>
       </section>
@@ -202,8 +203,9 @@ export default function HomePage() {
               <span className="section-label">Catering</span>
               <h2>Bring Jamaica To Your Next Event</h2>
               <p>
-                435+ catering orders and counting. Corporate lunches, weddings,
-                birthday parties. We bring the full Jamaican spread to you.
+                500+ events catered and counting. Trusted by Amazon, the U.S. Army,
+                and Coca-Cola. Corporate lunches, weddings, birthday parties.
+                We bring the full Jamaican spread to you.
               </p>
               <div className="catering-list">
                 <div className="catering-list-item">
