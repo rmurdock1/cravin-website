@@ -4,6 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Thank You',
   description: 'Your message has been received. We will get back to you within 1 business day.',
+  robots: { index: false, follow: false },
 };
 
 export default function SuccessPage() {

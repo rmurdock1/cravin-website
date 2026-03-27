@@ -23,9 +23,7 @@ export interface Location {
   hoursShort: string; // e.g. "Mon–Thu: 8am–8pm · Fri–Sat: 8am–9pm"
   storefrontImage: string;
   ordering: {
-    doordash: string;
     ubereats: string;
-    grubhub: string;
   };
 }
 
@@ -56,9 +54,7 @@ export const locations: Location[] = [
     hoursShort: 'Mon–Thu: 8am–8pm · Fri–Sat: 8am–9pm',
     storefrontImage: '/img/storefront-ossining.jpg',
     ordering: {
-      doordash: 'https://www.doordash.com/store/cravin-jamaican-cuisine-ossining-118210',
       ubereats: 'https://www.ubereats.com/store/cravin-jamaican-cuisine/1Uj4tqcJSJSVgoaFrt50qA',
-      grubhub: 'https://www.grubhub.com/restaurant/cravin-jamaican-cuisine-109-main-st-ossining/1282916',
     },
   },
   {
@@ -87,9 +83,7 @@ export const locations: Location[] = [
     hoursShort: 'Mon–Wed: 8am–9pm · Thu–Sat: 8am–10pm',
     storefrontImage: '/img/storefront-white-plains.jpg',
     ordering: {
-      doordash: '', // Not found on DoorDash — may not be listed for this location
       ubereats: 'https://www.ubereats.com/store/cravin-jamaican-cuisine-wp/FrxepP_CXpmzsvE1p7UleQ',
-      grubhub: '', // Not found on Grubhub — may not be listed for this location
     },
   },
   {
@@ -118,9 +112,7 @@ export const locations: Location[] = [
     hoursShort: 'Mon–Wed: 8am–9pm · Thu–Sat: 8am–10pm',
     storefrontImage: '/img/storefront-mount-vernon.jpg',
     ordering: {
-      doordash: 'https://www.doordash.com/store/cravin-jamaican-cuisine-mount-vernon-29589780/',
       ubereats: 'https://www.ubereats.com/store/cravin-jamaican-cuisine-mount-vernon/JYG0x7KkXl65ItLZ4zHQMg',
-      grubhub: 'https://www.grubhub.com/restaurant/cravin-jamaican-cuisine-529-gramatan-ave-mount-vernon/8479224',
     },
   },
 ];

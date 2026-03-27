@@ -5,6 +5,7 @@ import { SkipLink } from '@/components/layout/SkipLink';
 import { StickyOrderButton } from '@/components/layout/StickyOrderButton';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import './globals.css';
 
 const dmSans = DM_Sans({
@@ -79,6 +80,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
+        <GoogleAnalytics />
         <ThemeProvider>
           <SkipLink />
           <StickyOrderButton />

@@ -5,7 +5,7 @@ import { locations, brand } from '@/lib/site-data';
 
 export const metadata: Metadata = {
   title: 'Order Online',
-  description: 'Order Cravin Jamaican Cuisine for pickup or delivery via DoorDash, Uber Eats, or Grubhub. Three Westchester County locations.',
+  description: 'Order Cravin Jamaican Cuisine for pickup or delivery via Uber Eats. Three Westchester County locations in Ossining, White Plains, and Mount Vernon.',
 };
 
 function PhoneIcon() {
@@ -49,20 +49,6 @@ export default function OrderPage() {
                     <a href={loc.ordering.ubereats} className="order-platform" target="_blank" rel="noopener noreferrer">
                       <span className="platform-icon platform-icon-ubereats" aria-hidden="true">UE</span>
                       <span className="platform-label">Uber Eats</span>
-                      <span className="platform-type">Delivery</span>
-                    </a>
-                  )}
-                  {loc.ordering.doordash && (
-                    <a href={loc.ordering.doordash} className="order-platform" target="_blank" rel="noopener noreferrer">
-                      <span className="platform-icon platform-icon-doordash" aria-hidden="true">DD</span>
-                      <span className="platform-label">DoorDash</span>
-                      <span className="platform-type">Delivery</span>
-                    </a>
-                  )}
-                  {loc.ordering.grubhub && (
-                    <a href={loc.ordering.grubhub} className="order-platform" target="_blank" rel="noopener noreferrer">
-                      <span className="platform-icon platform-icon-grubhub" aria-hidden="true">G</span>
-                      <span className="platform-label">Grubhub</span>
                       <span className="platform-type">Delivery</span>
                     </a>
                   )}
