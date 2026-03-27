@@ -86,8 +86,8 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
           {link.label}
         </Link>
       ))}
-      <Link href="/order" className="btn btn-warm" onClick={onClose}>
-        Order Online
+      <Link href="/locations" className="btn btn-warm" onClick={onClose}>
+        Call to Order
       </Link>
     </div>
   );

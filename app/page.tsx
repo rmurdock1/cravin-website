@@ -26,7 +26,7 @@ export default function HomePage() {
               a real taste of Jamaica, with heart and hospitality.
             </p>
             <div className="hero-actions">
-              <Link href="/order" className="btn btn-warm">Order Online &rarr;</Link>
+              <Link href="/locations" className="btn btn-warm">Call to Order &rarr;</Link>
               <Link href="/menu" className="btn btn-outline-green">View Menu</Link>
             </div>
             <div className="hero-stats">

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { DM_Sans, DM_Serif_Display } from 'next/font/google';
 import { ThemeProvider } from '@/lib/theme-context';
 import { SkipLink } from '@/components/layout/SkipLink';
-import { StickyOrderButton } from '@/components/layout/StickyOrderButton';
+
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     default: 'Cravin Jamaican Cuisine | Authentic Jamaican Food in New York',
     template: '%s | Cravin Jamaican Cuisine',
   },
-  description: 'Authentic Jamaican cuisine at 3 New York locations. Jerk chicken, oxtail, ackee & saltfish, catering for events. Order online for pickup or delivery.',
+  description: 'Authentic Jamaican cuisine at 3 Westchester County locations. Jerk chicken, oxtail, ackee & saltfish, catering for events. Call to order for pickup or delivery.',
   keywords: ['Jamaican food', 'jerk chicken', 'Jamaican restaurant New York', 'Caribbean cuisine', 'Ossining', 'White Plains', 'Mount Vernon', 'catering'],
   metadataBase: new URL('https://www.cravinjc.com'),
   icons: {
@@ -83,7 +83,6 @@ export default function RootLayout({
         <GoogleAnalytics />
         <ThemeProvider>
           <SkipLink />
-          <StickyOrderButton />
           <Navbar />
           {children}
           <Footer />
