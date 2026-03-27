@@ -40,7 +40,7 @@ export function Footer() {
           <div className="footer-col">
             <h4>Support</h4>
             <Link href="/contact">Contact Us</Link>
-            <Link href="/locations">Call to Order</Link>
+            <Link href="/order">Order Online</Link>
             <Link href="/catering">Catering Inquiry</Link>
           </div>
         </div>

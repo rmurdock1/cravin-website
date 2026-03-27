@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 import { locations } from '@/lib/site-data';
 import { getLocationsJsonLd } from '@/lib/json-ld';
 
@@ -77,7 +78,7 @@ export default function LocationsPage() {
                   </tbody>
                 </table>
                 <div className="location-detail-actions">
-                  <a href={`tel:${loc.phone}`} className="btn btn-warm">Call to Order</a>
+                  <Link href="/order" className="btn btn-warm">Order Online</Link>
                   <a href={loc.googleMapsUrl} className="btn btn-outline-green" target="_blank" rel="noopener noreferrer">Get Directions</a>
                 </div>
               </div>

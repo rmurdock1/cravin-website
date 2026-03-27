@@ -29,7 +29,7 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Link href="/locations" className="nav-cta">Call to Order</Link>
+            <Link href="/order" className="nav-cta">Order Online</Link>
             <ThemeToggle />
           </div>
           <ThemeToggle className="mobile-theme-toggle" />
