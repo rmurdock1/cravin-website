@@ -6,8 +6,8 @@ import { usePathname } from 'next/navigation';
 export function StickyOrderButton() {
   const pathname = usePathname();
 
-  // Hide on catering page (has its own floating cart pill) and about page
-  if (pathname === '/catering' || pathname === '/about') return null;
+  // Hide on pages that don't need it
+  if (pathname === '/catering' || pathname === '/about' || pathname === '/careers' || pathname === '/order') return null;
 
   return (
     <Link href="/order" className="sticky-order" aria-label="Order food online">

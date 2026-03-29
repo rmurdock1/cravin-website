@@ -52,10 +52,13 @@ export default function OrderPage() {
                       <span className="platform-type">Delivery</span>
                     </a>
                   )}
-                  <div className="order-phone">
-                    <span>Or call:</span>
-                    <a href={`tel:${loc.phone}`}>{loc.phoneFormatted}</a>
-                  </div>
+                  {loc.ordering.ezcater && (
+                    <a href={loc.ordering.ezcater} className="order-platform" target="_blank" rel="noopener noreferrer">
+                      <span className="platform-icon platform-icon-ezcater" aria-hidden="true">EZ</span>
+                      <span className="platform-label">EZCater</span>
+                      <span className="platform-type">Catering</span>
+                    </a>
+                  )}
                 </div>
               </div>
             ))}
@@ -74,8 +77,10 @@ export default function OrderPage() {
               <span className="section-label">Large Orders?</span>
               <h2>Catering for Any Event</h2>
               <p>Planning an event for 10+ guests? Our catering team will create a custom menu for your occasion.</p>
-              <Link href="/catering" className="btn btn-warm">Get a Catering Quote &rarr;</Link>
-              <a href={brand.ezcaterUrl} className="btn btn-outline-green" target="_blank" rel="noopener noreferrer">Order via EZCater &rarr;</a>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <Link href="/catering" className="btn btn-warm">Get a Catering Quote &rarr;</Link>
+                <a href={brand.ezcaterUrl} className="btn btn-outline-green" target="_blank" rel="noopener noreferrer">Order via EZCater &rarr;</a>
+              </div>
             </div>
           </div>
         </div>

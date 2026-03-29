@@ -24,6 +24,7 @@ export interface Location {
   storefrontImage: string;
   ordering: {
     ubereats: string;
+    ezcater: string;
   };
 }
 
@@ -55,6 +56,7 @@ export const locations: Location[] = [
     storefrontImage: '/img/storefront-ossining.jpg',
     ordering: {
       ubereats: 'https://www.ubereats.com/store/cravin-jamaican-cuisine/1Uj4tqcJSJSVgoaFrt50qA',
+      ezcater: 'https://www.ezcater.com/catering/pvt/cravin-jamaican-cuisine-3?fcv=1',
     },
   },
   {
@@ -84,6 +86,7 @@ export const locations: Location[] = [
     storefrontImage: '/img/storefront-white-plains.jpg',
     ordering: {
       ubereats: 'https://www.ubereats.com/store/cravin-jamaican-cuisine-wp/FrxepP_CXpmzsvE1p7UleQ',
+      ezcater: 'https://www.ezcater.com/catering/pvt/cravin-jamaican-cuisine-white-plains',
     },
   },
   {
@@ -113,6 +116,7 @@ export const locations: Location[] = [
     storefrontImage: '/img/storefront-mount-vernon.jpg',
     ordering: {
       ubereats: 'https://www.ubereats.com/store/cravin-jamaican-cuisine-mount-vernon/JYG0x7KkXl65ItLZ4zHQMg',
+      ezcater: 'https://www.ezcater.com/catering/pvt/cravin-jamaican-cuisine-4',
     },
   },
 ];

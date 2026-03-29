@@ -18,7 +18,6 @@ export function Footer() {
             <div className="footer-social">
               <a href={socialLinks.instagram} aria-label="Instagram" target="_blank" rel="noopener noreferrer">IG</a>
               <a href={socialLinks.facebook} aria-label="Facebook" target="_blank" rel="noopener noreferrer">FB</a>
-              <a href={socialLinks.yelp} aria-label="Yelp" target="_blank" rel="noopener noreferrer">Yelp</a>
               <a href={socialLinks.twitter} aria-label="Twitter" target="_blank" rel="noopener noreferrer">TW</a>
             </div>
           </div>

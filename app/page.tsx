@@ -61,7 +61,7 @@ export default function HomePage() {
           <div className="featured-grid">
             <div className="featured-card featured-card-hero">
               <div className="featured-img">
-                <Image src="/img/jerk-chicken-plate.jpg" alt="Jerk Chicken plate with rice and peas and fried plantain" width={600} height={400} />
+                <Image src="/img/food/CravinJamaican_JerkChickenCombo.jpeg" alt="Jerk Chicken plate with rice and peas and fried plantain" width={600} height={400} />
                 <span className="featured-tag">Most Popular</span>
               </div>
               <div className="featured-info">
@@ -75,7 +75,7 @@ export default function HomePage() {
             </div>
             <div className="featured-card">
               <div className="featured-img">
-                <Image src="/img/jerk-chicken-close.jpg" alt="Oxtail Stew in rich savory gravy" width={400} height={300} />
+                <Image src="/img/food/CravinJamaican_OxTailCombo.jpeg" alt="Oxtail Stew in rich savory gravy" width={400} height={300} />
                 <span className="featured-tag featured-tag-green">Chef&apos;s Pick</span>
               </div>
               <div className="featured-info">
@@ -89,13 +89,13 @@ export default function HomePage() {
             </div>
             <div className="featured-card">
               <div className="featured-img">
-                <Image src="/img/ackee-saltfish.jpg" alt="Ackee and Saltfish, Jamaica's national dish" width={400} height={300} />
+                <Image src="/img/ackee-saltfish.jpg" alt="Callaloo and Salt Fish with fried plantain" width={400} height={300} />
               </div>
               <div className="featured-info">
-                <h3>Ackee &amp; Saltfish</h3>
-                <p>Jamaica&apos;s national dish: ackee with salted cod, peppers &amp; onions.</p>
+                <h3>Callaloo &amp; Salt Fish</h3>
+                <p>Saut&eacute;ed callaloo greens with flaked saltfish, peppers &amp; sweet plantain.</p>
                 <div className="featured-footer">
-                  <span className="featured-price">$16.99</span>
+                  <span className="featured-price">$14.25</span>
                   <Link href="/order" className="featured-order">Order Now &rarr;</Link>
                 </div>
               </div>
@@ -126,12 +126,12 @@ export default function HomePage() {
                 <p>Locations</p>
               </div>
               <div className="story-value story-value-green">
-                <h4>Fresh</h4>
-                <p>Daily</p>
+                <h4>Since 2015</h4>
+                <p>Serving NY</p>
               </div>
               <div className="story-value">
-                <h4>Family</h4>
-                <p>Recipes</p>
+                <h4>500+</h4>
+                <p>Events Catered</p>
               </div>
             </div>
             <Link href="/about" className="btn btn-warm">Our Story</Link>
@@ -228,27 +228,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* NEWSLETTER */}
-      <section className="newsletter" aria-label="Newsletter signup">
-        <div className="container">
-          <div className="newsletter-card">
-            <span className="section-label">Stay Connected</span>
-            <h2>Join the Cravin Family</h2>
-            <p>Exclusive discounts, new menu drops, and event invites delivered to your inbox.</p>
-            <form className="newsletter-form" name="newsletter" method="POST" action="/success" data-netlify="true" netlify-honeypot="website">
-              <label htmlFor="newsletter-email-home" className="sr-only">Email address</label>
-              <input type="email" id="newsletter-email-home" name="email" placeholder="Your email address" required />
-              <input type="text" name="website" className="hp-field" tabIndex={-1} autoComplete="off" />
-              <button type="submit" className="btn btn-warm">Subscribe</button>
-            </form>
-            <div className="newsletter-perks">
-              <span>10% welcome discount</span>
-              <span>Early menu access</span>
-              <span>Event invitations</span>
-            </div>
-          </div>
-        </div>
-      </section>
     </main>
   );
 }

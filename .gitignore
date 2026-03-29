@@ -9,15 +9,12 @@ out/
 next-env.d.ts
 *.tsbuildinfo
 
-# Unused raw photos (35MB+ of DSLR images not used in the app)
+# Source photos not used in the app (keep locally for future use)
 public/img/our_story/
-
-# Legacy unused logos
-public/img/logo-cravin-converted.png
-public/img/logo-text-black.jpg
-public/img/logo-cravin.png
-public/img/logo-squarespace.png
-public/img/logo-circle-white.png
+# Allow only the 3 our_story images actually used on the site
+!public/img/our_story/grand-opening-crowd.jpg
+!public/img/our_story/proclamations.jpg
+!public/img/our_story/wp-grand-opening-storefront.jpg
 
 # Legacy root-level img/ (pre-migration duplicate, images live in public/img/)
 /img/

@@ -42,8 +42,8 @@ export default function ContactPage() {
                 <div className="contact-icon" aria-hidden="true">&#128231;</div>
                 <h4>Email</h4>
                 <p>
-                  Ossining: <a href={`mailto:${locations[0].email}`}>{locations[0].email}</a><br />
-                  White Plains &amp; Mt Vernon: <a href={`mailto:${locations[1].email}`}>{locations[1].email}</a>
+                  General: <a href="mailto:info@cravinjc.com">info@cravinjc.com</a><br />
+                  Catering: <a href="mailto:catering@cravinjc.com">catering@cravinjc.com</a>
                 </p>
               </div>
 
@@ -61,7 +61,6 @@ export default function ContactPage() {
                 <div className="footer-social">
                   <a href={socialLinks.instagram} aria-label="Instagram" target="_blank" rel="noopener noreferrer">IG</a>
                   <a href={socialLinks.facebook} aria-label="Facebook" target="_blank" rel="noopener noreferrer">FB</a>
-                  <a href={socialLinks.yelp} aria-label="Yelp" target="_blank" rel="noopener noreferrer">Yelp</a>
                   <a href={socialLinks.twitter} aria-label="Twitter" target="_blank" rel="noopener noreferrer">TW</a>
                 </div>
               </div>
