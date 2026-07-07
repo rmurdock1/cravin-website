@@ -5,6 +5,8 @@ export const metadata: Metadata = {
   title: 'Careers',
   description:
     'Join the Cravin Jamaican Cuisine team. We\'re hiring line cooks, cashiers, catering assistants, and delivery drivers across our Westchester County locations.',
+  alternates: { canonical: '/careers' },
+  openGraph: { url: '/careers' },
 };
 
 export default function CareersPage() {

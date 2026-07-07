@@ -1,5 +1,11 @@
 // JSON-LD structured data for SEO
 import { locations, brand, socialLinks } from './site-data';
+import { menuCategories, menuItems, type MenuItem } from './menu-data';
+import type { FaqItem } from './faq-data';
+
+function centsToPrice(cents: number): string {
+  return (cents / 100).toFixed(2);
+}
 
 function formatHoursForSchema(hours: { day: string; hours: string }[]) {
   const dayMap: Record<string, string> = {
@@ -48,7 +54,12 @@ function buildLocationSchema(loc: typeof locations[number]) {
       postalCode: loc.zip,
       addressCountry: 'US',
     },
-    geo: undefined, // Placeholder — add lat/lng when available
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: loc.geo.lat,
+      longitude: loc.geo.lng,
+    },
+    hasMap: loc.googleMapsUrl,
     url: `${brand.domain}/locations#${loc.id}`,
     openingHoursSpecification: formatHoursForSchema(loc.hours),
     servesCuisine: brand.cuisine,
@@ -65,6 +76,7 @@ export function getRestaurantJsonLd() {
     name: brand.name,
     description: 'Authentic Jamaican cuisine at 3 New York locations. Jerk chicken, oxtail, ackee & saltfish, catering for events.',
     image: `${brand.domain}/img/food-spread.jpeg`,
+    logo: `${brand.domain}/icon-512.png`,
     url: brand.domain,
     telephone: locations[0].phoneFormatted,
     email: locations[0].email,
@@ -115,16 +127,70 @@ export function getCateringJsonLd() {
     email: locations[0].email,
     servesCuisine: brand.cuisine,
     priceRange: brand.priceRange,
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      reviewCount: '435',
-      bestRating: '5',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: locations[0].address,
+      addressLocality: locations[0].city,
+      addressRegion: locations[0].state,
+      postalCode: locations[0].zip,
+      addressCountry: 'US',
     },
+    areaServed: [
+      { '@type': 'AdministrativeArea', name: 'Westchester County, NY' },
+      ...locations.map((loc) => ({ '@type': 'City', name: loc.city })),
+    ],
+    sameAs: [
+      socialLinks.instagram,
+      socialLinks.facebook,
+      socialLinks.yelp,
+      socialLinks.twitter,
+    ],
+    // Aggregate rating intentionally omitted: Google requires ratings to be
+    // first-party (collected by the site). Our 4.9/5 from 500+ orders lives on
+    // ezCater. Add an aggregateRating here only when sourced via Review schema
+    // collected directly on cravinjc.com.
   };
 }
 
-// Menu schema for menu page
+// Build a schema.org MenuItem (with offers) from our menu data. Handles both
+// single-price items and small/large size options.
+function buildMenuItemSchema(item: MenuItem) {
+  const menuItem: Record<string, unknown> = {
+    '@type': 'MenuItem',
+    name: item.name,
+    description: item.description,
+  };
+
+  if (item.tags?.length) {
+    menuItem.suitableForDiet = item.tags
+      .map((tag) => {
+        if (tag === 'Vegetarian') return 'https://schema.org/VegetarianDiet';
+        if (tag === 'Vegan') return 'https://schema.org/VeganDiet';
+        if (tag === 'Gluten-Free') return 'https://schema.org/GlutenFreeDiet';
+        return null;
+      })
+      .filter(Boolean);
+    if ((menuItem.suitableForDiet as unknown[]).length === 0) delete menuItem.suitableForDiet;
+  }
+
+  if (item.priceCents != null) {
+    menuItem.offers = {
+      '@type': 'Offer',
+      price: centsToPrice(item.priceCents),
+      priceCurrency: 'USD',
+    };
+  } else if (item.priceSmallCents != null && item.priceLargeCents != null) {
+    menuItem.offers = [
+      { '@type': 'Offer', name: 'Small', price: centsToPrice(item.priceSmallCents), priceCurrency: 'USD' },
+      { '@type': 'Offer', name: 'Large', price: centsToPrice(item.priceLargeCents), priceCurrency: 'USD' },
+    ];
+  }
+
+  return menuItem;
+}
+
+// Menu schema for menu page — now populated with all real items + prices so
+// AI answer engines can cite specific dishes and costs.
 export function getMenuJsonLd() {
   return {
     '@context': 'https://schema.org',
@@ -132,16 +198,36 @@ export function getMenuJsonLd() {
     name: brand.name,
     url: `${brand.domain}/menu`,
     servesCuisine: brand.cuisine,
+    priceRange: brand.priceRange,
     hasMenu: {
       '@type': 'Menu',
       name: 'Full Menu',
       url: `${brand.domain}/menu`,
-      hasMenuSection: [
-        { '@type': 'MenuSection', name: 'Breakfast' },
-        { '@type': 'MenuSection', name: 'Lunch & Dinner' },
-        { '@type': 'MenuSection', name: 'Baked Goods & Extras' },
-        { '@type': 'MenuSection', name: 'Beverages' },
-      ],
+      hasMenuSection: menuCategories.map((cat) => ({
+        '@type': 'MenuSection',
+        name: cat.label,
+        ...(cat.description ? { description: cat.description } : {}),
+        hasMenuItem: menuItems
+          .filter((item) => item.category === cat.id)
+          .map(buildMenuItemSchema),
+      })),
     },
+  };
+}
+
+// FAQPage schema — pairs with visible on-page FAQ sections. FAQ content is the
+// single highest-leverage format for citation in AI answer engines.
+export function getFaqJsonLd(faqs: FaqItem[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
   };
 }

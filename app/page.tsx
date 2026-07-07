@@ -1,7 +1,13 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { locations, brand } from '@/lib/site-data';
 import { getRestaurantJsonLd } from '@/lib/json-ld';
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+  openGraph: { url: '/' },
+};
 
 export default function HomePage() {
   const jsonLd = getRestaurantJsonLd();
@@ -26,21 +32,22 @@ export default function HomePage() {
               a real taste of Jamaica, with heart and hospitality.
             </p>
             <div className="hero-actions">
-              <Link href="/order" className="btn btn-warm">Order Online &rarr;</Link>
+              <Link href="/catering" className="btn btn-warm">Plan Your Event &rarr;</Link>
+              <Link href="/order" className="btn btn-outline-warm">Order Online</Link>
               <Link href="/menu" className="btn btn-outline-green">View Menu</Link>
             </div>
             <div className="hero-stats">
               <div className="hero-stat">
                 <h3>500+</h3>
-                <p>Events Catered</p>
+                <p>Events Catered Since 2015</p>
               </div>
               <div className="hero-stat">
                 <h3>3</h3>
-                <p>Locations</p>
+                <p>Westchester Locations</p>
               </div>
               <div className="hero-stat">
-                <h3>Since &apos;15</h3>
-                <p>Serving Westchester</p>
+                <h3>4.9&#9733;</h3>
+                <p>Catering Rating on ezCater</p>
               </div>
             </div>
           </div>
@@ -131,7 +138,7 @@ export default function HomePage() {
               </div>
               <div className="story-value">
                 <h4>500+</h4>
-                <p>Events Catered</p>
+                <p>Events Catered Since 2015</p>
               </div>
             </div>
             <Link href="/about" className="btn btn-warm">Our Story</Link>
@@ -204,7 +211,7 @@ export default function HomePage() {
               <span className="section-label">Catering</span>
               <h2>Bring Jamaica To Your Next Event</h2>
               <p>
-                500+ events catered and counting. Trusted by Amazon, the U.S. Army,
+                500+ events catered since 2015. Trusted by Amazon, the U.S. Army,
                 and Coca-Cola. Corporate lunches, weddings, birthday parties.
                 We bring the full Jamaican spread to you.
               </p>

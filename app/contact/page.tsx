@@ -6,6 +6,8 @@ import { locations, socialLinks } from '@/lib/site-data';
 export const metadata: Metadata = {
   title: 'Contact Us',
   description: "Questions, feedback, or catering inquiries? Contact Cravin Jamaican Cuisine. Call, email, or send us a message.",
+  alternates: { canonical: '/contact' },
+  openGraph: { url: '/contact' },
 };
 
 export default function ContactPage() {
@@ -98,7 +100,7 @@ export default function ContactPage() {
                     <textarea id="contact-message" name="message" rows={5} placeholder="How can we help?" required></textarea>
                   </div>
                   {/* Honeypot */}
-                  <input type="text" name="website" className="hp-field" tabIndex={-1} autoComplete="off" />
+                  <input type="text" name="website" className="hp-field" tabIndex={-1} autoComplete="off" aria-hidden="true" />
                   <div className="form-submit">
                     <button type="submit" className="btn btn-warm">Send Message</button>
                   </div>

@@ -6,6 +6,8 @@ import { locations, brand } from '@/lib/site-data';
 export const metadata: Metadata = {
   title: 'Order Online',
   description: 'Order Cravin Jamaican Cuisine for pickup or delivery via Uber Eats. Three Westchester County locations in Ossining, White Plains, and Mount Vernon.',
+  alternates: { canonical: '/order' },
+  openGraph: { url: '/order' },
 };
 
 function PhoneIcon() {
@@ -23,7 +25,7 @@ export default function OrderPage() {
       <section className="page-hero" id="main-content">
         <div className="container">
           <h1>Order Online</h1>
-          <p>Choose your location and favorite ordering platform.</p>
+          <p>Calling ahead is fastest and supports us directly &mdash; or order delivery via Uber Eats.</p>
         </div>
       </section>
 
@@ -38,22 +40,22 @@ export default function OrderPage() {
                   <p>{loc.fullAddress}</p>
                 </div>
                 <div className="order-card-body">
-                  <a href={`tel:${loc.phone}`} className="order-platform">
+                  <a href={`tel:${loc.phone}`} className="order-platform order-platform-primary" aria-label={`Call ${loc.shortName} at ${loc.phoneFormatted} to order pickup`}>
                     <span className="platform-icon platform-icon-phone" aria-hidden="true">
                       <PhoneIcon />
                     </span>
-                    <span className="platform-label">Call to Order</span>
-                    <span className="platform-type">Pickup</span>
+                    <span className="platform-label">Call to Order &middot; Pickup</span>
+                    <span className="platform-type">{loc.phoneFormatted} &middot; Recommended</span>
                   </a>
                   {loc.ordering.ubereats && (
-                    <a href={loc.ordering.ubereats} className="order-platform" target="_blank" rel="noopener noreferrer">
+                    <a href={loc.ordering.ubereats} className="order-platform" target="_blank" rel="noopener noreferrer" aria-label={`Order ${loc.shortName} delivery on Uber Eats (opens in new tab)`}>
                       <span className="platform-icon platform-icon-ubereats" aria-hidden="true">UE</span>
                       <span className="platform-label">Uber Eats</span>
                       <span className="platform-type">Delivery</span>
                     </a>
                   )}
                   {loc.ordering.ezcater && (
-                    <a href={loc.ordering.ezcater} className="order-platform" target="_blank" rel="noopener noreferrer">
+                    <a href={loc.ordering.ezcater} className="order-platform" target="_blank" rel="noopener noreferrer" aria-label={`Order ${loc.shortName} catering on EZCater (opens in new tab)`}>
                       <span className="platform-icon platform-icon-ezcater" aria-hidden="true">EZ</span>
                       <span className="platform-label">EZCater</span>
                       <span className="platform-type">Catering</span>

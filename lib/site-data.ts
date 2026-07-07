@@ -14,6 +14,11 @@ export interface Location {
   state: string;
   zip: string;
   fullAddress: string;
+  /**
+   * Storefront coordinates for LocalBusiness JSON-LD, sourced from each
+   * location's Google Business Profile map embed (place-ID anchored).
+   */
+  geo: { lat: number; lng: number };
   phone: string;
   phoneFormatted: string;
   email: string;
@@ -38,9 +43,10 @@ export const locations: Location[] = [
     state: 'NY',
     zip: '10562',
     fullAddress: '109 Main Street, Ossining, NY 10562',
+    geo: { lat: 41.1605146, lng: -73.8648283 },
     phone: '+19144327776',
     phoneFormatted: '(914) 432-7776',
-    email: 'cravinjc@gmail.com',
+    email: 'info@cravinjc.com',
     googleMapsEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3010.5!2d-73.86!3d41.16!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDHCsDA5JzM2LjAiTiA3M8KwNTEnMzYuMCJX!5e0!3m2!1sen!2sus!4v1',
     googleMapsUrl: 'https://www.google.com/maps/dir/?api=1&destination=109+Main+Street+Ossining+NY+10562',
     hours: [
@@ -68,9 +74,10 @@ export const locations: Location[] = [
     state: 'NY',
     zip: '10601',
     fullAddress: '74 Mamaroneck Ave, White Plains, NY 10601',
+    geo: { lat: 41.0307859, lng: -73.7662208 },
     phone: '+19143585111',
     phoneFormatted: '(914) 358-5111',
-    email: 'cravinjcwp@gmail.com',
+    email: 'info@cravinjc.com',
     googleMapsEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3012.5!2d-73.77!3d41.03!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDHCsDAyJzAwLjAiTiA3M8KwNDYnMTIuMCJX!5e0!3m2!1sen!2sus!4v1',
     googleMapsUrl: 'https://www.google.com/maps/dir/?api=1&destination=74+Mamaroneck+Ave+White+Plains+NY+10601',
     hours: [
@@ -98,9 +105,10 @@ export const locations: Location[] = [
     state: 'NY',
     zip: '10552',
     fullAddress: '529 Gramatan Ave, Mount Vernon, NY 10552',
+    geo: { lat: 40.9252093, lng: -73.8358937 },
     phone: '+19145889202',
     phoneFormatted: '(914) 588-9202',
-    email: 'cravinjcwp@gmail.com',
+    email: 'info@cravinjc.com',
     googleMapsEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3015.5!2d-73.84!3d40.91!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDU0JzM2LjAiTiA3M8KwNTAnMjQuMCJX!5e0!3m2!1sen!2sus!4v1',
     googleMapsUrl: 'https://www.google.com/maps/dir/?api=1&destination=529+Gramatan+Ave+Mount+Vernon+NY+10552',
     hours: [

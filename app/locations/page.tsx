@@ -2,11 +2,14 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { locations } from '@/lib/site-data';
-import { getLocationsJsonLd } from '@/lib/json-ld';
+import { getLocationsJsonLd, getFaqJsonLd } from '@/lib/json-ld';
+import { FaqSection } from '@/components/layout/FaqSection';
+import { visitFaqs } from '@/lib/faq-data';
 
 export const metadata: Metadata = {
   title: 'Locations & Hours',
   description: 'Visit Cravin Jamaican Cuisine at three Westchester County locations: Ossining, White Plains, and Mount Vernon. View hours, addresses, and get directions.',
+  alternates: { canonical: '/locations' },
 };
 
 const locationTaglines: Record<string, string> = {
@@ -23,6 +26,7 @@ const mapEmbeds: Record<string, string> = {
 
 export default function LocationsPage() {
   const jsonLdArray = getLocationsJsonLd();
+  const faqJsonLd = getFaqJsonLd(visitFaqs);
 
   return (
     <main>
@@ -33,6 +37,10 @@ export default function LocationsPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       ))}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* PAGE HERO */}
       <section className="page-hero" id="main-content">
         <div className="container">
@@ -106,6 +114,12 @@ export default function LocationsPage() {
           </div>
         </section>
       ))}
+
+      <FaqSection
+        title="Visiting Cravin — Common Questions"
+        subtitle="Hours, ordering, dietary options, and more."
+        faqs={visitFaqs}
+      />
     </main>
   );
 }

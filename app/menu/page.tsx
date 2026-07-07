@@ -5,6 +5,12 @@ import { getMenuJsonLd } from '@/lib/json-ld';
 export const metadata: Metadata = {
   title: 'Menu',
   description: 'Explore the full menu at Cravin Jamaican Cuisine. Breakfast, lunch, dinner, sides and beverages. Jerk chicken, oxtail, ackee & saltfish, curry goat and more.',
+  alternates: { canonical: '/menu' },
+  openGraph: {
+    title: 'Menu | Cravin Jamaican Cuisine',
+    description: 'The full Cravin menu — jerk chicken, oxtail, curry goat, ackee & saltfish, patties, sorrel and more, with real prices across all 46 items.',
+    url: '/menu',
+  },
 };
 
 export default function MenuPage() {
