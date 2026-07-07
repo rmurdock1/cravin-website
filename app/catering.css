@@ -4,6 +4,38 @@
    ============================== */
 
 /* ==============================
+   PRICE ANCHOR (HERO)
+   ============================== */
+.catering-price-anchor {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 14px 22px;
+  margin: 12px 0 32px;
+  background: rgba(212, 160, 74, 0.08);
+  border: 1px solid rgba(212, 160, 74, 0.25);
+  border-radius: 10px;
+  flex-wrap: wrap;
+}
+.price-anchor-amount {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  color: var(--warm);
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+.price-anchor-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+[data-theme="light"] .catering-price-anchor {
+  background: rgba(154, 114, 40, 0.08);
+  border-color: rgba(154, 114, 40, 0.3);
+}
+[data-theme="light"] .price-anchor-amount { color: #9A7228; }
+
+/* ==============================
    TRUSTED BY — CLIENT LOGO WALL
    ============================== */
 .trusted-by-section {

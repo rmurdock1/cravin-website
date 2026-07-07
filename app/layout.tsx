@@ -27,8 +27,7 @@ export const metadata: Metadata = {
     default: 'Cravin Jamaican Cuisine | Authentic Jamaican Food in New York',
     template: '%s | Cravin Jamaican Cuisine',
   },
-  description: 'Authentic Jamaican cuisine at 3 New York locations. Jerk chicken, oxtail, ackee & saltfish, catering for events. Order online for pickup or delivery.',
-  keywords: ['Jamaican food', 'jerk chicken', 'Jamaican restaurant New York', 'Caribbean cuisine', 'Ossining', 'White Plains', 'Mount Vernon', 'catering'],
+  description: 'Family-owned Jamaican restaurant in Westchester County, NY since 2015. Jerk chicken, oxtail, and catering for 10–500 guests across Ossining, White Plains, and Mount Vernon.',
   metadataBase: new URL('https://www.cravinjc.com'),
   icons: {
     icon: [

@@ -222,6 +222,10 @@ export function CateringPageClient() {
         <div className="container">
           <h1>Catering</h1>
           <p className="page-hero-subtitle">Authentic Jamaican flavors for your next event. Half pans serve 10–15, full pans serve 40–50. Custom menus for up to 500 guests.</p>
+          <div className="catering-price-anchor">
+            <span className="price-anchor-amount">$15–25</span>
+            <span className="price-anchor-label">per person, depending on menu &middot; 10 guest minimum</span>
+          </div>
           <div className="hero-paths">
             <div className="hero-path-card">
               <div className="path-icon" aria-hidden="true">&#128722;</div>
@@ -450,6 +454,28 @@ export function CateringPageClient() {
                     <input type="number" id="bo-guests" name="guest_count" min="10" max="500" required />
                   </div>
                   <div className="form-group">
+                    <label htmlFor="bo-event-type">Event Type *</label>
+                    <select id="bo-event-type" name="event_type" defaultValue="" required>
+                      <option value="" disabled>Select event type</option>
+                      <option value="corporate">Corporate / Office Lunch</option>
+                      <option value="wedding">Wedding</option>
+                      <option value="birthday">Birthday</option>
+                      <option value="memorial">Memorial / Repast</option>
+                      <option value="holiday">Holiday Party</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="bo-budget">Budget Range</label>
+                    <select id="bo-budget" name="budget_range" defaultValue="">
+                      <option value="">Select (optional)</option>
+                      <option value="under_500">Under $500</option>
+                      <option value="500_1000">$500 – $1,000</option>
+                      <option value="1000_2000">$1,000 – $2,000</option>
+                      <option value="2000_plus">$2,000+</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
                     <label htmlFor="bo-utensils">Plates, cups &amp; utensils?</label>
                     <select id="bo-utensils" name="utensils_needed" defaultValue="">
                       <option value="">Select (optional)</option>
@@ -461,7 +487,7 @@ export function CateringPageClient() {
                     <label htmlFor="bo-notes">Special Requests &amp; Notes</label>
                     <textarea id="bo-notes" name="notes" rows={3} placeholder="Dietary needs, event details, etc."></textarea>
                   </div>
-                  <input type="text" name="website" className="hp-field" tabIndex={-1} autoComplete="off" />
+                  <input type="text" name="website" className="hp-field" tabIndex={-1} autoComplete="off" aria-hidden="true" />
                   <div className="form-submit">
                     <button type="submit" className="btn btn-warm">Submit Order Request</button>
                   </div>
@@ -495,6 +521,32 @@ export function CateringPageClient() {
                     <input type="date" id="qi-date" name="event_date" />
                   </div>
                   <div className="form-group">
+                    <label htmlFor="qi-event-type">Event Type *</label>
+                    <select id="qi-event-type" name="event_type" defaultValue="" required>
+                      <option value="" disabled>Select event type</option>
+                      <option value="corporate">Corporate / Office Lunch</option>
+                      <option value="wedding">Wedding</option>
+                      <option value="birthday">Birthday</option>
+                      <option value="memorial">Memorial / Repast</option>
+                      <option value="holiday">Holiday Party</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="qi-guests">Approximate Guest Count</label>
+                    <input type="number" id="qi-guests" name="guest_count" min="10" max="500" placeholder="e.g. 50" />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="qi-budget">Budget Range</label>
+                    <select id="qi-budget" name="budget_range" defaultValue="">
+                      <option value="">Select (optional)</option>
+                      <option value="under_500">Under $500</option>
+                      <option value="500_1000">$500 – $1,000</option>
+                      <option value="1000_2000">$1,000 – $2,000</option>
+                      <option value="2000_plus">$2,000+</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
                     <label htmlFor="qi-utensils">Plates, cups &amp; utensils?</label>
                     <select id="qi-utensils" name="utensils_needed" defaultValue="">
                       <option value="">Select (optional)</option>
@@ -504,9 +556,9 @@ export function CateringPageClient() {
                   </div>
                   <div className="form-group full">
                     <label htmlFor="qi-message">Tell us about your event *</label>
-                    <textarea id="qi-message" name="message" rows={5} placeholder="Event type, number of guests, menu preferences..." required></textarea>
+                    <textarea id="qi-message" name="message" rows={5} placeholder="Menu preferences, dietary needs, location, timing..." required></textarea>
                   </div>
-                  <input type="text" name="website" className="hp-field" tabIndex={-1} autoComplete="off" />
+                  <input type="text" name="website" className="hp-field" tabIndex={-1} autoComplete="off" aria-hidden="true" />
                   <div className="form-submit">
                     <button type="submit" className="btn btn-warm">Send Inquiry</button>
                   </div>
@@ -522,21 +574,24 @@ export function CateringPageClient() {
         <div className="container">
           <span className="section-label">What Our Clients Say</span>
           <h2 className="section-title">Trusted for Events Big &amp; Small</h2>
-          <p className="section-subtitle" style={{ marginBottom: 12 }}>Rated <strong>4.9/5</strong> from 500+ catering orders on ezCater</p>
+          <p className="section-subtitle" style={{ marginBottom: 12 }}>Rated <strong>4.9/5</strong> from 500+ catering orders on ezCater since 2015</p>
           <div className="testimonials-grid">
             <div className="testimonial-card">
+              <span className="testimonial-tag">Private Event</span>
               <div className="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
               <p className="testimonial-text">&ldquo;The Jerk Chicken is out of this world! My guests practically attacked it and there were no leftovers in sight. Will absolutely use this catering team again. They arrived perfectly on time and the food was delicious!&rdquo;</p>
               <div className="testimonial-author">Samantha</div>
-              <div className="testimonial-event">Event Catering &middot; via ezCater</div>
+              <div className="testimonial-event">Private Event &middot; via ezCater</div>
             </div>
             <div className="testimonial-card">
+              <span className="testimonial-tag">Corporate Lunch</span>
               <div className="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
               <p className="testimonial-text">&ldquo;This has to be the most moist jerk chicken I&apos;ve ever had. Our work group absolutely loved the food and the whiting, mac and cheese&hellip; chef&apos;s kiss!!!&rdquo;</p>
               <div className="testimonial-author">Janet</div>
               <div className="testimonial-event">Corporate Lunch &middot; via ezCater</div>
             </div>
             <div className="testimonial-card">
+              <span className="testimonial-tag">Large Event</span>
               <div className="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
               <p className="testimonial-text">&ldquo;The food arrived hot which is amazing. It was an absolute rave from everyone! Arrived on time, hot, and was thoroughly enjoyed by all. I highly recommend this restaurant.&rdquo;</p>
               <div className="testimonial-author">Natalia</div>
