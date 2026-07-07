@@ -31,17 +31,28 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  // Redirect old .html URLs to clean paths (SEO preservation)
+  // 301 redirects for SEO preservation
   async redirects() {
     return [
-      { source: '/index.html', destination: '/', permanent: true },
-      { source: '/menu.html', destination: '/menu', permanent: true },
-      { source: '/catering.html', destination: '/catering', permanent: true },
-      { source: '/order.html', destination: '/order', permanent: true },
-      { source: '/locations.html', destination: '/locations', permanent: true },
-      { source: '/about.html', destination: '/about', permanent: true },
-      { source: '/contact.html', destination: '/contact', permanent: true },
-      { source: '/success.html', destination: '/success', permanent: true },
+      // Old .html URLs → clean paths
+      { source: '/index.html', destination: '/', statusCode: 301 },
+      { source: '/menu.html', destination: '/menu', statusCode: 301 },
+      { source: '/catering.html', destination: '/catering', statusCode: 301 },
+      { source: '/order.html', destination: '/order', statusCode: 301 },
+      { source: '/locations.html', destination: '/locations', statusCode: 301 },
+      { source: '/about.html', destination: '/about', statusCode: 301 },
+      { source: '/contact.html', destination: '/contact', statusCode: 301 },
+      { source: '/success.html', destination: '/success', statusCode: 301 },
+
+      // Legacy Squarespace slugs → new routes (preserve SEO equity post-migration)
+      { source: '/home', destination: '/', statusCode: 301 },
+      { source: '/about-us', destination: '/about', statusCode: 301 },
+      { source: '/contact-us', destination: '/contact', statusCode: 301 },
+      { source: '/order-online', destination: '/order', statusCode: 301 },
+      { source: '/menu-2', destination: '/menu', statusCode: 301 },
+      { source: '/ossining', destination: '/locations#ossining', statusCode: 301 },
+      { source: '/white-plains', destination: '/locations#white-plains', statusCode: 301 },
+      { source: '/mount-vernon', destination: '/locations#mount-vernon', statusCode: 301 },
     ];
   },
 
