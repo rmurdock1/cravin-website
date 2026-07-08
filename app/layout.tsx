@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { DM_Sans, DM_Serif_Display } from 'next/font/google';
 import { ThemeProvider } from '@/lib/theme-context';
 import { SkipLink } from '@/components/layout/SkipLink';
@@ -57,6 +57,14 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@cravinjc',
   },
+};
+
+// viewportFit: 'cover' lets the page extend edge-to-edge on notched iPhones so
+// the nav can pad itself past the status bar / Dynamic Island via safe-area insets.
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 // Inline script to prevent FOUC — sets data-theme before React hydrates

@@ -7,6 +7,11 @@
 
 /* ========== DARK MODE (DEFAULT) ========== */
 :root {
+  /* iOS safe-area insets (0 on non-notched devices / desktop) */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
   --bg: #111110;
   --bg-elevated: #1A1918;
   --bg-card: #1F1E1C;
@@ -215,7 +220,7 @@ ul { list-style: none; }
 /* ========== STICKY ORDER BAR ========== */
 .sticky-order {
   position: fixed;
-  bottom: 24px;
+  bottom: calc(24px + var(--safe-bottom));
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
@@ -271,7 +276,9 @@ nav {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 99;
-  padding: 18px 0;
+  padding: calc(18px + var(--safe-top)) 0 18px;
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
   background: var(--nav-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -342,7 +349,7 @@ nav .container {
   top: 0; left: 0; right: 0; bottom: 0;
   z-index: 98;
   background: var(--bg);
-  padding: 100px 24px 40px;
+  padding: calc(100px + var(--safe-top)) 24px calc(40px + var(--safe-bottom));
   flex-direction: column;
   gap: 8px;
 }
@@ -366,7 +373,7 @@ nav .container {
 
 /* ========== PAGE HERO (interior pages) ========== */
 .page-hero {
-  padding: 140px 0 60px;
+  padding: calc(140px + var(--safe-top)) 0 60px;
   background: var(--bg-elevated);
   text-align: center;
   transition: background-color 0.3s ease;
@@ -1380,7 +1387,7 @@ footer {
 /* Quick links nav bar */
 .about-quicklinks {
   position: sticky;
-  top: 72px;
+  top: calc(72px + var(--safe-top));
   z-index: 40;
   background: var(--bg-elevated);
   border-bottom: 1px solid var(--border);
@@ -1739,7 +1746,7 @@ footer {
   .newsletter-form { flex-direction: column; }
   .newsletter-perks { flex-direction: column; gap: 8px; }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
-  .sticky-order { bottom: 16px; padding: 12px 28px; font-size: 14px; }
+  .sticky-order { bottom: calc(16px + var(--safe-bottom)); padding: 12px 28px; font-size: 14px; }
   .menu-grid { grid-template-columns: 1fr; }
   .order-grid { grid-template-columns: 1fr; }
   .packages-grid { grid-template-columns: 1fr; }
@@ -1750,12 +1757,12 @@ footer {
   .community-grid { grid-template-columns: 1fr; }
   .community-awards { grid-template-columns: 1fr; gap: 24px; padding: 24px; }
   .about-hero-full { min-height: 320px; padding: 100px 0 40px; }
-  .about-quicklinks { top: 60px; }
+  .about-quicklinks { top: calc(60px + var(--safe-top)); }
   .about-quicklinks .quicklink { padding: 6px 14px; font-size: 12px; }
   .form-grid { grid-template-columns: 1fr; }
   .form-group.full { grid-column: auto; }
   .catering-form-card { padding: 28px 20px; }
-  .page-hero { padding: 120px 0 48px; }
+  .page-hero { padding: calc(120px + var(--safe-top)) 0 48px; }
   .location-quicklinks .container { gap: 10px; }
   .quicklink { padding: 8px 16px; font-size: 13px; }
 }
