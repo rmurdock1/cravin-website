@@ -1733,6 +1733,11 @@ footer {
   .nav-links { display: none; }
   .mobile-theme-toggle { display: flex; margin-left: auto; margin-right: 12px; }
   .mobile-menu-btn { display: flex; }
+  /* Hero content is taller than the viewport on phones; top-align it and clear
+     the fixed nav so the title never hides behind the header (was bottom-aligned,
+     which pushed the h1 up under the nav on short viewports like Brave). */
+  .hero { align-items: flex-start; }
+  .hero-content { padding-top: calc(120px + var(--safe-top)); }
   .hero h1 { max-width: 100%; }
   .hero-stats { gap: 24px; flex-wrap: wrap; }
   .hero-top-proof { flex-wrap: wrap; gap: 12px; }
