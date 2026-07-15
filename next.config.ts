@@ -11,7 +11,7 @@ const ContentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline' https://*.tiktokcdn.com https://*.tiktokcdn-us.com",
   "img-src 'self' data: https:",
   "font-src 'self' data:",
-  "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.tiktokv.com https://*.tiktokcdn.com https://*.tiktokcdn-us.com",
+  "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.tiktokv.com https://*.tiktokcdn.com https://*.tiktokcdn-us.com https://xegvxlvjqoxcpgjtjlvu.supabase.co wss://xegvxlvjqoxcpgjtjlvu.supabase.co",
   "frame-src https://www.google.com https://www.tiktok.com",
   "object-src 'none'",
   "base-uri 'self'",

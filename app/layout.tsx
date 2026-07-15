@@ -5,6 +5,7 @@ import { SkipLink } from '@/components/layout/SkipLink';
 import { StickyOrderButton } from '@/components/layout/StickyOrderButton';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { HideOnAdmin } from '@/components/layout/HideOnAdmin';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import './globals.css';
 
@@ -90,10 +91,10 @@ export default function RootLayout({
         <GoogleAnalytics />
         <ThemeProvider>
           <SkipLink />
-          <StickyOrderButton />
-          <Navbar />
+          <HideOnAdmin><StickyOrderButton /></HideOnAdmin>
+          <HideOnAdmin><Navbar /></HideOnAdmin>
           {children}
-          <Footer />
+          <HideOnAdmin><Footer /></HideOnAdmin>
         </ThemeProvider>
       </body>
     </html>
