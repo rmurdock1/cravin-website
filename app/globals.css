@@ -1944,11 +1944,6 @@ footer {
   border: 1px dashed var(--border-light);
   border-radius: var(--radius-lg);
 }
-.careers-empty-icon {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
 .careers-empty-state h3 {
   margin-bottom: 12px;
   font-size: 22px;
