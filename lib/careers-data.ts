@@ -11,31 +11,20 @@ export interface JobListing {
   perks?: string[];
 }
 
-export const jobListings: JobListing[] = [
-  {
-    id: 'cashier',
-    title: 'Cashier / Front of House',
-    location: 'White Plains & Mount Vernon',
-    type: 'full-time',
-    description:
-      'Be the face of Cravin. Greet customers, take orders, and ensure every guest leaves happy. We\'re looking for friendly, reliable people who take pride in great service.',
-    responsibilities: [
-      'Greet customers and take orders accurately',
-      'Operate the POS system and handle cash/card transactions',
-      'Keep the front counter, dining area, and drink station clean',
-      'Answer phone calls and assist with takeout/delivery orders',
-      'Upsell specials and catering services when appropriate',
-    ],
-    requirements: [
-      'Previous cashier or customer service experience preferred',
-      'Friendly, positive attitude with strong communication skills',
-      'Ability to multitask during busy periods',
-      'Must be available evenings and weekends',
-    ],
-    perks: [
-      'Free shift meals',
-      'Tips',
-      'Flexible scheduling',
-    ],
-  },
+// No active openings right now. Add JobListing objects here to re-open roles;
+// each title automatically appears in the application "Position of Interest"
+// dropdown, and the empty-state message on the careers page disappears.
+export const jobListings: JobListing[] = [];
+
+// Roles Cravin hires for — shown in the application form so applicants can
+// express interest even when there are no active listings. "General
+// Application" is always first so anyone can apply without a specific role.
+export const positionOptions: string[] = [
+  'General Application',
+  'Cashier / Front of House',
+  'Line Cook / Kitchen',
+  'Catering & Events Staff',
+  'Delivery Driver',
+  'Baker',
+  'Management',
 ];

@@ -1,9 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { jobListings, type JobListing } from '@/lib/careers-data';
+import { jobListings, positionOptions, type JobListing } from '@/lib/careers-data';
 import { PhoneInput } from '@/components/forms/PhoneInput';
 import { submitNetlifyForm } from '@/lib/netlify-forms';
+
+// Position dropdown = the standing role categories plus any open listings
+const applyPositions = [
+  ...positionOptions,
+  ...jobListings.map((j) => j.title).filter((t) => !positionOptions.includes(t)),
+];
 
 function JobCard({
   job,
@@ -76,14 +82,16 @@ function JobCard({
 }
 
 export function CareersPageClient() {
-  const [selectedJob, setSelectedJob] = useState<JobListing | null>(null);
+  const [position, setPosition] = useState('General Application');
+  const hasOpenings = jobListings.length > 0;
+
+  function scrollToForm() {
+    document.getElementById('application-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
   function handleApply(job: JobListing) {
-    setSelectedJob(job);
-    const formEl = document.getElementById('application-form');
-    if (formEl) {
-      formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    setPosition(job.title);
+    scrollToForm();
   }
 
   return (
@@ -93,8 +101,8 @@ export function CareersPageClient() {
         <div className="container">
           <h1>Join the Cravin Family</h1>
           <p className="page-hero-subtitle">
-            We&apos;re growing, and we want passionate people who love great
-            food and great service. Check out our open positions below.
+            We&apos;re a growing family business that&apos;s always looking for
+            passionate people who love great food and great service.
           </p>
         </div>
       </section>
@@ -142,13 +150,30 @@ export function CareersPageClient() {
         <div className="container">
           <div className="careers-listings-header">
             <span className="section-label">Open Positions</span>
-            <h2 className="section-title">Current Openings</h2>
+            <h2 className="section-title">{hasOpenings ? 'Current Openings' : 'No Open Roles Right Now'}</h2>
           </div>
-          <div className="careers-listings-grid">
-            {jobListings.map((job) => (
-              <JobCard key={job.id} job={job} onApply={handleApply} />
-            ))}
-          </div>
+          {hasOpenings ? (
+            <div className="careers-listings-grid">
+              {jobListings.map((job) => (
+                <JobCard key={job.id} job={job} onApply={handleApply} />
+              ))}
+            </div>
+          ) : (
+            <div className="careers-empty-state">
+              <div className="careers-empty-icon" aria-hidden="true">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--warm)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              </div>
+              <h3>We&apos;re not actively hiring at the moment</h3>
+              <p>
+                But we&apos;re always growing, and the right person is worth making
+                room for. Submit a general application below and we&apos;ll reach
+                out the moment a spot opens up that fits you.
+              </p>
+              <button type="button" className="btn btn-warm" onClick={scrollToForm}>
+                Submit a General Application &darr;
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -214,21 +239,17 @@ export function CareersPageClient() {
                   <PhoneInput id="careers-phone" name="phone" required />
                 </div>
                 <div className="careers-form-group">
-                  <label htmlFor="careers-position">Position *</label>
+                  <label htmlFor="careers-position">Position of Interest *</label>
                   <select
                     id="careers-position"
                     name="position"
                     required
-                    value={selectedJob?.id ?? ''}
-                    onChange={(e) => {
-                      const job = jobListings.find((j) => j.id === e.target.value);
-                      setSelectedJob(job ?? null);
-                    }}
+                    value={position}
+                    onChange={(e) => setPosition(e.target.value)}
                   >
-                    <option value="">Select a position</option>
-                    {jobListings.map((job) => (
-                      <option key={job.id} value={job.id}>
-                        {job.title}
+                    {applyPositions.map((p) => (
+                      <option key={p} value={p}>
+                        {p}
                       </option>
                     ))}
                   </select>

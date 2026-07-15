@@ -1935,6 +1935,32 @@ footer {
   max-width: 800px;
   margin: 0 auto;
 }
+.careers-empty-state {
+  max-width: 620px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 48px 32px;
+  background: var(--bg-card);
+  border: 1px dashed var(--border-light);
+  border-radius: var(--radius-lg);
+}
+.careers-empty-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.careers-empty-state h3 {
+  margin-bottom: 12px;
+  font-size: 22px;
+}
+.careers-empty-state p {
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+@media (max-width: 640px) {
+  .careers-empty-state { padding: 36px 22px; }
+}
 
 /* Job Card */
 .careers-job-card {
