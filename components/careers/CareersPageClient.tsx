@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { jobListings, type JobListing } from '@/lib/careers-data';
+import { PhoneInput } from '@/components/forms/PhoneInput';
 
 function JobCard({
   job,
@@ -169,6 +170,7 @@ export function CareersPageClient() {
               netlify-honeypot="website"
               name="careers-application"
             >
+              <input type="hidden" name="form-name" value="careers-application" />
               {/* Honeypot */}
               <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
                 <label htmlFor="careers-website">Website</label>
@@ -207,13 +209,7 @@ export function CareersPageClient() {
               <div className="careers-form-row">
                 <div className="careers-form-group">
                   <label htmlFor="careers-phone">Phone *</label>
-                  <input
-                    type="tel"
-                    id="careers-phone"
-                    name="phone"
-                    required
-                    placeholder="(914) 555-1234"
-                  />
+                  <PhoneInput id="careers-phone" name="phone" required />
                 </div>
                 <div className="careers-form-group">
                   <label htmlFor="careers-position">Position *</label>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { locations, socialLinks } from '@/lib/site-data';
+import { PhoneInput } from '@/components/forms/PhoneInput';
 
 export const metadata: Metadata = {
   title: 'Contact Us',
@@ -72,6 +73,7 @@ export default function ContactPage() {
             <div className="contact-form-card">
               <h3>Send Us a Message</h3>
               <form name="contact" method="POST" action="/success" data-netlify="true" netlify-honeypot="website">
+                <input type="hidden" name="form-name" value="contact" />
                 <div className="form-grid">
                   <div className="form-group">
                     <label htmlFor="contact-name">Full Name</label>
@@ -83,7 +85,7 @@ export default function ContactPage() {
                   </div>
                   <div className="form-group">
                     <label htmlFor="contact-phone">Phone</label>
-                    <input type="tel" id="contact-phone" name="phone" />
+                    <PhoneInput id="contact-phone" name="phone" />
                   </div>
                   <div className="form-group">
                     <label htmlFor="contact-subject">Subject</label>
