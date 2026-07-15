@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { jobListings, type JobListing } from '@/lib/careers-data';
 import { PhoneInput } from '@/components/forms/PhoneInput';
+import { submitNetlifyForm } from '@/lib/netlify-forms';
 
 function JobCard({
   job,
@@ -169,6 +170,7 @@ export function CareersPageClient() {
               data-netlify="true"
               netlify-honeypot="website"
               name="careers-application"
+              onSubmit={submitNetlifyForm}
             >
               <input type="hidden" name="form-name" value="careers-application" />
               {/* Honeypot */}
