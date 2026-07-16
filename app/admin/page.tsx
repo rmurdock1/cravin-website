@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { SignOutButton } from '@/components/admin/SignOutButton';
@@ -47,11 +48,10 @@ export default async function AdminHome() {
       </header>
 
       <div className="admin-cards">
-        <div className="admin-card">
-          <h2>Job Postings</h2>
+        <Link href="/admin/postings" className="admin-card admin-card-link">
+          <h2>Job Postings →</h2>
           <p>Create and manage location-specific openings that publish straight to the public careers page.</p>
-          <span className="admin-soon">Coming next</span>
-        </div>
+        </Link>
         {profile.role === 'owner' && (
           <div className="admin-card">
             <h2>Team Access</h2>

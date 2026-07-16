@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { CareersPageClient } from '@/components/careers/CareersPageClient';
+import { getActiveJobListings } from '@/lib/job-postings';
 
 export const metadata: Metadata = {
   title: 'Careers',
@@ -9,10 +10,14 @@ export const metadata: Metadata = {
   openGraph: { url: '/careers' },
 };
 
-export default function CareersPage() {
+// Revalidate the cached page periodically; admin actions also revalidate on change.
+export const revalidate = 60;
+
+export default async function CareersPage() {
+  const jobListings = await getActiveJobListings();
   return (
     <main>
-      <CareersPageClient />
+      <CareersPageClient jobListings={jobListings} />
     </main>
   );
 }

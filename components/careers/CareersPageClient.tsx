@@ -1,15 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { jobListings, positionOptions, type JobListing } from '@/lib/careers-data';
+import { positionOptions, type JobListing } from '@/lib/careers-data';
 import { PhoneInput } from '@/components/forms/PhoneInput';
 import { submitNetlifyForm } from '@/lib/netlify-forms';
-
-// Position dropdown = the standing role categories plus any open listings
-const applyPositions = [
-  ...positionOptions,
-  ...jobListings.map((j) => j.title).filter((t) => !positionOptions.includes(t)),
-];
 
 function JobCard({
   job,
@@ -81,9 +75,14 @@ function JobCard({
   );
 }
 
-export function CareersPageClient() {
+export function CareersPageClient({ jobListings }: { jobListings: JobListing[] }) {
   const [position, setPosition] = useState('General Application');
   const hasOpenings = jobListings.length > 0;
+  // Position dropdown = standing role categories plus any open listings
+  const applyPositions = [
+    ...positionOptions,
+    ...jobListings.map((j) => j.title).filter((t) => !positionOptions.includes(t)),
+  ];
 
   function scrollToForm() {
     document.getElementById('application-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
