@@ -10,8 +10,9 @@ export const metadata: Metadata = {
   openGraph: { url: '/careers' },
 };
 
-// Revalidate the cached page periodically; admin actions also revalidate on change.
-export const revalidate = 60;
+// Always reflect the current postings (avoids stale build-cache / ISR snapshots
+// after deploys). It's a tiny indexed query on a low-traffic page.
+export const dynamic = 'force-dynamic';
 
 export default async function CareersPage() {
   const jobListings = await getActiveJobListings();
