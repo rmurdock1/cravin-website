@@ -33,14 +33,25 @@ export function rowToListing(r: JobPostingRow): JobListing {
   };
 }
 
-/** Public: active postings only (RLS also enforces this), ordered for display. */
+export interface JobTemplateRow {
+  id: string;
+  name: string;
+  title: string | null;
+  location: string | null;
+  employment_type: 'full-time' | 'part-time' | 'flexible';
+  description: string | null;
+  responsibilities: string[];
+  requirements: string[];
+  perks: string[];
+}
+
+/** Public: active postings only (RLS also enforces this), newest first. */
 export async function getActiveJobListings(): Promise<JobListing[]> {
   const supabase = createPublicClient();
   const { data } = await supabase
     .from('job_postings')
     .select('*')
     .eq('is_active', true)
-    .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false });
   return (data ?? []).map((r) => rowToListing(r as JobPostingRow));
 }

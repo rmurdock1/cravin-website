@@ -1935,6 +1935,24 @@ footer {
   max-width: 800px;
   margin: 0 auto;
 }
+.careers-location-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.careers-location-group { display: flex; flex-direction: column; gap: 20px; }
+.careers-location-heading {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--warm);
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
 .careers-empty-state {
   max-width: 620px;
   margin: 0 auto;

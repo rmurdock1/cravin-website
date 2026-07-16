@@ -11,7 +11,6 @@ export default async function PostingsPage() {
     .from('job_postings')
     .select('*')
     .order('is_active', { ascending: false })
-    .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false });
 
   const rows = (postings ?? []) as JobPostingRow[];

@@ -5,6 +5,23 @@ import { positionOptions, type JobListing } from '@/lib/careers-data';
 import { PhoneInput } from '@/components/forms/PhoneInput';
 import { submitNetlifyForm } from '@/lib/netlify-forms';
 
+const LOCATION_ORDER = ['Ossining', 'White Plains', 'Mount Vernon', 'All Locations'];
+
+function groupByLocation(jobs: JobListing[]) {
+  const groups = new Map<string, JobListing[]>();
+  for (const j of jobs) {
+    if (!groups.has(j.location)) groups.set(j.location, []);
+    groups.get(j.location)!.push(j);
+  }
+  return [...groups.keys()]
+    .sort((a, b) => {
+      const ia = LOCATION_ORDER.indexOf(a);
+      const ib = LOCATION_ORDER.indexOf(b);
+      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+    })
+    .map((location) => ({ location, jobs: groups.get(location)! }));
+}
+
 function JobCard({
   job,
   onApply,
@@ -16,7 +33,6 @@ function JobCard({
 
   return (
     <div className="careers-job-card" id={job.id}>
-      <div className="careers-job-location-label">{job.location}</div>
       <div className="careers-job-header">
         <div>
           <h3>{job.title}</h3>
@@ -152,9 +168,16 @@ export function CareersPageClient({ jobListings }: { jobListings: JobListing[] }
             <h2 className="section-title">{hasOpenings ? 'Current Openings' : 'No Open Roles Right Now'}</h2>
           </div>
           {hasOpenings ? (
-            <div className="careers-listings-grid">
-              {jobListings.map((job) => (
-                <JobCard key={job.id} job={job} onApply={handleApply} />
+            <div className="careers-location-groups">
+              {groupByLocation(jobListings).map(({ location, jobs }) => (
+                <div key={location} className="careers-location-group">
+                  <h3 className="careers-location-heading">{location}</h3>
+                  <div className="careers-listings-grid">
+                    {jobs.map((job) => (
+                      <JobCard key={job.id} job={job} onApply={handleApply} />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           ) : (

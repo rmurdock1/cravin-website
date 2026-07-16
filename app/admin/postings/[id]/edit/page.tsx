@@ -14,7 +14,7 @@ export default async function EditPostingPage({ params }: { params: Promise<{ id
     <main className="admin-wrap admin-form-wrap">
       <Link href="/admin/postings" className="admin-back">← Postings</Link>
       <h1>Edit Posting</h1>
-      <PostingForm posting={posting as JobPostingRow} />
+      <PostingForm editingId={id} initial={posting as JobPostingRow} />
     </main>
   );
 }
