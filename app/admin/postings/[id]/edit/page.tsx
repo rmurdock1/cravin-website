@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireActiveStaff } from '@/lib/admin-auth';
 import { PostingForm } from '../../PostingForm';
+import { AdminBreadcrumb } from '@/components/admin/AdminBreadcrumb';
 import type { JobPostingRow } from '@/lib/job-postings';
 
 export default async function EditPostingPage({ params }: { params: Promise<{ id: string }> }) {
@@ -12,7 +12,13 @@ export default async function EditPostingPage({ params }: { params: Promise<{ id
 
   return (
     <main className="admin-wrap admin-form-wrap">
-      <Link href="/admin/postings" className="admin-back">← Postings</Link>
+      <AdminBreadcrumb
+        trail={[
+          { label: 'Admin', href: '/admin' },
+          { label: 'Job Postings', href: '/admin/postings' },
+          { label: 'Edit' },
+        ]}
+      />
       <h1>Edit Posting</h1>
       <PostingForm editingId={id} initial={posting as JobPostingRow} />
     </main>

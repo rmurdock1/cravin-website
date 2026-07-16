@@ -91,8 +91,16 @@ function JobCard({
   );
 }
 
+// Map a posting's location to the application form's Preferred Location value.
+const LOCATION_VALUES: Record<string, string> = {
+  Ossining: 'ossining',
+  'White Plains': 'white-plains',
+  'Mount Vernon': 'mount-vernon',
+};
+
 export function CareersPageClient({ jobListings }: { jobListings: JobListing[] }) {
   const [position, setPosition] = useState('General Application');
+  const [preferredLocation, setPreferredLocation] = useState('');
   const hasOpenings = jobListings.length > 0;
   // Position dropdown = standing role categories plus any open listings
   const applyPositions = [
@@ -106,6 +114,8 @@ export function CareersPageClient({ jobListings }: { jobListings: JobListing[] }
 
   function handleApply(job: JobListing) {
     setPosition(job.title);
+    // Prefill preferred location from the posting (applicant can still change it)
+    setPreferredLocation(LOCATION_VALUES[job.location] ?? '');
     scrollToForm();
   }
 
@@ -278,7 +288,12 @@ export function CareersPageClient({ jobListings }: { jobListings: JobListing[] }
               <div className="careers-form-row">
                 <div className="careers-form-group">
                   <label htmlFor="careers-location-pref">Preferred Location</label>
-                  <select id="careers-location-pref" name="preferred_location">
+                  <select
+                    id="careers-location-pref"
+                    name="preferred_location"
+                    value={preferredLocation}
+                    onChange={(e) => setPreferredLocation(e.target.value)}
+                  >
                     <option value="">No preference</option>
                     <option value="ossining">Ossining</option>
                     <option value="white-plains">White Plains</option>

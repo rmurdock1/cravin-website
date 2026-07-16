@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { requireActiveStaff } from '@/lib/admin-auth';
 import { PostingForm } from '../PostingForm';
 import { TemplatePicker } from '../TemplatePicker';
+import { AdminBreadcrumb } from '@/components/admin/AdminBreadcrumb';
 import type { JobPostingRow } from '@/lib/job-postings';
 
 export default async function NewPostingPage({
@@ -39,7 +39,13 @@ export default async function NewPostingPage({
 
   return (
     <main className="admin-wrap admin-form-wrap">
-      <Link href="/admin/postings" className="admin-back">← Postings</Link>
+      <AdminBreadcrumb
+        trail={[
+          { label: 'Admin', href: '/admin' },
+          { label: 'Job Postings', href: '/admin/postings' },
+          { label: 'New' },
+        ]}
+      />
       <h1>New Posting</h1>
       <TemplatePicker templates={templates ?? []} selected={template} />
       <PostingForm initial={initial} />

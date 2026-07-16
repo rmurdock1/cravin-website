@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { requireActiveStaff } from '@/lib/admin-auth';
 import { PostingRow } from './PostingRow';
+import { AdminBreadcrumb } from '@/components/admin/AdminBreadcrumb';
 import type { JobPostingRow } from '@/lib/job-postings';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +19,7 @@ export default async function PostingsPage() {
   return (
     <main className="admin-wrap">
       <div className="admin-subhead">
-        <Link href="/admin" className="admin-back">← Admin</Link>
+        <AdminBreadcrumb trail={[{ label: 'Admin', href: '/admin' }, { label: 'Job Postings' }]} />
         <Link href="/admin/postings/new" className="btn btn-warm btn-sm">+ New posting</Link>
       </div>
       <h1>Job Postings</h1>
