@@ -1981,9 +1981,10 @@ footer {
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 18px 24px;
-  transition: border-color 0.2s;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
 }
-.careers-job-card:hover { border-color: var(--border-light); }
+.careers-job-card:hover { border-color: var(--warm); background: var(--surface); }
 .careers-job-card:hover {
   border-color: var(--warm);
 }
@@ -2019,8 +2020,27 @@ footer {
 .careers-job-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   flex-shrink: 0;
+}
+.careers-job-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.25s ease, color 0.2s;
+}
+.careers-job-chevron:hover { color: var(--text); }
+.careers-job-chevron[aria-expanded="true"] { transform: rotate(180deg); color: var(--warm); }
+@media (prefers-reduced-motion: reduce) {
+  .careers-job-chevron { transition: color 0.2s; }
 }
 .careers-job-meta {
   display: flex;
