@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { requireActiveStaff } from '@/lib/admin-auth';
 import { PostingRow } from './PostingRow';
+import { TemplateRow } from './TemplateRow';
 import { AdminBreadcrumb } from '@/components/admin/AdminBreadcrumb';
 import type { JobPostingRow } from '@/lib/job-postings';
 
@@ -12,6 +13,10 @@ export default async function PostingsPage() {
     .from('job_postings')
     .select('*')
     .order('is_active', { ascending: false })
+    .order('created_at', { ascending: false });
+  const { data: templates } = await supabase
+    .from('job_templates')
+    .select('id, name')
     .order('created_at', { ascending: false });
 
   const rows = (postings ?? []) as JobPostingRow[];
@@ -36,6 +41,18 @@ export default async function PostingsPage() {
             <PostingRow key={p.id} posting={p} />
           ))}
         </div>
+      )}
+
+      {templates && templates.length > 0 && (
+        <section className="admin-templates-section">
+          <h2>Templates</h2>
+          <p className="admin-hint">Reusable starting points — choose one when creating a new posting.</p>
+          <div className="admin-list">
+            {templates.map((t) => (
+              <TemplateRow key={t.id} template={t} />
+            ))}
+          </div>
+        </section>
       )}
     </main>
   );

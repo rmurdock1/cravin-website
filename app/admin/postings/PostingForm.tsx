@@ -21,7 +21,9 @@ export function PostingForm({
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [templateMsg, setTemplateMsg] = useState('');
+  const [submitting, setSubmitting] = useState<'save' | 'publish' | 'unpublish' | null>(null);
   const isLive = !!initial?.is_active;
+  const busy = submitting !== null;
 
   function submit(intent: 'save' | 'publish' | 'unpublish') {
     const form = formRef.current;
@@ -29,6 +31,7 @@ export function PostingForm({
     if (intent === 'publish' && !confirm('This posting will go LIVE on the public careers page. Continue?')) return;
     if (intent === 'unpublish' && !confirm('This will remove the posting from the public careers page. Continue?')) return;
     (form.elements.namedItem('intent') as HTMLInputElement).value = intent;
+    setSubmitting(intent);
     form.requestSubmit();
   }
 
@@ -88,19 +91,23 @@ export function PostingForm({
       <BulletListInput name="perks" label="Perks" hint="(optional)" initial={initial?.perks} placeholder="e.g. Free shift meals" />
 
       <div className="admin-template-bar">
-        <button type="button" className="admin-mini" onClick={handleSaveTemplate}>Save as template</button>
+        <button type="button" className="admin-mini" onClick={handleSaveTemplate} disabled={busy}>Save as template</button>
         {templateMsg && <span className="admin-template-msg">{templateMsg}</span>}
       </div>
 
       <div className="admin-form-actions">
         <Link href="/admin/postings" className="btn btn-outline">Cancel</Link>
-        <button type="button" className="btn btn-outline-warm" onClick={() => submit('save')}>
-          {editingId ? 'Save changes' : 'Save as draft'}
+        <button type="button" className="btn btn-outline-warm" onClick={() => submit('save')} disabled={busy}>
+          {submitting === 'save' ? 'Saving…' : editingId ? 'Save changes' : 'Save as draft'}
         </button>
         {isLive ? (
-          <button type="button" className="btn btn-warm" onClick={() => submit('unpublish')}>Unpublish</button>
+          <button type="button" className="btn btn-warm" onClick={() => submit('unpublish')} disabled={busy}>
+            {submitting === 'unpublish' ? 'Unpublishing…' : 'Unpublish'}
+          </button>
         ) : (
-          <button type="button" className="btn btn-warm" onClick={() => submit('publish')}>Publish posting</button>
+          <button type="button" className="btn btn-warm" onClick={() => submit('publish')} disabled={busy}>
+            {submitting === 'publish' ? 'Publishing…' : 'Publish posting'}
+          </button>
         )}
       </div>
     </form>

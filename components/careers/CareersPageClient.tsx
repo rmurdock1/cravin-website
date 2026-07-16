@@ -7,6 +7,12 @@ import { submitNetlifyForm } from '@/lib/netlify-forms';
 
 const LOCATION_ORDER = ['Ossining', 'White Plains', 'Mount Vernon', 'All Locations'];
 
+const TYPE_LABELS: Record<string, string> = {
+  'full-time': 'Full-Time',
+  'part-time': 'Part-Time',
+  flexible: 'Flexible',
+};
+
 function groupByLocation(jobs: JobListing[]) {
   const groups = new Map<string, JobListing[]>();
   for (const j of jobs) {
@@ -34,20 +40,29 @@ function JobCard({
   return (
     <div className="careers-job-card" id={job.id}>
       <div className="careers-job-header">
-        <div>
+        <div className="careers-job-titles">
           <h3>{job.title}</h3>
-          <span className="careers-tag careers-tag-type">{job.type}</span>
+          <span className="careers-tag careers-tag-type">{TYPE_LABELS[job.type] ?? job.type}</span>
         </div>
-        <button
-          className="btn btn-outline-green careers-toggle-btn"
-          type="button"
-          onClick={() => setExpanded(!expanded)}
-          aria-expanded={expanded}
-        >
-          {expanded ? 'Less' : 'Details'}
-        </button>
+        <div className="careers-job-actions">
+          <button
+            className="btn btn-outline-green careers-toggle-btn"
+            type="button"
+            onClick={() => setExpanded(!expanded)}
+            aria-expanded={expanded}
+          >
+            {expanded ? 'Less' : 'Details'}
+          </button>
+          <button
+            className="btn btn-warm careers-apply-btn"
+            type="button"
+            onClick={() => onApply(job)}
+          >
+            Apply &rarr;
+          </button>
+        </div>
       </div>
-      <p className="careers-job-desc">{job.description}</p>
+      {job.description && <p className="careers-job-desc">{job.description}</p>}
 
       {expanded && (
         <div className="careers-job-details">
@@ -79,14 +94,6 @@ function JobCard({
           )}
         </div>
       )}
-
-      <button
-        className="btn btn-warm careers-apply-btn"
-        type="button"
-        onClick={() => onApply(job)}
-      >
-        Apply Now &rarr;
-      </button>
     </div>
   );
 }
@@ -340,21 +347,6 @@ export function CareersPageClient({ jobListings }: { jobListings: JobListing[] }
                 Submit Application &rarr;
               </button>
             </form>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="careers-cta">
-        <div className="container">
-          <div className="careers-cta-card">
-            <h2>Don&apos;t See Your Role?</h2>
-            <p>
-              We&apos;re always looking for talented people. Send us your resume
-              at{' '}
-              <a href="mailto:hr@cravinjc.com">hr@cravinjc.com</a> and
-              we&apos;ll keep you in mind for future openings.
-            </p>
           </div>
         </div>
       </section>

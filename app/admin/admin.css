@@ -97,6 +97,8 @@
   color: var(--text-muted);
 }
 
+.admin-templates-section { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+.admin-templates-section h2 { font-size: 20px; margin-bottom: 6px; }
 .admin-list { display: flex; flex-direction: column; gap: 10px; }
 .admin-list-row {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
@@ -197,6 +199,19 @@
   .admin-list-row { flex-direction: column; align-items: flex-start; }
   .admin-form-row { flex-direction: column; }
 }
+
+/* ---- Loading ---- */
+.admin-loading {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px; min-height: 40vh; color: var(--text-muted);
+}
+.admin-spinner {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 3px solid var(--border-light); border-top-color: var(--warm);
+  animation: admin-spin 0.7s linear infinite;
+}
+@keyframes admin-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .admin-spinner { animation-duration: 2s; } }
 
 /* ---- Pending ---- */
 .admin-pending {

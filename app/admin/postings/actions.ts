@@ -75,3 +75,20 @@ export async function saveTemplate(formData: FormData) {
     .insert({ name, ...fieldsFrom(formData), created_by: user.id });
   revalidatePath('/admin/postings/new');
 }
+
+export async function updateTemplate(formData: FormData) {
+  const { supabase } = await requireSession();
+  const id = String(formData.get('id') ?? '');
+  const name = String(formData.get('template_name') ?? '').trim() || 'Untitled template';
+  await supabase.from('job_templates').update({ name, ...fieldsFrom(formData) }).eq('id', id);
+  revalidatePath('/admin/postings');
+  revalidatePath('/admin/postings/new');
+  redirect('/admin/postings');
+}
+
+export async function deleteTemplate(id: string) {
+  const { supabase } = await requireSession();
+  await supabase.from('job_templates').delete().eq('id', id);
+  revalidatePath('/admin/postings');
+  revalidatePath('/admin/postings/new');
+}
