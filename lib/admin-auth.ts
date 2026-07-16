@@ -21,3 +21,10 @@ export async function requireActiveStaff() {
 
   return { supabase, user, profile };
 }
+
+/** Guard for owner-only pages (team access). Non-owners are sent to /admin. */
+export async function requireOwner() {
+  const { supabase, user, profile } = await requireActiveStaff();
+  if (profile.role !== 'owner') redirect('/admin');
+  return { supabase, user, profile };
+}

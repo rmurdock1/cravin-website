@@ -53,11 +53,10 @@ export default async function AdminHome() {
           <p>Create and manage location-specific openings that publish straight to the public careers page.</p>
         </Link>
         {profile.role === 'owner' && (
-          <div className="admin-card">
-            <h2>Team Access</h2>
-            <p>Invite the HR manager, and activate or revoke access at any time.</p>
-            <span className="admin-soon">Coming next</span>
-          </div>
+          <Link href="/admin/team" className="admin-card admin-card-link">
+            <h2>Team Access →</h2>
+            <p>Invite people, and activate, revoke, or change their access at any time.</p>
+          </Link>
         )}
       </div>
     </main>
