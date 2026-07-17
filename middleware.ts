@@ -33,6 +33,20 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isLogin = path === '/admin/login' || path.startsWith('/admin/login/');
 
+  // Defense-in-depth: if a magic-link `code` lands on an /admin page instead of
+  // /auth/callback (e.g. Supabase fell back to a Site URL pointing at /admin/login),
+  // forward it to the callback so the session is actually exchanged. Only works
+  // when the host is correct — a wrong Site URL host must be fixed in Supabase.
+  const code = request.nextUrl.searchParams.get('code');
+  if (code) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/auth/callback';
+    url.search = '';
+    url.searchParams.set('code', code);
+    url.searchParams.set('next', '/admin');
+    return NextResponse.redirect(url);
+  }
+
   if (path.startsWith('/admin') && !isLogin && !user) {
     const url = request.nextUrl.clone();
     url.pathname = '/admin/login';
