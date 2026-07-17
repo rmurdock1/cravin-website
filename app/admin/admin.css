@@ -100,6 +100,27 @@
 .admin-templates-section { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
 .admin-templates-section h2 { font-size: 20px; margin-bottom: 6px; }
 
+/* ---- Google sign-in ---- */
+.admin-google-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; height: 46px; margin-top: 4px; padding: 0 16px;
+  border-radius: var(--radius); border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff; color: #1f1f1f;
+  font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: filter 0.15s ease, box-shadow 0.15s ease;
+}
+.admin-google-btn svg { width: 18px; height: 18px; flex: 0 0 auto; }
+.admin-google-btn:hover:not(:disabled) { filter: brightness(0.96); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25); }
+.admin-google-btn:disabled { opacity: 0.65; cursor: default; }
+.admin-login-divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 22px 0 18px; color: var(--text-dim); font-size: 12px;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.admin-login-divider::before, .admin-login-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
 /* ---- Team Access ---- */
 .admin-invite {
   background: var(--bg-card); border: 1px solid var(--border);
