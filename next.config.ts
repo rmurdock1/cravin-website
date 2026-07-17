@@ -34,6 +34,16 @@ const nextConfig: NextConfig = {
   // 301 redirects for SEO preservation
   async redirects() {
     return [
+      // Canonical host: force every *.netlify.app host (bare subdomain + per-deploy
+      // permalinks) to www.cravinjc.com. Prevents auth sessions landing on the wrong
+      // host and stops search engines indexing the netlify.app duplicate.
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: '.*\\.netlify\\.app' }],
+        destination: 'https://www.cravinjc.com/:path*',
+        statusCode: 301,
+      },
+
       // Old .html URLs → clean paths
       { source: '/index.html', destination: '/', statusCode: 301 },
       { source: '/menu.html', destination: '/menu', statusCode: 301 },
