@@ -41,7 +41,8 @@ export default async function AdminHome() {
         <div>
           <h1>Cravin Admin</h1>
           <p className="admin-user">
-            {profile.full_name || user.email} · <span className="admin-role">{profile.role}</span>
+            {profile.full_name || user.email} ·{' '}
+            <span className="admin-role">{profile.role === 'owner' ? 'Admin' : 'HR Manager'}</span>
           </p>
         </div>
         <SignOutButton />

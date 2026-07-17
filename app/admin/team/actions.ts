@@ -28,20 +28,30 @@ export async function inviteUser(_prev: InviteState, formData: FormData): Promis
   const full_name = String(formData.get('full_name') ?? '').trim() || null;
   if (!email) return { ok: false, message: 'Email is required.' };
 
+  // Guard: never let an invite clobber an existing account's role — including your own.
+  if (email === (actor.email ?? '').toLowerCase()) {
+    return { ok: false, message: "That's your own account — you already have full Admin access." };
+  }
   const admin = createAdminClient();
+  const { data: existing } = await admin
+    .from('profiles')
+    .select('id')
+    .eq('email', email)
+    .maybeSingle();
+  if (existing) {
+    return {
+      ok: false,
+      message: 'That email already has an account — manage their role and access in the People list below.',
+    };
+  }
+
   const { data, error } = await admin.auth.admin.createUser({
     email,
     email_confirm: true,
     user_metadata: full_name ? { full_name } : {},
   });
-
-  let userId = data?.user?.id;
-  if (error) {
-    // Likely already exists — reactivate/update that account instead.
-    const { data: existing } = await admin.from('profiles').select('id').eq('email', email).maybeSingle();
-    if (!existing) return { ok: false, message: error.message };
-    userId = existing.id;
-  }
+  if (error) return { ok: false, message: error.message };
+  const userId = data?.user?.id;
   if (!userId) return { ok: false, message: 'Could not create the account.' };
 
   await admin.from('profiles').update({ role, is_active: true, full_name }).eq('id', userId);
