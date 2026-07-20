@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { cateringCategories, cateringItems, type CateringItem, formatPrice } from '@/lib/catering-data';
-import { locations, brand } from '@/lib/site-data';
+import { brand } from '@/lib/site-data';
 import { useCateringCart, formatCurrency, sizeLabel, type CartItem } from '@/hooks/useCateringCart';
 import { PhoneInput } from '@/components/forms/PhoneInput';
 import { submitNetlifyForm } from '@/lib/netlify-forms';
@@ -440,42 +440,23 @@ export function CateringPageClient() {
                     <input type="text" id="bo-company" name="company" placeholder="Leave blank if personal" />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="bo-location">Preferred Location</label>
-                    <select id="bo-location" name="catering_location">
-                      <option value="">Any / Not sure</option>
-                      {locations.map((loc) => (
-                        <option key={loc.id} value={loc.shortName}>{loc.shortName}</option>
-                      ))}
-                    </select>
+                    <label htmlFor="bo-date">Event Date</label>
+                    <input type="date" id="bo-date" name="event_date" />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="bo-date">Event Date *</label>
-                    <input type="date" id="bo-date" name="event_date" required />
+                    <label htmlFor="bo-guests">Guest Count</label>
+                    <input type="number" id="bo-guests" name="guest_count" min="1" max="1000" placeholder="Optional" />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="bo-guests">Guest Count *</label>
-                    <input type="number" id="bo-guests" name="guest_count" min="10" max="500" required />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="bo-event-type">Event Type *</label>
-                    <select id="bo-event-type" name="event_type" defaultValue="" required>
-                      <option value="" disabled>Select event type</option>
+                    <label htmlFor="bo-event-type">Event Type</label>
+                    <select id="bo-event-type" name="event_type" defaultValue="">
+                      <option value="">Select (optional)</option>
                       <option value="corporate">Corporate / Office Lunch</option>
                       <option value="wedding">Wedding</option>
                       <option value="birthday">Birthday</option>
                       <option value="memorial">Memorial / Repast</option>
                       <option value="holiday">Holiday Party</option>
                       <option value="other">Other</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="bo-budget">Budget Range</label>
-                    <select id="bo-budget" name="budget_range" defaultValue="">
-                      <option value="">Select (optional)</option>
-                      <option value="under_500">Under $500</option>
-                      <option value="500_1000">$500 – $1,000</option>
-                      <option value="1000_2000">$1,000 – $2,000</option>
-                      <option value="2000_plus">$2,000+</option>
                     </select>
                   </div>
                   <div className="form-group">
@@ -525,9 +506,9 @@ export function CateringPageClient() {
                     <input type="date" id="qi-date" name="event_date" />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="qi-event-type">Event Type *</label>
-                    <select id="qi-event-type" name="event_type" defaultValue="" required>
-                      <option value="" disabled>Select event type</option>
+                    <label htmlFor="qi-event-type">Event Type</label>
+                    <select id="qi-event-type" name="event_type" defaultValue="">
+                      <option value="">Select (optional)</option>
                       <option value="corporate">Corporate / Office Lunch</option>
                       <option value="wedding">Wedding</option>
                       <option value="birthday">Birthday</option>
@@ -538,17 +519,7 @@ export function CateringPageClient() {
                   </div>
                   <div className="form-group">
                     <label htmlFor="qi-guests">Approximate Guest Count</label>
-                    <input type="number" id="qi-guests" name="guest_count" min="10" max="500" placeholder="e.g. 50" />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="qi-budget">Budget Range</label>
-                    <select id="qi-budget" name="budget_range" defaultValue="">
-                      <option value="">Select (optional)</option>
-                      <option value="under_500">Under $500</option>
-                      <option value="500_1000">$500 – $1,000</option>
-                      <option value="1000_2000">$1,000 – $2,000</option>
-                      <option value="2000_plus">$2,000+</option>
-                    </select>
+                    <input type="number" id="qi-guests" name="guest_count" min="1" max="1000" placeholder="e.g. 50" />
                   </div>
                   <div className="form-group">
                     <label htmlFor="qi-utensils">Plates, cups &amp; utensils?</label>
