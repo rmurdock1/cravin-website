@@ -1,9 +1,14 @@
 import { LoginForm } from '@/components/admin/LoginForm';
 
-export default function AdminLoginPage() {
+export default async function AdminLoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   return (
     <main className="admin-login-wrap">
-      <LoginForm />
+      <LoginForm initialError={error} />
     </main>
   );
 }

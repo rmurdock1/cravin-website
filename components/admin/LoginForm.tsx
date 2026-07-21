@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
-export function LoginForm() {
+export function LoginForm({ initialError }: { initialError?: string }) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'google' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
@@ -59,6 +59,8 @@ export function LoginForm() {
     <div className="admin-login-card">
       <h1>Cravin Admin</h1>
       <p>Sign in to manage job postings and staff.</p>
+
+      {initialError && status === 'idle' && <p className="admin-error">{initialError}</p>}
 
       <button type="button" className="admin-google-btn" onClick={handleGoogle} disabled={status === 'google'}>
         <svg viewBox="0 0 18 18" aria-hidden="true" focusable="false">
