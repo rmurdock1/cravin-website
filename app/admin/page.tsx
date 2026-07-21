@@ -53,6 +53,10 @@ export default async function AdminHome() {
           <h2>Job Postings →</h2>
           <p>Create and manage location-specific openings that publish straight to the public careers page.</p>
         </Link>
+        <Link href="/admin/staff" className="admin-card admin-card-link">
+          <h2>Staff →</h2>
+          <p>Team profiles and secure documents — I-9s, offer letters and certifications in private storage.</p>
+        </Link>
         {profile.role === 'owner' && (
           <Link href="/admin/team" className="admin-card admin-card-link">
             <h2>Team Access →</h2>
