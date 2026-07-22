@@ -33,13 +33,19 @@ const text = (fd: FormData, key: string) => {
 export async function saveStaff(formData: FormData) {
   const { supabase, user } = await requireActiveStaff();
   const id = text(formData, 'id');
+  const jobTitle = text(formData, 'job_title');
 
   // NOTE: deliberately no SSN / date-of-birth fields. Those live only inside
   // uploaded documents, never as queryable columns.
   const payload = {
     full_name: String(formData.get('full_name') ?? '').trim(),
-    job_title: text(formData, 'job_title'),
-    location: text(formData, 'location'),
+    job_title: jobTitle,
+    // Checkboxes → text[]. Keep only known store values so a tampered form
+    // can't inject arbitrary strings.
+    locations: formData
+      .getAll('locations')
+      .map(String)
+      .filter((v) => ['ossining', 'white-plains', 'mount-vernon'].includes(v)),
     employment_type: text(formData, 'employment_type'),
     status: text(formData, 'status') ?? 'active',
     email: text(formData, 'email'),
@@ -52,6 +58,9 @@ export async function saveStaff(formData: FormData) {
   };
 
   if (!payload.full_name) return;
+
+  // Remember the title so it appears in the picker next time.
+  if (jobTitle) await supabase.from('job_titles').upsert({ title: jobTitle }, { onConflict: 'title' });
 
   let staffId = id;
   if (id) {

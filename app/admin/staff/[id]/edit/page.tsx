@@ -11,6 +11,8 @@ export default async function EditStaffPage({ params }: { params: Promise<{ id: 
   const { supabase } = await requireActiveStaff();
   const { data } = await supabase.from('staff').select('*').eq('id', id).single();
   if (!data) notFound();
+  const { data: titles } = await supabase.from('job_titles').select('title').order('title');
+  const titleOptions = (titles ?? []).map((t) => t.title as string);
 
   return (
     <main className="admin-wrap">
@@ -23,7 +25,7 @@ export default async function EditStaffPage({ params }: { params: Promise<{ id: 
         ]}
       />
       <h1>Edit Profile</h1>
-      <StaffForm staff={data as StaffRow} />
+      <StaffForm staff={data as StaffRow} titleOptions={titleOptions} />
     </main>
   );
 }

@@ -5,7 +5,9 @@ import { StaffForm } from '../StaffForm';
 export const dynamic = 'force-dynamic';
 
 export default async function NewStaffPage() {
-  await requireActiveStaff();
+  const { supabase } = await requireActiveStaff();
+  const { data: titles } = await supabase.from('job_titles').select('title').order('title');
+  const titleOptions = (titles ?? []).map((t) => t.title as string);
   return (
     <main className="admin-wrap">
       <AdminBreadcrumb
@@ -16,7 +18,7 @@ export default async function NewStaffPage() {
         ]}
       />
       <h1>Add Staff</h1>
-      <StaffForm />
+      <StaffForm titleOptions={titleOptions} />
     </main>
   );
 }

@@ -6,7 +6,7 @@ export interface StaffRow {
   id: string;
   full_name: string;
   job_title: string | null;
-  location: string | null;
+  locations: string[] | null;
   employment_type: string | null;
   status: string;
   email: string | null;
@@ -28,12 +28,18 @@ export interface StaffDocumentRow {
   created_at: string;
 }
 
+// The three real stores. Multi-select — someone assigned to 2+ is a "floater".
 export const LOCATIONS = [
   { value: 'ossining', label: 'Ossining' },
   { value: 'white-plains', label: 'White Plains' },
   { value: 'mount-vernon', label: 'Mount Vernon' },
-  { value: 'all', label: 'All Locations' },
 ];
+
+/** Human-readable location summary for a staff member's assignments. */
+export const locationsLabel = (values: string[] | null) => {
+  if (!values || values.length === 0) return 'Unassigned';
+  return values.map((v) => labelFor(LOCATIONS, v)).join(', ');
+};
 
 export const EMPLOYMENT_TYPES = [
   { value: 'full-time', label: 'Full-time' },

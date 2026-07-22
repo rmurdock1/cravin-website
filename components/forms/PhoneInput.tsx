@@ -15,12 +15,13 @@ interface PhoneInputProps {
   id: string;
   name?: string;
   required?: boolean;
+  defaultValue?: string;
 }
 
 /** Controlled tel input that live-formats to US format. Submits the formatted
  *  value (e.g. "(914) 432-7776"), which is human-readable for the manager. */
-export function PhoneInput({ id, name = 'phone', required = false }: PhoneInputProps) {
-  const [value, setValue] = useState('');
+export function PhoneInput({ id, name = 'phone', required = false, defaultValue = '' }: PhoneInputProps) {
+  const [value, setValue] = useState(() => formatUSPhone(defaultValue));
   return (
     <input
       type="tel"

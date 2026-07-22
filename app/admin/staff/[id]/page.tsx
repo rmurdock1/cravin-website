@@ -5,10 +5,10 @@ import { AdminBreadcrumb } from '@/components/admin/AdminBreadcrumb';
 import { DocumentManager } from '@/app/admin/staff/DocumentManager';
 import { DeleteStaffButton } from '@/app/admin/staff/DeleteStaffButton';
 import {
-  LOCATIONS,
   EMPLOYMENT_TYPES,
   STAFF_STATUSES,
   labelFor,
+  locationsLabel,
   type StaffRow,
   type StaffDocumentRow,
 } from '@/lib/staff-data';
@@ -48,11 +48,13 @@ export default async function StaffDetailPage({ params }: { params: Promise<{ id
         ]}
       />
 
+      <Link href="/admin/staff" className="admin-back-link">← Back to Staff</Link>
+
       <div className="admin-page-head">
         <div>
           <h1>{person.full_name}</h1>
           <p className="admin-hint">
-            {person.job_title || 'No title'} · {labelFor(LOCATIONS, person.location)} ·{' '}
+            {person.job_title || 'No title'} · {locationsLabel(person.locations)} ·{' '}
             <span className={`admin-badge ${person.status === 'active' ? 'on' : 'off'}`}>
               {labelFor(STAFF_STATUSES, person.status)}
             </span>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { PhoneInput } from '@/components/forms/PhoneInput';
 import { saveStaff } from './actions';
 import {
   LOCATIONS,
@@ -10,8 +11,15 @@ import {
   type StaffRow,
 } from '@/lib/staff-data';
 
-export function StaffForm({ staff }: { staff?: StaffRow }) {
+export function StaffForm({
+  staff,
+  titleOptions,
+}: {
+  staff?: StaffRow;
+  titleOptions: string[];
+}) {
   const [saving, setSaving] = useState(false);
+  const assigned = new Set(staff?.locations ?? []);
 
   return (
     <form action={saveStaff} onSubmit={() => setSaving(true)} className="admin-form">
@@ -24,15 +32,33 @@ export function StaffForm({ staff }: { staff?: StaffRow }) {
         </div>
         <div className="admin-field">
           <label htmlFor="job_title">Job Title</label>
-          <input id="job_title" name="job_title" defaultValue={staff?.job_title ?? ''} placeholder="e.g. Line Cook" />
+          <input
+            id="job_title"
+            name="job_title"
+            list="job-title-options"
+            defaultValue={staff?.job_title ?? ''}
+            placeholder="Type or pick — e.g. Chef"
+            autoComplete="off"
+          />
+          <datalist id="job-title-options">
+            {titleOptions.map((t) => <option key={t} value={t} />)}
+          </datalist>
+          <span className="admin-field-hint">New titles are saved to the list automatically.</span>
         </div>
-        <div className="admin-field">
-          <label htmlFor="location">Location</label>
-          <select id="location" name="location" defaultValue={staff?.location ?? ''}>
-            <option value="">Select…</option>
-            {LOCATIONS.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
-          </select>
+
+        <div className="admin-field full">
+          <label>Locations</label>
+          <div className="admin-checkbox-row">
+            {LOCATIONS.map((l) => (
+              <label key={l.value} className="admin-checkbox">
+                <input type="checkbox" name="locations" value={l.value} defaultChecked={assigned.has(l.value)} />
+                <span>{l.label}</span>
+              </label>
+            ))}
+          </div>
+          <span className="admin-field-hint">Check every store this person works at. Two or more marks them a floater.</span>
         </div>
+
         <div className="admin-field">
           <label htmlFor="employment_type">Employment Type</label>
           <select id="employment_type" name="employment_type" defaultValue={staff?.employment_type ?? ''}>
@@ -56,7 +82,7 @@ export function StaffForm({ staff }: { staff?: StaffRow }) {
         </div>
         <div className="admin-field">
           <label htmlFor="phone">Phone</label>
-          <input id="phone" name="phone" defaultValue={staff?.phone ?? ''} />
+          <PhoneInput id="phone" name="phone" defaultValue={staff?.phone ?? ''} />
         </div>
         <div className="admin-field full">
           <label htmlFor="address">Address</label>
@@ -68,19 +94,13 @@ export function StaffForm({ staff }: { staff?: StaffRow }) {
         </div>
         <div className="admin-field">
           <label htmlFor="emergency_contact_phone">Emergency Phone</label>
-          <input id="emergency_contact_phone" name="emergency_contact_phone" defaultValue={staff?.emergency_contact_phone ?? ''} />
+          <PhoneInput id="emergency_contact_phone" name="emergency_contact_phone" defaultValue={staff?.emergency_contact_phone ?? ''} />
         </div>
         <div className="admin-field full">
           <label htmlFor="notes">Notes</label>
           <textarea id="notes" name="notes" rows={3} defaultValue={staff?.notes ?? ''} />
         </div>
       </div>
-
-      <p className="admin-hint admin-privacy-note">
-        Do not enter Social Security numbers or dates of birth here — there are no fields for
-        them by design. If they appear on a form (an I-9, say), upload the document instead;
-        files stay in private storage rather than becoming searchable data.
-      </p>
 
       <div className="admin-form-actions">
         <Link href={staff ? `/admin/staff/${staff.id}` : '/admin/staff'} className="btn btn-outline">Cancel</Link>
