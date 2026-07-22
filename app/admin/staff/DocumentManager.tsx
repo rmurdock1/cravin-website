@@ -1,8 +1,16 @@
 'use client';
 
 import { useRef, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { recordDocument, getDocumentUrl, deleteDocument } from './actions';
+import {
+  recordDocument,
+  getDocumentUrl,
+  deleteDocument,
+  parseStaffDocument,
+  applyParsedFields,
+} from './actions';
+import type { ParsedFields } from '@/lib/parse-document';
 import {
   BUCKET,
   DOC_TYPES,
@@ -23,8 +31,64 @@ export function DocumentManager({
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [pending, startTransition] = useTransition();
+  const [scanningId, setScanningId] = useState<string | null>(null);
+  const [review, setReview] = useState<{ fields: ParsedFields; include: Set<string> } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const typeRef = useRef<HTMLSelectElement>(null);
+  const router = useRouter();
+
+  const FIELD_LABELS: Record<keyof ParsedFields, string> = {
+    full_name: 'Full Name',
+    job_title: 'Job Title',
+    phone: 'Phone',
+    address: 'Address',
+    emergency_contact_name: 'Emergency Contact',
+    emergency_contact_phone: 'Emergency Phone',
+  };
+
+  async function handleScan(id: string) {
+    setScanningId(id);
+    setMsg(null);
+    setReview(null);
+    try {
+      const res = await parseStaffDocument(id);
+      if (!res.ok) {
+        setMsg({ ok: false, text: res.message });
+        return;
+      }
+      const present = Object.entries(res.fields).filter(([, v]) => v).map(([k]) => k);
+      if (present.length === 0) {
+        setMsg({ ok: false, text: 'No contact basics were found in that document.' });
+        return;
+      }
+      setReview({ fields: res.fields, include: new Set(present) });
+    } finally {
+      setScanningId(null);
+    }
+  }
+
+  function toggleField(key: string) {
+    setReview((r) => {
+      if (!r) return r;
+      const include = new Set(r.include);
+      include.has(key) ? include.delete(key) : include.add(key);
+      return { ...r, include };
+    });
+  }
+
+  function applyReview() {
+    if (!review) return;
+    const selected: Partial<ParsedFields> = {};
+    for (const key of review.include) {
+      selected[key as keyof ParsedFields] = review.fields[key as keyof ParsedFields];
+    }
+    startTransition(async () => {
+      await applyParsedFields(staffId, selected);
+      setReview(null);
+      setMsg({ ok: true, text: 'Profile updated from the document.' });
+      router.refresh();
+    });
+  }
 
   async function handleUpload(e: React.FormEvent) {
     e.preventDefault();
@@ -103,6 +167,38 @@ export function DocumentManager({
       </form>
       {msg && <p className={msg.ok ? 'admin-template-msg' : 'admin-error'}>{msg.text}</p>}
 
+      {review && (
+        <div className="admin-scan-review">
+          <h3>Review extracted details</h3>
+          <p className="admin-hint">
+            Claude read this document. Check what you want to apply — it overwrites the matching
+            profile fields. Nothing is saved until you click Apply. (SSNs and dates of birth are
+            never extracted.)
+          </p>
+          {(Object.keys(FIELD_LABELS) as (keyof ParsedFields)[])
+            .filter((k) => review.fields[k])
+            .map((k) => (
+              <label key={k} className="admin-scan-field">
+                <input
+                  type="checkbox"
+                  checked={review.include.has(k)}
+                  onChange={() => toggleField(k)}
+                />
+                <span className="admin-scan-label">{FIELD_LABELS[k]}</span>
+                <span className="admin-scan-value">{review.fields[k]}</span>
+              </label>
+            ))}
+          <div className="admin-form-actions">
+            <button className="btn btn-outline" onClick={() => setReview(null)} disabled={pending}>
+              Discard
+            </button>
+            <button className="btn btn-warm" onClick={applyReview} disabled={pending || review.include.size === 0}>
+              {pending ? 'Applying…' : `Apply ${review.include.size} field${review.include.size === 1 ? '' : 's'}`}
+            </button>
+          </div>
+        </div>
+      )}
+
       {documents.length === 0 ? (
         <p className="admin-hint">No documents uploaded yet.</p>
       ) : (
@@ -119,6 +215,18 @@ export function DocumentManager({
               </div>
               <div className="admin-list-actions">
                 <button className="admin-mini" onClick={() => openDoc(d.id)}>View</button>
+                {['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(
+                  d.mime_type ?? ''
+                ) && (
+                  <button
+                    className="admin-mini"
+                    disabled={scanningId === d.id}
+                    onClick={() => handleScan(d.id)}
+                    title="Extract name, title, phone, address and emergency contact"
+                  >
+                    {scanningId === d.id ? 'Scanning…' : 'Scan ✨'}
+                  </button>
+                )}
                 <button
                   className="admin-mini danger"
                   disabled={pending}

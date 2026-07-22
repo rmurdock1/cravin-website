@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { requireActiveStaff } from '@/lib/admin-auth';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { BUCKET } from '@/lib/staff-data';
+import { parseDocumentBytes, isParseable, type ParsedFields } from '@/lib/parse-document';
 
 /** Audit writes go through the service role: `authenticated` has SELECT-only
  *  on audit_log so the trail can't be edited by the app's own session. */
@@ -178,4 +179,61 @@ export async function deleteDocument(documentId: string) {
   await supabase.from('staff_documents').delete().eq('id', documentId);
   await logAudit(user, 'delete_document', doc.staff_id, { file_name: doc.file_name });
   revalidatePath(`/admin/staff/${doc.staff_id}`);
+}
+
+type ParseResult =
+  | { ok: true; fields: ParsedFields }
+  | { ok: false; message: string };
+
+/** Read a stored document and let Claude extract non-sensitive basics. Returns a
+ *  DRAFT for human review — it never writes to the profile on its own. */
+export async function parseStaffDocument(documentId: string): Promise<ParseResult> {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return { ok: false, message: 'AI parsing is not configured yet (missing API key).' };
+  }
+  const { supabase, user } = await requireActiveStaff();
+
+  const { data: doc } = await supabase
+    .from('staff_documents')
+    .select('storage_path, mime_type, file_name, staff_id')
+    .eq('id', documentId)
+    .single();
+  if (!doc) return { ok: false, message: 'Document not found.' };
+  if (!isParseable(doc.mime_type)) {
+    return { ok: false, message: 'Only PDF, JPG, PNG, GIF or WebP files can be scanned.' };
+  }
+
+  const { data: file, error } = await supabase.storage.from(BUCKET).download(doc.storage_path);
+  if (error || !file) return { ok: false, message: 'Could not read the document.' };
+
+  try {
+    const fields = await parseDocumentBytes(await file.arrayBuffer(), doc.mime_type!);
+    // Log only which fields were found — never the extracted values themselves.
+    await logAudit(user, 'parse_document', doc.staff_id, {
+      file_name: doc.file_name,
+      fields_found: Object.entries(fields).filter(([, v]) => v).map(([k]) => k),
+    });
+    return { ok: true, fields };
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : 'Parsing failed.' };
+  }
+}
+
+/** Apply reviewed fields to the profile. Only the keys the user kept are sent;
+ *  each overwrites the current value. Runs after a human has looked at the draft. */
+export async function applyParsedFields(staffId: string, fields: Partial<ParsedFields>) {
+  const { supabase, user } = await requireActiveStaff();
+
+  const update: Record<string, string> = {};
+  for (const [k, v] of Object.entries(fields)) {
+    if (typeof v === 'string' && v.trim()) update[k] = v.trim();
+  }
+  if (update.job_title) {
+    update.job_title = (await canonicalJobTitle(supabase, update.job_title)) ?? update.job_title;
+  }
+  if (Object.keys(update).length === 0) return;
+
+  await supabase.from('staff').update(update).eq('id', staffId);
+  await logAudit(user, 'apply_parsed', staffId, { applied: Object.keys(update) });
+  revalidatePath(`/admin/staff/${staffId}`);
 }

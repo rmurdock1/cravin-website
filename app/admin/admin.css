@@ -217,6 +217,22 @@
 .admin-file-input::file-selector-button:hover { border-color: var(--warm); }
 .admin-danger-btn:hover { border-color: #C0503A; color: #E07A63; }
 
+/* ---- AI document scan review ---- */
+.admin-scan-review {
+  margin-top: 18px; padding: 20px; border-radius: var(--radius-lg);
+  border: 1px solid rgba(212, 160, 74, 0.4); background: var(--bg-card);
+}
+.admin-scan-review h3 { font-size: 16px; margin-bottom: 4px; }
+.admin-scan-review .admin-hint { margin: 0 0 14px; }
+.admin-scan-field {
+  display: grid; grid-template-columns: 20px 140px 1fr; align-items: center; gap: 12px;
+  padding: 8px 0; border-top: 1px solid var(--border); cursor: pointer;
+}
+.admin-scan-field input { width: 16px; height: 16px; accent-color: var(--warm); cursor: pointer; }
+.admin-scan-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); }
+.admin-scan-value { font-size: 15px; color: var(--text); overflow-wrap: anywhere; }
+.admin-scan-review .admin-form-actions { margin-top: 16px; }
+
 /* ---- Google sign-in ---- */
 .admin-google-btn {
   display: flex; align-items: center; justify-content: center; gap: 10px;
