@@ -30,10 +30,34 @@ const text = (fd: FormData, key: string) => {
   return v.length ? v : null;
 };
 
+/** Canonicalize a job title so "Chef", "chef" and "Chef " don't become three
+ *  separate options. Collapses whitespace, then reuses the casing of any
+ *  existing title that matches case-insensitively; otherwise saves the new one. */
+async function canonicalJobTitle(
+  supabase: Awaited<ReturnType<typeof requireActiveStaff>>['supabase'],
+  raw: string | null
+): Promise<string | null> {
+  if (!raw) return null;
+  const cleaned = raw.replace(/\s+/g, ' ').trim();
+  if (!cleaned) return null;
+
+  // Exact case-insensitive match against the existing list (escape LIKE metachars).
+  const escaped = cleaned.replace(/[\\%_]/g, '\\$&');
+  const { data: existing } = await supabase
+    .from('job_titles')
+    .select('title')
+    .ilike('title', escaped)
+    .limit(1);
+
+  if (existing && existing.length) return existing[0].title as string;
+  await supabase.from('job_titles').insert({ title: cleaned });
+  return cleaned;
+}
+
 export async function saveStaff(formData: FormData) {
   const { supabase, user } = await requireActiveStaff();
   const id = text(formData, 'id');
-  const jobTitle = text(formData, 'job_title');
+  const jobTitle = await canonicalJobTitle(supabase, text(formData, 'job_title'));
 
   // NOTE: deliberately no SSN / date-of-birth fields. Those live only inside
   // uploaded documents, never as queryable columns.
@@ -58,9 +82,6 @@ export async function saveStaff(formData: FormData) {
   };
 
   if (!payload.full_name) return;
-
-  // Remember the title so it appears in the picker next time.
-  if (jobTitle) await supabase.from('job_titles').upsert({ title: jobTitle }, { onConflict: 'title' });
 
   let staffId = id;
   if (id) {
