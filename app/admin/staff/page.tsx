@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { requireActiveStaff } from '@/lib/admin-auth';
 import { AdminBreadcrumb } from '@/components/admin/AdminBreadcrumb';
 import { LOCATIONS, STAFF_STATUSES, labelFor, locationsLabel, type StaffRow } from '@/lib/staff-data';
+import { createDraftStaff } from './actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +13,8 @@ export default async function StaffPage() {
     .select('id, full_name, job_title, locations, status, email, phone')
     .order('full_name');
 
-  const staff = (data ?? []) as StaffRow[];
+  // Drop unsaved drafts (empty name) — they only appear once a name is saved.
+  const staff = (data ?? []).filter((p) => p.full_name) as StaffRow[];
 
   // Buckets for both the headcount summary and the grouped directory below.
   // Current team only (exclude 'former'); single-store staff count at their store,
@@ -36,11 +38,13 @@ export default async function StaffPage() {
         <div>
           <h1>Staff</h1>
           <p className="admin-hint">
-            Profiles and secure documents. Files are stored in a private bucket and opened
-            through short-lived links — every view is recorded in the audit log.
+            Your team. Click <strong>Add Staff</strong> to add someone, or click a profile to edit
+            or remove them.
           </p>
         </div>
-        <Link href="/admin/staff/new" className="btn btn-warm">Add Staff</Link>
+        <form action={createDraftStaff}>
+          <button type="submit" className="btn btn-warm">Add Staff</button>
+        </form>
       </div>
 
       {current.length > 0 && (
@@ -63,7 +67,9 @@ export default async function StaffPage() {
       {staff.length === 0 ? (
         <div className="admin-empty">
           <p>No staff profiles yet.</p>
-          <Link href="/admin/staff/new" className="btn btn-warm">Add your first</Link>
+          <form action={createDraftStaff}>
+            <button type="submit" className="btn btn-warm">Add your first</button>
+          </form>
         </div>
       ) : (
         <div className="admin-staff-directory">

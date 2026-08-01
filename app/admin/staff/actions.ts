@@ -55,6 +55,21 @@ async function canonicalJobTitle(
   return cleaned;
 }
 
+/** "Add Staff" creates an empty draft row immediately and drops the user on the
+ *  full editor — so they can upload a document and scan-to-prefill, or type
+ *  fields, and attach documents, all on one page. The draft has an empty name
+ *  until saved; saveStaff requires a name, so an abandoned draft stays nameless
+ *  and can be deleted from the list. */
+export async function createDraftStaff() {
+  const { supabase, user } = await requireActiveStaff();
+  const { data } = await supabase
+    .from('staff')
+    .insert({ full_name: '', status: 'active', created_by: user.id })
+    .select('id')
+    .single();
+  redirect(data ? `/admin/staff/${data.id}/edit` : '/admin/staff');
+}
+
 export async function saveStaff(formData: FormData) {
   const { supabase, user } = await requireActiveStaff();
   const id = text(formData, 'id');

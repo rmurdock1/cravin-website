@@ -217,6 +217,9 @@
 .admin-file-input::file-selector-button:hover { border-color: var(--warm); }
 .admin-danger-btn:hover { border-color: #C0503A; color: #E07A63; }
 
+/* Documents section embedded inside the staff editor form. */
+.admin-form-docs { margin: 8px 0 4px; padding-top: 24px; border-top: 1px solid var(--border); }
+
 /* ---- AI document scan review ---- */
 .admin-scan-review {
   margin-top: 18px; padding: 20px; border-radius: var(--radius-lg);

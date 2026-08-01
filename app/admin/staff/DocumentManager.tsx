@@ -21,12 +21,25 @@ import {
   type StaffDocumentRow,
 } from '@/lib/staff-data';
 
+const FIELD_LABELS: Record<keyof ParsedFields, string> = {
+  full_name: 'Full Name',
+  job_title: 'Job Title',
+  phone: 'Phone',
+  address: 'Address',
+  emergency_contact_name: 'Emergency Contact',
+  emergency_contact_phone: 'Emergency Phone',
+};
+
 export function DocumentManager({
   staffId,
   documents,
+  onApply,
 }: {
   staffId: string;
   documents: StaffDocumentRow[];
+  /** When provided (add/edit form), applying a scan fills the form instead of
+   *  writing straight to the profile. Omitted on the read-only detail page. */
+  onApply?: (fields: Partial<ParsedFields>) => void;
 }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -36,15 +49,6 @@ export function DocumentManager({
   const fileRef = useRef<HTMLInputElement>(null);
   const typeRef = useRef<HTMLSelectElement>(null);
   const router = useRouter();
-
-  const FIELD_LABELS: Record<keyof ParsedFields, string> = {
-    full_name: 'Full Name',
-    job_title: 'Job Title',
-    phone: 'Phone',
-    address: 'Address',
-    emergency_contact_name: 'Emergency Contact',
-    emergency_contact_phone: 'Emergency Phone',
-  };
 
   async function handleScan(id: string) {
     setScanningId(id);
@@ -82,6 +86,12 @@ export function DocumentManager({
     for (const key of review.include) {
       selected[key as keyof ParsedFields] = review.fields[key as keyof ParsedFields];
     }
+    if (onApply) {
+      onApply(selected);
+      setReview(null);
+      setMsg({ ok: true, text: 'Applied to the form — review the fields, then Save.' });
+      return;
+    }
     startTransition(async () => {
       await applyParsedFields(staffId, selected);
       setReview(null);
@@ -90,8 +100,7 @@ export function DocumentManager({
     });
   }
 
-  async function handleUpload(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleUpload() {
     const file = fileRef.current?.files?.[0];
     if (!file) return;
 
@@ -130,7 +139,10 @@ export function DocumentManager({
         size_bytes: file.size,
       });
       setMsg({ ok: res.ok, text: res.message });
-      if (res.ok && fileRef.current) fileRef.current.value = '';
+      if (res.ok) {
+        if (fileRef.current) fileRef.current.value = '';
+        router.refresh(); // reflect the new file in the list on any page
+      }
     } finally {
       setBusy(false);
     }
@@ -147,10 +159,11 @@ export function DocumentManager({
       <h2>Documents</h2>
       <p className="admin-hint">
         I-9s, W-4s, offer letters, certifications. Stored privately — links expire after
-        60 seconds and every view is logged.
+        60 seconds and every view is logged.{' '}
+        {onApply && 'Upload a document and press Scan ✨ to pre-fill the profile.'}
       </p>
 
-      <form onSubmit={handleUpload} className="admin-upload">
+      <div className="admin-upload">
         <select ref={typeRef} defaultValue="other" className="admin-role-select" aria-label="Document type">
           {DOC_TYPES.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
         </select>
@@ -161,19 +174,20 @@ export function DocumentManager({
           className="admin-file-input"
           aria-label="Choose file"
         />
-        <button type="submit" className="btn btn-warm" disabled={busy}>
+        <button type="button" className="btn btn-warm" disabled={busy} onClick={handleUpload}>
           {busy ? 'Uploading…' : 'Upload'}
         </button>
-      </form>
+      </div>
       {msg && <p className={msg.ok ? 'admin-template-msg' : 'admin-error'}>{msg.text}</p>}
 
       {review && (
         <div className="admin-scan-review">
           <h3>Review extracted details</h3>
           <p className="admin-hint">
-            Claude read this document. Check what you want to apply — it overwrites the matching
-            profile fields. Nothing is saved until you click Apply. (SSNs and dates of birth are
-            never extracted.)
+            Claude read this document. Check what you want to apply
+            {onApply ? ' to the form' : ' — it overwrites the matching profile fields'}. Nothing is
+            saved until you {onApply ? 'Save the profile' : 'click Apply'}. (SSNs and dates of birth
+            are never extracted.)
           </p>
           {(Object.keys(FIELD_LABELS) as (keyof ParsedFields)[])
             .filter((k) => review.fields[k])
@@ -189,10 +203,15 @@ export function DocumentManager({
               </label>
             ))}
           <div className="admin-form-actions">
-            <button className="btn btn-outline" onClick={() => setReview(null)} disabled={pending}>
+            <button type="button" className="btn btn-outline" onClick={() => setReview(null)} disabled={pending}>
               Discard
             </button>
-            <button className="btn btn-warm" onClick={applyReview} disabled={pending || review.include.size === 0}>
+            <button
+              type="button"
+              className="btn btn-warm"
+              onClick={applyReview}
+              disabled={pending || review.include.size === 0}
+            >
               {pending ? 'Applying…' : `Apply ${review.include.size} field${review.include.size === 1 ? '' : 's'}`}
             </button>
           </div>
@@ -214,11 +233,12 @@ export function DocumentManager({
                 </div>
               </div>
               <div className="admin-list-actions">
-                <button className="admin-mini" onClick={() => openDoc(d.id)}>View</button>
+                <button type="button" className="admin-mini" onClick={() => openDoc(d.id)}>View</button>
                 {['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(
                   d.mime_type ?? ''
                 ) && (
                   <button
+                    type="button"
                     className="admin-mini"
                     disabled={scanningId === d.id}
                     onClick={() => handleScan(d.id)}
@@ -228,11 +248,15 @@ export function DocumentManager({
                   </button>
                 )}
                 <button
+                  type="button"
                   className="admin-mini danger"
                   disabled={pending}
                   onClick={() => {
                     if (!confirm(`Delete "${d.file_name}"? This cannot be undone.`)) return;
-                    startTransition(() => deleteDocument(d.id));
+                    startTransition(async () => {
+                      await deleteDocument(d.id);
+                      router.refresh();
+                    });
                   }}
                 >
                   Delete
