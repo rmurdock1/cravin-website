@@ -266,6 +266,9 @@ export function CateringPageClient() {
               <img src="/img/logos/coca-cola.svg" alt="Coca-Cola" loading="lazy" />
             </div>
             <div className="trusted-logo">
+              <img src="/img/logos/msg.svg" alt="Madison Square Garden" loading="lazy" />
+            </div>
+            <div className="trusted-logo">
               <img src="/img/logos/northwell-health.png" alt="Northwell Health" loading="lazy" />
             </div>
             <div className="trusted-logo">
