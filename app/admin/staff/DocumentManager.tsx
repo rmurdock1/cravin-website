@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useTransition } from 'react';
+import { Fragment, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import {
@@ -45,7 +45,7 @@ export function DocumentManager({
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [pending, startTransition] = useTransition();
   const [scanningId, setScanningId] = useState<string | null>(null);
-  const [review, setReview] = useState<{ fields: ParsedFields; include: Set<string> } | null>(null);
+  const [review, setReview] = useState<{ docId: string; fields: ParsedFields; include: Set<string> } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const typeRef = useRef<HTMLSelectElement>(null);
   const router = useRouter();
@@ -65,7 +65,7 @@ export function DocumentManager({
         setMsg({ ok: false, text: 'No contact basics were found in that document.' });
         return;
       }
-      setReview({ fields: res.fields, include: new Set(present) });
+      setReview({ docId: id, fields: res.fields, include: new Set(present) });
     } finally {
       setScanningId(null);
     }
@@ -180,89 +180,92 @@ export function DocumentManager({
       </div>
       {msg && <p className={msg.ok ? 'admin-template-msg' : 'admin-error'}>{msg.text}</p>}
 
-      {review && (
-        <div className="admin-scan-review">
-          <h3>Review extracted details</h3>
-          <p className="admin-hint">
-            Claude read this document. Check what you want to apply
-            {onApply ? ' to the form' : ' — it overwrites the matching profile fields'}. Nothing is
-            saved until you {onApply ? 'Save the profile' : 'click Apply'}. (SSNs and dates of birth
-            are never extracted.)
-          </p>
-          {(Object.keys(FIELD_LABELS) as (keyof ParsedFields)[])
-            .filter((k) => review.fields[k])
-            .map((k) => (
-              <label key={k} className="admin-scan-field">
-                <input
-                  type="checkbox"
-                  checked={review.include.has(k)}
-                  onChange={() => toggleField(k)}
-                />
-                <span className="admin-scan-label">{FIELD_LABELS[k]}</span>
-                <span className="admin-scan-value">{review.fields[k]}</span>
-              </label>
-            ))}
-          <div className="admin-form-actions">
-            <button type="button" className="btn btn-outline" onClick={() => setReview(null)} disabled={pending}>
-              Discard
-            </button>
-            <button
-              type="button"
-              className="btn btn-warm"
-              onClick={applyReview}
-              disabled={pending || review.include.size === 0}
-            >
-              {pending ? 'Applying…' : `Apply ${review.include.size} field${review.include.size === 1 ? '' : 's'}`}
-            </button>
-          </div>
-        </div>
-      )}
-
       {documents.length === 0 ? (
         <p className="admin-hint">No documents uploaded yet.</p>
       ) : (
         <div className="admin-list">
           {documents.map((d) => (
-            <div key={d.id} className="admin-list-row">
-              <div className="admin-list-main">
-                <div className="admin-list-title">{d.file_name}</div>
-                <div className="admin-list-meta">
-                  {labelFor(DOC_TYPES, d.doc_type)}
-                  {d.size_bytes ? ` · ${formatBytes(d.size_bytes)}` : ''} ·{' '}
-                  {new Date(d.created_at).toLocaleDateString()}
+            <Fragment key={d.id}>
+              <div className="admin-list-row">
+                <div className="admin-list-main">
+                  <div className="admin-list-title">{d.file_name}</div>
+                  <div className="admin-list-meta">
+                    {labelFor(DOC_TYPES, d.doc_type)}
+                    {d.size_bytes ? ` · ${formatBytes(d.size_bytes)}` : ''} ·{' '}
+                    {new Date(d.created_at).toLocaleDateString()}
+                  </div>
                 </div>
-              </div>
-              <div className="admin-list-actions">
-                <button type="button" className="admin-mini" onClick={() => openDoc(d.id)}>View</button>
-                {['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(
-                  d.mime_type ?? ''
-                ) && (
+                <div className="admin-list-actions">
+                  <button type="button" className="admin-mini" onClick={() => openDoc(d.id)}>View</button>
+                  {['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(
+                    d.mime_type ?? ''
+                  ) && (
+                    <button
+                      type="button"
+                      className="admin-mini"
+                      disabled={scanningId === d.id}
+                      onClick={() => handleScan(d.id)}
+                      title="Extract name, title, phone, address and emergency contact"
+                    >
+                      {scanningId === d.id ? 'Scanning…' : 'Scan ✨'}
+                    </button>
+                  )}
                   <button
                     type="button"
-                    className="admin-mini"
-                    disabled={scanningId === d.id}
-                    onClick={() => handleScan(d.id)}
-                    title="Extract name, title, phone, address and emergency contact"
+                    className="admin-mini danger"
+                    disabled={pending}
+                    onClick={() => {
+                      if (!confirm(`Delete "${d.file_name}"? This cannot be undone.`)) return;
+                      startTransition(async () => {
+                        await deleteDocument(d.id);
+                        router.refresh();
+                      });
+                    }}
                   >
-                    {scanningId === d.id ? 'Scanning…' : 'Scan ✨'}
+                    Delete
                   </button>
-                )}
-                <button
-                  type="button"
-                  className="admin-mini danger"
-                  disabled={pending}
-                  onClick={() => {
-                    if (!confirm(`Delete "${d.file_name}"? This cannot be undone.`)) return;
-                    startTransition(async () => {
-                      await deleteDocument(d.id);
-                      router.refresh();
-                    });
-                  }}
-                >
-                  Delete
-                </button>
+                </div>
               </div>
-            </div>
+
+              {/* Extracted details render directly under the document they came from. */}
+              {review?.docId === d.id && (
+                <div className="admin-scan-review">
+                  <h3>Extracted from {d.file_name}</h3>
+                  <p className="admin-hint">
+                    Check what you want to apply
+                    {onApply ? ' to the form' : ' — it overwrites the matching profile fields'}.
+                    Nothing is saved until you {onApply ? 'Save the profile' : 'click Apply'}. (SSNs
+                    and dates of birth are never extracted.)
+                  </p>
+                  {(Object.keys(FIELD_LABELS) as (keyof ParsedFields)[])
+                    .filter((k) => review.fields[k])
+                    .map((k) => (
+                      <label key={k} className="admin-scan-field">
+                        <input
+                          type="checkbox"
+                          checked={review.include.has(k)}
+                          onChange={() => toggleField(k)}
+                        />
+                        <span className="admin-scan-label">{FIELD_LABELS[k]}</span>
+                        <span className="admin-scan-value">{review.fields[k]}</span>
+                      </label>
+                    ))}
+                  <div className="admin-form-actions">
+                    <button type="button" className="btn btn-outline" onClick={() => setReview(null)} disabled={pending}>
+                      Discard
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-warm"
+                      onClick={applyReview}
+                      disabled={pending || review.include.size === 0}
+                    >
+                      {pending ? 'Applying…' : `Apply ${review.include.size} field${review.include.size === 1 ? '' : 's'}`}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </Fragment>
           ))}
         </div>
       )}

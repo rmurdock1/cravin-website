@@ -208,7 +208,15 @@
   background: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-lg); padding: 18px; margin: 16px 0 20px;
 }
-.admin-file-input { flex: 1; min-width: 200px; color: var(--text-muted); font-size: 14px; }
+/* Override the generic .admin-form input box — the upload row lives inside the
+ * staff editor form now, so the file input would otherwise inherit a 46px
+ * bordered box that clips the "Choose File" button. */
+.admin-upload .admin-file-input {
+  flex: 1; min-width: 200px; color: var(--text-muted); font-size: 14px;
+  height: auto; padding: 0; background: transparent; border: none; box-shadow: none;
+}
+.admin-upload .admin-file-input:focus { box-shadow: none; }
+.admin-upload .admin-role-select { width: auto; min-width: 150px; height: 46px; flex: 0 0 auto; }
 .admin-file-input::file-selector-button {
   margin-right: 12px; padding: 9px 16px; border-radius: 8px;
   border: 1px solid var(--border-light); background: var(--surface);
