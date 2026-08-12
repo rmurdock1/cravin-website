@@ -1,4 +1,5 @@
 import type { FormEvent } from 'react';
+import { trackFormSubmit } from '@/lib/analytics';
 
 /**
  * Submits a Netlify form via fetch instead of a full-page POST.
@@ -39,6 +40,13 @@ export async function submitNetlifyForm(e: FormEvent<HTMLFormElement>) {
   try {
     const res = await fetch(NETLIFY_FORM_ENDPOINT, init);
     if (!res.ok) throw new Error(`Submission failed: ${res.status}`);
+    // Fire the GA4 conversion (catering → generate_lead with value) on the
+    // confirmed success, before we navigate away from the page.
+    try {
+      trackFormSubmit(formData);
+    } catch {
+      // Never let analytics block the user's redirect to the thank-you page.
+    }
     window.location.href = '/success';
   } catch {
     if (btn) {
