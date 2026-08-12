@@ -5,6 +5,12 @@ import { locations, brand } from '@/lib/site-data';
 import { getRestaurantJsonLd } from '@/lib/json-ld';
 
 export const metadata: Metadata = {
+  // Absolute title (bypasses the "| Cravin…" template) tuned for local intent —
+  // leads with "Jamaican Restaurant" + Westchester to lift CTR on searches like
+  // "jamaican food near me" where we rank ~9 but rarely get the click.
+  title: { absolute: 'Jamaican Restaurant in Westchester, NY | Cravin Jamaican Cuisine' },
+  description:
+    'Authentic Jamaican food in Westchester County, NY — jerk chicken, oxtail, and curry goat for takeout, Uber Eats delivery, and catering. Three locations in Ossining, White Plains, and Mount Vernon.',
   alternates: { canonical: '/' },
   openGraph: { url: '/' },
 };
