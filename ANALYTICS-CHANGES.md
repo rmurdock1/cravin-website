@@ -112,11 +112,30 @@ recommend scoping it as a separate PR.
 
 ---
 
-## 4. Verification (do this on the Netlify deploy preview)
+## 4. Verification
 
-> Local `next build` / dev-server verification was **not possible** — the build
-> machine has no Node toolchain installed. Everything below should be checked on
-> the deploy preview, where `NEXT_PUBLIC_GA_ID` is set.
+### Already verified locally (production build) ✅
+`next build` passes (clean type-check; `/`, `/menu`, `/catering`, `/order`,
+`/locations` all remain **Static**). Every event was confirmed firing at runtime
+against `next start`, observed via `window.dataLayer` (locally there's no GA ID,
+so `trackEvent` uses its dataLayer fallback):
+
+- `call_click` — with resolved `location`
+- `order_click` — with `provider` (ubereats / ezcater) and `location`
+- `directions_click` — per location (Ossining / White Plains / Mount Vernon)
+- `menu_view` — on `/menu` load
+- `generate_lead` + `catering_request` — `value: 480`, `value_basis: cart_total`,
+  plus `event_type` / `guest_count` / `event_date` / `page_path`
+- `page_view` — on SPA route change, no double-count on initial load
+
+> ⚠️ Dev-mode note: `npm run dev` breaks hydration locally because Next's
+> eval-based HMR is blocked by the site's CSP (no `unsafe-eval`). Verify against
+> the **production** build (`npm run build && npm run start`), not `next dev`.
+> Production has no eval, so CSP is satisfied — this is not a code issue.
+
+### Still to confirm on the Netlify deploy preview (real GA4)
+The above proves the wiring; the deploy preview (where `NEXT_PUBLIC_GA_ID` is set)
+confirms the events reach the actual GA4 property:
 
 1. Open the preview with `?debug_mode=1`, and open **GA4 → Admin → DebugView**
    (or the GA Debugger extension).
