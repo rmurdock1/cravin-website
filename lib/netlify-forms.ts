@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react';
-import { trackFormSubmit } from '@/lib/analytics';
+import { stashFormConversion } from '@/lib/analytics';
 
 /**
  * Submits a Netlify form via fetch instead of a full-page POST.
@@ -40,10 +40,11 @@ export async function submitNetlifyForm(e: FormEvent<HTMLFormElement>) {
   try {
     const res = await fetch(NETLIFY_FORM_ENDPOINT, init);
     if (!res.ok) throw new Error(`Submission failed: ${res.status}`);
-    // Fire the GA4 conversion (catering → generate_lead with value) on the
-    // confirmed success, before we navigate away from the page.
+    // Stash the GA4 conversion payload and fire it on /success instead of here:
+    // firing now would race the /success navigation's page unload and lose the
+    // gtag beacon (why catering conversions weren't reaching GA4).
     try {
-      trackFormSubmit(formData);
+      stashFormConversion(formData);
     } catch {
       // Never let analytics block the user's redirect to the thank-you page.
     }

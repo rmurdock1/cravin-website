@@ -50,15 +50,27 @@ landing hit carries the UTMs (see §5).
 
 ## 2. Catering measurement + dollar value (priority)
 
-The catering page has **two** forms, both submitting via `submitNetlifyForm()`
-(`lib/netlify-forms.ts`). On confirmed success (`res.ok`, before the redirect to
-`/success`), it now calls `trackFormSubmit()` which fires GA4's recommended
+The catering page has **two** forms (`catering-order` and `catering-inquiry`),
+both submitting via `submitNetlifyForm()` (`lib/netlify-forms.ts`). On confirmed
+success (`res.ok`), it **stashes** the conversion payload to `sessionStorage`
+(`stashFormConversion`) and the events fire on **`/success`** load
+(`ConversionTracker` → `flushStashedConversions`) — GA4's recommended
 **`generate_lead`** plus a **`catering_request`** alias with:
 
 - `value` — estimated dollar value (see logic below)
 - `currency` — `"USD"`
 - `location`, `form_type` (`build-order` / `quick-inquiry`), `event_type`,
   `guest_count`, `event_date`, `value_basis`, `page_path`
+
+### Why the events fire on `/success` (not on submit)
+Firing during the submit handler races the navigation to `/success`: the page
+unloads before the gtag beacon is sent, so the conversion is lost (this is why
+GA4 showed ~0 `catering_request`/`generate_lead` despite real Netlify
+submissions). The submit now only **stashes** the payload to `sessionStorage`;
+`/success` reads it back on load, fires both events (waiting for `gtag` to be
+ready so the hit lands after `config`), and clears the stash. `value` comes from
+`lead_value`/`cart_total` for orders and the per-head estimate for inquiries —
+never hardcoded.
 
 ### How `value` is derived (`computeCateringLeadValue` in `lib/analytics.ts`)
 In priority order:

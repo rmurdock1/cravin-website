@@ -55,14 +55,19 @@ function clean(params: GtagParams): GtagParams {
 export function trackEvent(name: string, params: GtagParams = {}): void {
   if (typeof window === 'undefined') return;
   const payload = clean(params);
-  if (typeof window.gtag === 'function') {
-    window.gtag('event', name, payload);
-  } else {
-    // No GA script present (preview without NEXT_PUBLIC_GA_ID / local dev).
-    // Push so the event is still observable for local verification; a real GA4
-    // tag ignores these GTM-style objects.
-    (window.dataLayer = window.dataLayer || []).push({ event: name, ...payload });
+  const w = window;
+  w.dataLayer = w.dataLayer || [];
+  // If the GA library hasn't defined gtag yet (can happen on /success, where we
+  // fire in useEffect before the afterInteractive GA script runs), install the
+  // standard gtag shim. It queues the hit in the correct arguments format so
+  // GA4 sends it once the library loads — NOT a GTM-style object push, which a
+  // real gtag tag would ignore.
+  if (typeof w.gtag !== 'function') {
+    w.gtag = function gtag() {
+      w.dataLayer!.push(arguments);
+    };
   }
+  w.gtag('event', name, payload);
 }
 
 // ---------------------------------------------------------------------------
@@ -129,17 +134,21 @@ export function computeCateringLeadValue(
   return { value: FALLBACK_CATERING_LEAD_VALUE_USD, basis: 'placeholder' };
 }
 
+// sessionStorage key for the submit -> /success conversion relay.
+const CONVERSION_KEY = 'cateringConversion';
+
+interface PendingEvent {
+  name: string;
+  params: GtagParams;
+}
+
 /**
- * Fire the appropriate GA4 conversion for a successful Netlify form submission.
- * Catering forms emit GA4's recommended `generate_lead` (with value/currency)
- * plus a `catering_request` alias for report clarity; other forms emit a
- * generic `form_submit`. Called from lib/netlify-forms.ts on res.ok.
+ * Build (but do not fire) the GA4 events for a submitted form. Catering forms
+ * produce GA4's recommended `generate_lead` (with value/currency) plus a
+ * `catering_request` alias for report clarity; other forms produce a generic
+ * `form_submit`.
  */
-export function trackFormSubmit(formData: FormData): void {
-  const get = (key: string): string | null => {
-    const v = formData.get(key);
-    return typeof v === 'string' ? v : null;
-  };
+function buildFormEvents(get: (key: string) => string | null): PendingEvent[] {
   const formName = get('form-name') || 'unknown';
   const pagePath = typeof window !== 'undefined' ? window.location.pathname : undefined;
 
@@ -153,14 +162,83 @@ export function trackFormSubmit(formData: FormData): void {
       value_basis: basis,
       form_name: formName,
       form_type: get('form_type') || formName,
+      location: get('location') || undefined,
       event_type: get('event_type') || undefined,
       guest_count: Number.isFinite(guests) ? guests : undefined,
       event_date: get('event_date') || undefined,
       page_path: pagePath,
     };
-    trackEvent('generate_lead', params);
-    trackEvent('catering_request', params);
-  } else {
-    trackEvent('form_submit', { form_name: formName, page_path: pagePath });
+    return [
+      { name: 'generate_lead', params },
+      { name: 'catering_request', params },
+    ];
   }
+  return [{ name: 'form_submit', params: { form_name: formName, page_path: pagePath } }];
+}
+
+/**
+ * Stash the conversion events for a successful form submit into sessionStorage,
+ * to be fired on the /success page. Firing here (right before the navigation to
+ * /success) would race the page unload and lose the gtag beacon — the whole
+ * reason conversions weren't reaching GA4. Called from lib/netlify-forms.ts.
+ */
+export function stashFormConversion(formData: FormData): void {
+  if (typeof window === 'undefined') return;
+  const get = (key: string): string | null => {
+    const v = formData.get(key);
+    return typeof v === 'string' ? v : null;
+  };
+  const events = buildFormEvents(get);
+  if (!events.length) return;
+  try {
+    sessionStorage.setItem(CONVERSION_KEY, JSON.stringify({ events }));
+  } catch {
+    // sessionStorage unavailable (private mode quota etc.) — skip silently.
+  }
+}
+
+// Wait until gtag is defined by the GA library (which also queues config just
+// before), then run cb so the event is sent AFTER config. Falls back to firing
+// anyway after ~4s so a blocked/slow GA still queues the hit via the shim.
+function whenGtagReady(cb: () => void, tries = 40): void {
+  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+    cb();
+    return;
+  }
+  if (tries <= 0) {
+    cb();
+    return;
+  }
+  setTimeout(() => whenGtagReady(cb, tries - 1), 100);
+}
+
+/**
+ * Read any stashed conversion from sessionStorage and fire it on the current
+ * (already-loaded, stable) page. Called on /success mount. Clears the stash
+ * first so a remount can't double-fire.
+ */
+export function flushStashedConversions(): void {
+  if (typeof window === 'undefined') return;
+  let raw: string | null = null;
+  try {
+    raw = sessionStorage.getItem(CONVERSION_KEY);
+  } catch {
+    return;
+  }
+  if (!raw) return;
+  try {
+    sessionStorage.removeItem(CONVERSION_KEY);
+  } catch {
+    /* ignore */
+  }
+  let events: PendingEvent[] | undefined;
+  try {
+    events = JSON.parse(raw).events;
+  } catch {
+    return;
+  }
+  if (!events || !events.length) return;
+  whenGtagReady(() => {
+    for (const e of events) trackEvent(e.name, e.params);
+  });
 }
