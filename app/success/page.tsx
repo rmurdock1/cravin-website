@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { ConversionTracker } from '@/components/analytics/ConversionTracker';
 
 export const metadata: Metadata = {
   title: 'Thank You',
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 export default function SuccessPage() {
   return (
     <main>
+      <ConversionTracker />
       <section className="success-section" id="main-content">
         <div className="container">
           <span className="success-icon" aria-hidden="true">&#10003;</span>
