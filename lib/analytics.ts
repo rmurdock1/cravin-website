@@ -12,26 +12,6 @@
 import { locations } from './site-data';
 
 // ---------------------------------------------------------------------------
-// Catering lead-value constants — REVIEW BEFORE GO-LIVE (see ANALYTICS-CHANGES.md)
-// ---------------------------------------------------------------------------
-
-/**
- * Per-guest dollar estimate used to derive a catering lead `value` when the
- * visitor did NOT build a priced cart (Quick Inquiry) but DID give a guest
- * count. ⚠️ PLACEHOLDER = 25 — RPM MUST set the real blended per-head figure
- * here before trusting GA4 catering revenue. The catering hero advertises
- * $15–25 per person.
- */
-export const CATERING_VALUE_PER_GUEST_USD = 25;
-
-/**
- * Fallback dollar value for a catering lead when there is neither a priced
- * cart nor a guest count. PLACEHOLDER — RPM to confirm a sensible average
- * lead value. Leads using this fall back carry value_basis: 'placeholder'.
- */
-export const FALLBACK_CATERING_LEAD_VALUE_USD = 500;
-
-// ---------------------------------------------------------------------------
 // Core emit
 // ---------------------------------------------------------------------------
 
@@ -117,22 +97,19 @@ export function locationFromHref(href: string): string | undefined {
 // ---------------------------------------------------------------------------
 
 /**
- * Derive the estimated dollar value of a catering lead.
- * Priority: real cart total (Build Your Order) → guest_count × per-head
- * estimate → fixed placeholder. `basis` records which rule fired.
+ * Dollar value of a catering lead, derived ONLY from a real priced cart
+ * (Build Your Order). Quick-Inquiry leads have no cart, so they return null —
+ * they are still counted as conversions but carry no fabricated value. We do
+ * not estimate revenue from a per-head guess.
  */
 export function computeCateringLeadValue(
   get: (key: string) => string | null
-): { value: number; basis: 'cart_total' | 'guest_estimate' | 'placeholder' } {
+): { value: number; basis: 'cart_total' } | null {
   const cart = parseFloat((get('lead_value') || '').replace(/[^0-9.]/g, ''));
   if (!Number.isNaN(cart) && cart > 0) {
     return { value: Math.round(cart * 100) / 100, basis: 'cart_total' };
   }
-  const guests = parseInt((get('guest_count') || '').replace(/[^0-9]/g, ''), 10);
-  if (!Number.isNaN(guests) && guests > 0) {
-    return { value: guests * CATERING_VALUE_PER_GUEST_USD, basis: 'guest_estimate' };
-  }
-  return { value: FALLBACK_CATERING_LEAD_VALUE_USD, basis: 'placeholder' };
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -192,14 +169,14 @@ function buildFormEvents(get: (key: string) => string | null): PendingEvent[] {
   const pagePath = typeof window !== 'undefined' ? window.location.pathname : undefined;
 
   if (formName === 'catering-order' || formName === 'catering-inquiry') {
-    const { value, basis } = computeCateringLeadValue(get);
+    // value/currency only when there's a real cart total; inquiry leads count
+    // as conversions but carry no fabricated dollar value.
+    const lead = computeCateringLeadValue(get);
     const guestsRaw = get('guest_count');
     const guests = guestsRaw ? parseInt(guestsRaw.replace(/[^0-9]/g, ''), 10) : undefined;
     const params: GtagParams = {
       ...getFirstTouchUtms(), // trace the lead to its GBP/QR/campaign source
-      currency: 'USD',
-      value,
-      value_basis: basis,
+      ...(lead ? { currency: 'USD', value: lead.value, value_basis: lead.basis } : {}),
       form_name: formName,
       form_type: get('form_type') || formName,
       location: get('location') || undefined,

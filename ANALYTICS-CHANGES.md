@@ -68,29 +68,16 @@ unloads before the gtag beacon is sent, so the conversion is lost (this is why
 GA4 showed ~0 `catering_request`/`generate_lead` despite real Netlify
 submissions). The submit now only **stashes** the payload to `sessionStorage`;
 `/success` reads it back on load, fires both events (waiting for `gtag` to be
-ready so the hit lands after `config`), and clears the stash. `value` comes from
-`lead_value`/`cart_total` for orders and the per-head estimate for inquiries —
-never hardcoded.
+ready so the hit lands after `config`), and clears the stash.
 
 ### How `value` is derived (`computeCateringLeadValue` in `lib/analytics.ts`)
-In priority order:
-1. **Real cart total** — the "Build Your Order" form is a cart with real
-   line-item prices. Its total (in `lib/hooks useCateringCart`) is written to a
-   new hidden `lead_value` field and used directly. `value_basis: "cart_total"`.
-   *This is a true estimate, not a guess — better than a flat per-head number.*
-2. **Guest estimate** — "Quick Inquiry" has no cart. If `guest_count` is given,
-   `value = guest_count × CATERING_VALUE_PER_GUEST_USD`. `value_basis: "guest_estimate"`.
-3. **Placeholder** — neither present → `FALLBACK_CATERING_LEAD_VALUE_USD`.
-   `value_basis: "placeholder"`.
-
-### ⚠️ Constants to set before trusting revenue (top of `lib/analytics.ts`)
-```ts
-export const CATERING_VALUE_PER_GUEST_USD = 25;      // PLACEHOLDER — RPM to set real per-head
-export const FALLBACK_CATERING_LEAD_VALUE_USD = 500; // PLACEHOLDER — avg lead value
-```
-`CATERING_VALUE_PER_GUEST_USD` only affects Quick-Inquiry leads that include a
-guest count; Build-Your-Order leads already carry the real cart total. **RPM: set
-the real blended per-head figure and a sensible fallback.**
+**Real cart total only.** The "Build Your Order" form is a cart with real
+line-item prices; its total is written to a hidden `lead_value` field and used
+directly (`value_basis: "cart_total"`). "Quick Inquiry" leads have no cart, so
+they carry **no `value`/`currency`** — they are still counted as conversions
+(`generate_lead`/`catering_request`) but contribute no revenue. We deliberately
+do **not** estimate revenue from a per-head guess, so GA4 catering revenue
+reflects only real quoted amounts. No constant to set.
 
 ### Why GA4 shows catering revenue $0 (and the two events)
 If GA4 shows `generate_lead`/`catering_request` firing but **$0 revenue**, the
@@ -172,7 +159,8 @@ confirms the events reach the actual GA4 property:
    - Load `/menu` → `menu_view`.
    - Build a catering order, submit → `generate_lead` + `catering_request` with
      `value` = cart total and `value_basis: "cart_total"`.
-   - Submit a Quick Inquiry with a guest count → `value_basis: "guest_estimate"`.
+   - Submit a Quick Inquiry → `generate_lead` fires with **no** `value` (counted
+     as a conversion, no revenue — inquiries have no cart).
    - Navigate between pages → one `page_view` per route change.
 3. If `gtag` is present, events go to GA4. (When the GA script is absent — e.g. a
    preview without the env var — `trackEvent` falls back to a `dataLayer` push so
@@ -190,10 +178,10 @@ confirms the events reach the actual GA4 property:
 - [ ] `menu_view`
 
 **Catering value:**
-- [ ] Set `CATERING_VALUE_PER_GUEST_USD` and `FALLBACK_CATERING_LEAD_VALUE_USD` in
-      `lib/analytics.ts` to real figures.
-- [ ] In GA4, confirm `generate_lead` value is being summed (Reports →
-      Monetization / or a custom exploration on `value`).
+- Value now comes from the real cart total only (no per-head constant to set).
+  Quick-Inquiry leads count as conversions with no dollar value.
+- [ ] In GA4, confirm `generate_lead` value is being summed for Build-Your-Order
+      leads (Reports → Monetization / a custom exploration on `value`).
 
 > UTM handling (obj 6): GA4 attributes the **session** from the landing
 > `page_view`'s UTMs, so campaign attribution survives the first internal
@@ -255,11 +243,12 @@ correct single-hop 301s. Verified against a local production build:
 removes their redirects. Sitemap/robots/canonicals confirmed clean; no chains.
 
 ## Obj 2 — Catering value
-See §2 above. Constant renamed to `CATERING_VALUE_PER_GUEST_USD` (placeholder
-**25**). `generate_lead` + `catering_request` firing together is an intentional
+See §2 above. Value comes from the **real cart total only** (Build Your Order);
+Quick-Inquiry leads count as conversions with no dollar value (no per-head
+estimate). `generate_lead` + `catering_request` firing together is an intentional
 alias — make **one** the key event. GA4 $0 revenue = production predates the
-value logic; merging fixes it. **Verified locally**: `generate_lead` carries
-`value` + `currency:"USD"` (e.g. 725 cart_total, 1000 guest_estimate).
+value logic; merging fixes it. **Verified locally**: a Build-Your-Order
+`generate_lead` carries `value` + `currency:"USD"` (e.g. 725, `cart_total`).
 
 ## Obj 3 — Directions tracking
 Already resilient — the global delegated listener (`AnalyticsProvider`) fires
