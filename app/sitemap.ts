@@ -35,6 +35,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.8,
     },
+    // Restored per-location landing pages
+    {
+      url: `${baseUrl}/ossining`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/white-plains`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/mount-vernon`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
     {
       url: `${baseUrl}/about`,
       lastModified: now,

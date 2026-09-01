@@ -60,9 +60,9 @@ const nextConfig: NextConfig = {
       { source: '/contact-us', destination: '/contact', statusCode: 301 },
       { source: '/order-online', destination: '/order', statusCode: 301 },
       { source: '/menu-2', destination: '/menu', statusCode: 301 },
-      { source: '/ossining', destination: '/locations#ossining', statusCode: 301 },
-      { source: '/white-plains', destination: '/locations#white-plains', statusCode: 301 },
-      { source: '/mount-vernon', destination: '/locations#mount-vernon', statusCode: 301 },
+      // NOTE: /ossining, /white-plains and /mount-vernon are now REAL pages
+      // again (restored per-location landing pages), so their old redirects to
+      // /locations#<id> were removed — a redirect here would shadow the page.
 
       // Retired cart route (the catering order cart is now inline on /catering).
       // Was returning 404 — Search Console's single "Not found (404)". Send its
