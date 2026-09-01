@@ -437,8 +437,8 @@ export function CateringPageClient() {
                     <input type="email" id="bo-email" name="email" required />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="bo-phone">Phone *</label>
-                    <PhoneInput id="bo-phone" name="phone" required />
+                    <label htmlFor="bo-phone">Phone</label>
+                    <PhoneInput id="bo-phone" name="phone" />
                   </div>
                   <div className="form-group">
                     <label htmlFor="bo-company">Company or Organization</label>
@@ -499,8 +499,8 @@ export function CateringPageClient() {
                     <input type="email" id="qi-email" name="email" required />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="qi-phone">Phone *</label>
-                    <PhoneInput id="qi-phone" name="phone" required />
+                    <label htmlFor="qi-phone">Phone</label>
+                    <PhoneInput id="qi-phone" name="phone" />
                   </div>
                   <div className="form-group">
                     <label htmlFor="qi-company">Company or Organization</label>
