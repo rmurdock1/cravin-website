@@ -18,10 +18,11 @@ import { locations } from './site-data';
 /**
  * Per-guest dollar estimate used to derive a catering lead `value` when the
  * visitor did NOT build a priced cart (Quick Inquiry) but DID give a guest
- * count. PLACEHOLDER — the catering hero advertises $15–25 per person; RPM
- * should set the real blended figure here before relying on GA4 revenue.
+ * count. ⚠️ PLACEHOLDER = 25 — RPM MUST set the real blended per-head figure
+ * here before trusting GA4 catering revenue. The catering hero advertises
+ * $15–25 per person.
  */
-export const PER_GUEST_ESTIMATE_USD = 20;
+export const CATERING_VALUE_PER_GUEST_USD = 25;
 
 /**
  * Fallback dollar value for a catering lead when there is neither a priced
@@ -129,7 +130,7 @@ export function computeCateringLeadValue(
   }
   const guests = parseInt((get('guest_count') || '').replace(/[^0-9]/g, ''), 10);
   if (!Number.isNaN(guests) && guests > 0) {
-    return { value: guests * PER_GUEST_ESTIMATE_USD, basis: 'guest_estimate' };
+    return { value: guests * CATERING_VALUE_PER_GUEST_USD, basis: 'guest_estimate' };
   }
   return { value: FALLBACK_CATERING_LEAD_VALUE_USD, basis: 'placeholder' };
 }

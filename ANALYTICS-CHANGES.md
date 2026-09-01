@@ -79,18 +79,32 @@ In priority order:
    new hidden `lead_value` field and used directly. `value_basis: "cart_total"`.
    *This is a true estimate, not a guess — better than a flat per-head number.*
 2. **Guest estimate** — "Quick Inquiry" has no cart. If `guest_count` is given,
-   `value = guest_count × PER_GUEST_ESTIMATE_USD`. `value_basis: "guest_estimate"`.
+   `value = guest_count × CATERING_VALUE_PER_GUEST_USD`. `value_basis: "guest_estimate"`.
 3. **Placeholder** — neither present → `FALLBACK_CATERING_LEAD_VALUE_USD`.
    `value_basis: "placeholder"`.
 
 ### ⚠️ Constants to set before trusting revenue (top of `lib/analytics.ts`)
 ```ts
-export const PER_GUEST_ESTIMATE_USD = 20;          // PLACEHOLDER — hero says $15–25/pp
+export const CATERING_VALUE_PER_GUEST_USD = 25;      // PLACEHOLDER — RPM to set real per-head
 export const FALLBACK_CATERING_LEAD_VALUE_USD = 500; // PLACEHOLDER — avg lead value
 ```
-`PER_GUEST_ESTIMATE_USD` only affects Quick-Inquiry leads that include a guest
-count; Build-Your-Order leads already carry the real cart total. **RPM: set the
-real blended per-head figure and a sensible fallback.**
+`CATERING_VALUE_PER_GUEST_USD` only affects Quick-Inquiry leads that include a
+guest count; Build-Your-Order leads already carry the real cart total. **RPM: set
+the real blended per-head figure and a sensible fallback.**
+
+### Why GA4 shows catering revenue $0 (and the two events)
+If GA4 shows `generate_lead`/`catering_request` firing but **$0 revenue**, the
+deployed build predates this value logic — production is running code without
+`value`/`currency` on the event. Merging this branch fixes it; confirm in
+DebugView that `generate_lead` arrives with a numeric `value` + `currency:"USD"`.
+
+`catering_request` and `generate_lead` fire **on the same submission by design**
+— `generate_lead` is GA4's recommended lead event (for value/revenue reporting),
+`catering_request` is a domain-named alias for readable funnels. This is an
+intentional alias, **not** double-counting a conversion. **Recommendation: make
+`generate_lead` the single key event** (so value/revenue counts once) and keep
+`catering_request` as a non-key event for segmentation — or vice-versa, but only
+**one** should be a key event to avoid inflating conversion counts.
 
 Netlify only captures form fields declared in `public/__forms.html`, so
 `lead_value` was added there too — required for the field to persist.
@@ -176,7 +190,7 @@ confirms the events reach the actual GA4 property:
 - [ ] `menu_view`
 
 **Catering value:**
-- [ ] Set `PER_GUEST_ESTIMATE_USD` and `FALLBACK_CATERING_LEAD_VALUE_USD` in
+- [ ] Set `CATERING_VALUE_PER_GUEST_USD` and `FALLBACK_CATERING_LEAD_VALUE_USD` in
       `lib/analytics.ts` to real figures.
 - [ ] In GA4, confirm `generate_lead` value is being summed (Reports →
       Monetization / or a custom exploration on `value`).
