@@ -7,6 +7,7 @@ import {
   locationFromHref,
   orderProviderFromHref,
   isDirectionsHref,
+  captureFirstTouchUtms,
 } from '@/lib/analytics';
 
 // One delegated listener for the whole document. Because it inspects the
@@ -69,6 +70,9 @@ function PageViewTracker() {
 
 export function AnalyticsProvider() {
   useEffect(() => {
+    // Stash the landing UTMs once per session (before any internal navigation
+    // can strip them from the URL) so catering leads can carry their source.
+    captureFirstTouchUtms();
     document.addEventListener('click', handleLinkClick);
     document.addEventListener('auxclick', handleLinkClick);
     return () => {

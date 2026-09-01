@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 import { locations } from '@/lib/site-data';
 import { getLocationsJsonLd, getFaqJsonLd } from '@/lib/json-ld';
 import { FaqSection } from '@/components/layout/FaqSection';
@@ -85,9 +84,21 @@ export default function LocationsPage() {
                     ))}
                   </tbody>
                 </table>
+                {/* Per-location conversion CTAs — each fires its GA4 event
+                    (call_click / order_click / directions_click) with the
+                    location resolved automatically from the href. */}
                 <div className="location-detail-actions">
-                  <Link href="/order" className="btn btn-warm">Order Online</Link>
-                  <a href={loc.googleMapsUrl} className="btn btn-outline-green" target="_blank" rel="noopener noreferrer">Get Directions</a>
+                  <a href={`tel:${loc.phone}`} className="btn btn-warm" aria-label={`Call ${loc.shortName} at ${loc.phoneFormatted} to order`}>
+                    Call to Order
+                  </a>
+                  {loc.ordering.ubereats && (
+                    <a href={loc.ordering.ubereats} className="btn btn-outline-warm" target="_blank" rel="noopener noreferrer" aria-label={`Order ${loc.shortName} delivery on Uber Eats (opens in new tab)`}>
+                      Order Delivery
+                    </a>
+                  )}
+                  <a href={loc.googleMapsUrl} className="btn btn-outline-green" target="_blank" rel="noopener noreferrer" aria-label={`Get directions to ${loc.shortName}`}>
+                    Get Directions
+                  </a>
                 </div>
               </div>
               <div className="location-storefront-block">

@@ -63,6 +63,11 @@ const nextConfig: NextConfig = {
       { source: '/ossining', destination: '/locations#ossining', statusCode: 301 },
       { source: '/white-plains', destination: '/locations#white-plains', statusCode: 301 },
       { source: '/mount-vernon', destination: '/locations#mount-vernon', statusCode: 301 },
+
+      // Retired cart route (the catering order cart is now inline on /catering).
+      // Was returning 404 — Search Console's single "Not found (404)". Send its
+      // residual equity to the catering page.
+      { source: '/cart', destination: '/catering', statusCode: 301 },
     ];
   },
 

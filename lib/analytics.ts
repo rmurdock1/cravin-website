@@ -18,10 +18,11 @@ import { locations } from './site-data';
 /**
  * Per-guest dollar estimate used to derive a catering lead `value` when the
  * visitor did NOT build a priced cart (Quick Inquiry) but DID give a guest
- * count. PLACEHOLDER — the catering hero advertises $15–25 per person; RPM
- * should set the real blended figure here before relying on GA4 revenue.
+ * count. ⚠️ PLACEHOLDER = 25 — RPM MUST set the real blended per-head figure
+ * here before trusting GA4 catering revenue. The catering hero advertises
+ * $15–25 per person.
  */
-export const PER_GUEST_ESTIMATE_USD = 20;
+export const CATERING_VALUE_PER_GUEST_USD = 25;
 
 /**
  * Fallback dollar value for a catering lead when there is neither a priced
@@ -129,9 +130,47 @@ export function computeCateringLeadValue(
   }
   const guests = parseInt((get('guest_count') || '').replace(/[^0-9]/g, ''), 10);
   if (!Number.isNaN(guests) && guests > 0) {
-    return { value: guests * PER_GUEST_ESTIMATE_USD, basis: 'guest_estimate' };
+    return { value: guests * CATERING_VALUE_PER_GUEST_USD, basis: 'guest_estimate' };
   }
   return { value: FALLBACK_CATERING_LEAD_VALUE_USD, basis: 'placeholder' };
+}
+
+// ---------------------------------------------------------------------------
+// First-touch UTM capture (obj 6 — make GBP / Maps / QR traffic legible)
+// ---------------------------------------------------------------------------
+// GA4 already attributes the *session* from the landing page_view's UTMs, so
+// campaign attribution is not lost on the first internal <Link> click. We
+// additionally stash the landing UTMs for the session and stamp them onto
+// catering leads, so a lead can be traced to the GBP/QR source that produced it.
+
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+const UTM_STORE_KEY = 'firstTouchUtms';
+
+export function captureFirstTouchUtms(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    if (sessionStorage.getItem(UTM_STORE_KEY)) return; // first touch only
+    const sp = new URLSearchParams(window.location.search);
+    const utms: Record<string, string> = {};
+    for (const k of UTM_KEYS) {
+      const v = sp.get(k);
+      if (v) utms[k] = v;
+    }
+    const gclid = sp.get('gclid');
+    if (gclid) utms.gclid = gclid;
+    if (Object.keys(utms).length) sessionStorage.setItem(UTM_STORE_KEY, JSON.stringify(utms));
+  } catch {
+    /* sessionStorage unavailable — skip */
+  }
+}
+
+export function getFirstTouchUtms(): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+  try {
+    return JSON.parse(sessionStorage.getItem(UTM_STORE_KEY) || '{}');
+  } catch {
+    return {};
+  }
 }
 
 // sessionStorage key for the submit -> /success conversion relay.
@@ -157,6 +196,7 @@ function buildFormEvents(get: (key: string) => string | null): PendingEvent[] {
     const guestsRaw = get('guest_count');
     const guests = guestsRaw ? parseInt(guestsRaw.replace(/[^0-9]/g, ''), 10) : undefined;
     const params: GtagParams = {
+      ...getFirstTouchUtms(), // trace the lead to its GBP/QR/campaign source
       currency: 'USD',
       value,
       value_basis: basis,
