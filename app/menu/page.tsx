@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { MenuTabs } from '@/components/menu/MenuTabs';
+import { MenuViewTracker } from '@/components/analytics/MenuViewTracker';
 import { getMenuJsonLd } from '@/lib/json-ld';
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export default function MenuPage() {
 
   return (
     <main>
+      <MenuViewTracker />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

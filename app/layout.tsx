@@ -7,6 +7,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { HideOnAdmin } from '@/components/layout/HideOnAdmin';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
+import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
 import './globals.css';
 
 const dmSans = DM_Sans({
@@ -89,6 +90,7 @@ export default function RootLayout({
       </head>
       <body>
         <GoogleAnalytics />
+        <AnalyticsProvider />
         <ThemeProvider>
           <SkipLink />
           <HideOnAdmin><StickyOrderButton /></HideOnAdmin>

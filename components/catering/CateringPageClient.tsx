@@ -424,6 +424,8 @@ export function CateringPageClient() {
                   <input type="hidden" name="form-name" value="catering-order" />
                   <textarea name="cart_items" style={{ display: 'none' }} aria-hidden="true" value={serializeForForm()} readOnly />
                   <input type="hidden" name="cart_total" value={formatCurrency(total)} />
+                  {/* Numeric USD value for GA4 generate_lead (cart total, 2dp) */}
+                  <input type="hidden" name="lead_value" value={(total / 100).toFixed(2)} />
                   <input type="hidden" name="form_type" value="build-order" />
 
                   <div className="form-group">
