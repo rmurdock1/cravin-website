@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 import { locations } from '@/lib/site-data';
 import { getLocationsJsonLd, getFaqJsonLd } from '@/lib/json-ld';
+import { mapEmbeds } from '@/lib/location-embeds';
 import { FaqSection } from '@/components/layout/FaqSection';
 import { visitFaqs } from '@/lib/faq-data';
 
@@ -15,12 +17,6 @@ const locationTaglines: Record<string, string> = {
   ossining: 'Our original location, where it all began in 2015.',
   'white-plains': 'Right on Mamaroneck Ave in the heart of downtown.',
   'mount-vernon': 'Our newest location, bringing island flavors to Gramatan Ave.',
-};
-
-const mapEmbeds: Record<string, string> = {
-  ossining: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3003.8091971593276!2d-73.8648283!3d41.1605146!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2c0b81277d073%3A0xc19451f64c242faf!2sCravin%20Jamaican%20Cuisine%20Ossining!5e0!3m2!1sen!2sus!4v1772632494618!5m2!1sen!2sus',
-  'white-plains': 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3009.747221993228!2d-73.7662208!3d41.030785900000005!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2952b950437bf%3A0x97fbd165266b6eae!2sCravin%20Jamaican%20Cuisine%20White%20Plains!5e0!3m2!1sen!2sus!4v1772632581353!5m2!1sen!2sus',
-  'mount-vernon': 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3014.5683547162794!2d-73.8358937!3d40.9252093!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c28d93448f3d43%3A0xa94d190591d8e217!2sCravin%20Jamaican%20Cuisine%20Mount%20Vernon!5e0!3m2!1sen!2sus!4v1772632638799!5m2!1sen!2sus',
 };
 
 export default function LocationsPage() {
@@ -100,6 +96,9 @@ export default function LocationsPage() {
                     Get Directions
                   </a>
                 </div>
+                <p style={{ marginTop: 12 }}>
+                  <Link href={`/${loc.id}`}>More about our {loc.shortName} location &rarr;</Link>
+                </p>
               </div>
               <div className="location-storefront-block">
                 <Image

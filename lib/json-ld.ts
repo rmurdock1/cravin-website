@@ -114,6 +114,19 @@ export function getLocationsJsonLd() {
   }));
 }
 
+// Single Restaurant schema for a standalone per-location page (self-referential
+// URL at /<id>, with a hasMenu link).
+export function getLocationJsonLd(id: string) {
+  const loc = locations.find((l) => l.id === id);
+  if (!loc) return null;
+  return {
+    '@context': 'https://schema.org',
+    ...buildLocationSchema(loc),
+    url: `${brand.domain}/${loc.id}`,
+    hasMenu: `${brand.domain}/menu`,
+  };
+}
+
 // FoodEstablishment for catering page
 export function getCateringJsonLd() {
   return {
