@@ -224,10 +224,6 @@ export function CateringPageClient() {
         <div className="container">
           <h1>Catering</h1>
           <p className="page-hero-subtitle">Authentic Jamaican flavors for your next event. Half pans serve 10–15, full pans serve 40–50. Custom menus for up to 500 guests.</p>
-          <div className="catering-price-anchor">
-            <span className="price-anchor-amount">$15–25</span>
-            <span className="price-anchor-label">per person, depending on menu &middot; 10 guest minimum</span>
-          </div>
           <div className="hero-paths">
             <div className="hero-path-card">
               <div className="path-icon" aria-hidden="true">&#128722;</div>
