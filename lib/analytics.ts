@@ -135,6 +135,44 @@ export function computeCateringLeadValue(
   return { value: FALLBACK_CATERING_LEAD_VALUE_USD, basis: 'placeholder' };
 }
 
+// ---------------------------------------------------------------------------
+// First-touch UTM capture (obj 6 — make GBP / Maps / QR traffic legible)
+// ---------------------------------------------------------------------------
+// GA4 already attributes the *session* from the landing page_view's UTMs, so
+// campaign attribution is not lost on the first internal <Link> click. We
+// additionally stash the landing UTMs for the session and stamp them onto
+// catering leads, so a lead can be traced to the GBP/QR source that produced it.
+
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+const UTM_STORE_KEY = 'firstTouchUtms';
+
+export function captureFirstTouchUtms(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    if (sessionStorage.getItem(UTM_STORE_KEY)) return; // first touch only
+    const sp = new URLSearchParams(window.location.search);
+    const utms: Record<string, string> = {};
+    for (const k of UTM_KEYS) {
+      const v = sp.get(k);
+      if (v) utms[k] = v;
+    }
+    const gclid = sp.get('gclid');
+    if (gclid) utms.gclid = gclid;
+    if (Object.keys(utms).length) sessionStorage.setItem(UTM_STORE_KEY, JSON.stringify(utms));
+  } catch {
+    /* sessionStorage unavailable — skip */
+  }
+}
+
+export function getFirstTouchUtms(): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+  try {
+    return JSON.parse(sessionStorage.getItem(UTM_STORE_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
+
 // sessionStorage key for the submit -> /success conversion relay.
 const CONVERSION_KEY = 'cateringConversion';
 
@@ -158,6 +196,7 @@ function buildFormEvents(get: (key: string) => string | null): PendingEvent[] {
     const guestsRaw = get('guest_count');
     const guests = guestsRaw ? parseInt(guestsRaw.replace(/[^0-9]/g, ''), 10) : undefined;
     const params: GtagParams = {
+      ...getFirstTouchUtms(), // trace the lead to its GBP/QR/campaign source
       currency: 'USD',
       value,
       value_basis: basis,

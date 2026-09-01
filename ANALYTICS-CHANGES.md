@@ -195,6 +195,15 @@ confirms the events reach the actual GA4 property:
 - [ ] In GA4, confirm `generate_lead` value is being summed (Reports →
       Monetization / or a custom exploration on `value`).
 
+> UTM handling (obj 6): GA4 attributes the **session** from the landing
+> `page_view`'s UTMs, so campaign attribution survives the first internal
+> `<Link>` click (it's session-scoped, not per-page). On top of that, the site
+> now captures the landing UTMs once per session (`captureFirstTouchUtms`) and
+> stamps them onto catering lead events, so an individual lead can be traced to
+> the GBP/QR source that produced it. Internal link URLs are intentionally **not**
+> rewritten (keeps the site's clean URLs intact). The remaining step is tagging
+> the GBP/QR entry points below.
+
 **Google Business Profile — paste as the "Website" link on each profile** (makes
 GBP/Maps traffic legible instead of hiding in "Direct"):
 - Ossining: `https://www.cravinjc.com/?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=ossining`
