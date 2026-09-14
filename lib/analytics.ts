@@ -45,6 +45,8 @@ export function trackEvent(name: string, params: GtagParams = {}): void {
   // real gtag tag would ignore.
   if (typeof w.gtag !== 'function') {
     w.gtag = function gtag() {
+      // gtag.js only accepts the Arguments object here; a rest-parameter array is ignored.
+      // eslint-disable-next-line prefer-rest-params
       w.dataLayer!.push(arguments);
     };
   }

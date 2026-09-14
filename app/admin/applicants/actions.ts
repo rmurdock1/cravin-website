@@ -14,6 +14,8 @@ import {
   type ApplicationRow,
 } from '@/lib/applicants-data';
 
+type Supabase = Awaited<ReturnType<typeof requireActiveStaff>>['supabase'];
+
 /** Audit writes go through the service role: `authenticated` has SELECT-only
  *  on audit_log so the trail can't be edited by the app's own session. */
 async function logAudit(
@@ -31,6 +33,36 @@ async function logAudit(
     entity_id: entityId,
     metadata,
   });
+}
+
+/** Copy (not move) an application's resume into a staff member's private
+ *  documents; the application keeps its own copy. Returns whether it worked. */
+async function copyResumeToStaff(
+  supabase: Supabase,
+  uploadedBy: string,
+  staffId: string,
+  resume: { path: string; fileName: string | null; mime: string | null; size: number | null }
+) {
+  const { data: file } = await supabase.storage.from(RESUME_BUCKET).download(resume.path);
+  if (!file) return false;
+
+  const fileName = resume.fileName ?? 'resume';
+  const path = `${staffId}/${randomUUID()}-${fileName.replace(/[^\w.\-]+/g, '_')}`;
+  const { error: uploadError } = await supabase.storage
+    .from(STAFF_BUCKET)
+    .upload(path, file, { contentType: resume.mime ?? undefined, upsert: false });
+  if (uploadError) return false;
+
+  const { error: docError } = await supabase.from('staff_documents').insert({
+    staff_id: staffId,
+    storage_path: path,
+    file_name: fileName,
+    doc_type: 'resume',
+    mime_type: resume.mime,
+    size_bytes: resume.size,
+    uploaded_by: uploadedBy,
+  });
+  return !docError;
 }
 
 type NotesState = { ok: boolean; message: string } | null;
@@ -101,7 +133,8 @@ export async function createResumeUpload(applicationId: string, fileName: string
 }
 
 /** Step 2: point the application at the uploaded file, deleting any resume it
- *  replaces so old files aren't stranded in the bucket. */
+ *  replaces so old files aren't stranded in the bucket. If the applicant was
+ *  already hired, the new resume is also copied to their staff documents. */
 export async function recordResume(
   applicationId: string,
   input: { path: string; fileName: string; size: number }
@@ -115,16 +148,17 @@ export async function recordResume(
 
   const { data: app } = await supabase
     .from('job_applications')
-    .select('resume_path')
+    .select('resume_path, staff_id')
     .eq('id', applicationId)
     .single();
   if (!app) return { ok: false, message: 'Application not found.' };
 
+  const fileName = input.fileName.slice(0, 255);
   const { error } = await supabase
     .from('job_applications')
     .update({
       resume_path: input.path,
-      resume_file_name: input.fileName.slice(0, 255),
+      resume_file_name: fileName,
       resume_mime_type: mime,
       resume_size_bytes: input.size,
     })
@@ -137,11 +171,29 @@ export async function recordResume(
   if (app.resume_path && app.resume_path !== input.path) {
     await supabase.storage.from(RESUME_BUCKET).remove([app.resume_path]);
   }
+
+  // Their staff profile keeps any earlier resume copy; this adds the new one.
+  const copiedToStaff = app.staff_id
+    ? await copyResumeToStaff(supabase, user.id, app.staff_id, {
+        path: input.path,
+        fileName,
+        mime,
+        size: input.size,
+      })
+    : false;
+
   await logAudit(user, app.resume_path ? 'replace_resume' : 'upload_resume', applicationId, {
     file_name: input.fileName,
+    copied_to_staff: copiedToStaff,
   });
   revalidatePath(`/admin/applicants/${applicationId}`);
-  return { ok: true, message: app.resume_path ? 'Resume replaced.' : 'Resume uploaded.' };
+  if (app.staff_id) revalidatePath(`/admin/staff/${app.staff_id}`);
+
+  const base = app.resume_path ? 'Resume replaced.' : 'Resume uploaded.';
+  if (!app.staff_id) return { ok: true, message: base };
+  return copiedToStaff
+    ? { ok: true, message: `${base} Also added to their staff documents.` }
+    : { ok: true, message: `${base} It couldn't be copied to their staff documents, so upload it there too.` };
 }
 
 export async function deleteApplicant(id: string) {
@@ -193,31 +245,15 @@ export async function hireApplicant(id: string): Promise<{ ok: false; message: s
     .single();
   if (error || !staff) return { ok: false, message: error?.message ?? 'Could not create the staff profile.' };
 
-  // Copy (not move) the resume: the application keeps its own copy. A failed
-  // copy doesn't block the hire — the resume is still on the application.
-  let resumeCopied = false;
-  if (app.resume_path) {
-    const { data: file } = await supabase.storage.from(RESUME_BUCKET).download(app.resume_path);
-    if (file) {
-      const fileName = app.resume_file_name ?? 'resume';
-      const path = `${staff.id}/${randomUUID()}-${fileName.replace(/[^\w.\-]+/g, '_')}`;
-      const { error: uploadError } = await supabase.storage
-        .from(STAFF_BUCKET)
-        .upload(path, file, { contentType: app.resume_mime_type ?? undefined, upsert: false });
-      if (!uploadError) {
-        const { error: docError } = await supabase.from('staff_documents').insert({
-          staff_id: staff.id,
-          storage_path: path,
-          file_name: fileName,
-          doc_type: 'resume',
-          mime_type: app.resume_mime_type,
-          size_bytes: app.resume_size_bytes,
-          uploaded_by: user.id,
-        });
-        resumeCopied = !docError;
-      }
-    }
-  }
+  // A failed copy doesn't block the hire — the resume is still on the application.
+  const resumeCopied = app.resume_path
+    ? await copyResumeToStaff(supabase, user.id, staff.id, {
+        path: app.resume_path,
+        fileName: app.resume_file_name,
+        mime: app.resume_mime_type,
+        size: app.resume_size_bytes,
+      })
+    : false;
 
   await supabase.from('job_applications').update({ staff_id: staff.id }).eq('id', id);
   await logAudit(user, 'hire_applicant', id, { staff_id: staff.id, resume_copied: resumeCopied });

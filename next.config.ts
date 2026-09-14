@@ -5,9 +5,15 @@ import type { NextConfig } from 'next';
 //   • Google Maps embeds (location page iframes)
 //   • TikTok embed (About page)
 // Everything else (ezCater, UberEats, press links) is plain <a> navigation, not a subresource.
+//
+// `next dev` needs eval for hot reloading and serves plain http://localhost, so
+// development adds 'unsafe-eval' and skips upgrade-insecure-requests. Production
+// builds never get either relaxation.
+const isDev = process.env.NODE_ENV === 'development';
+
 const ContentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://www.tiktok.com https://*.tiktokcdn.com https://*.tiktokcdn-us.com",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://www.google-analytics.com https://www.tiktok.com https://*.tiktokcdn.com https://*.tiktokcdn-us.com`,
   "style-src 'self' 'unsafe-inline' https://*.tiktokcdn.com https://*.tiktokcdn-us.com",
   "img-src 'self' data: https:",
   "font-src 'self' data:",
@@ -17,7 +23,7 @@ const ContentSecurityPolicy = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  'upgrade-insecure-requests',
+  ...(isDev ? [] : ['upgrade-insecure-requests']),
 ].join('; ');
 
 const securityHeaders = [

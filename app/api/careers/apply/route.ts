@@ -41,13 +41,33 @@ export async function POST(request: Request) {
   };
 
   const fullName = text('name', 200);
-  const email = text('email', 254);
+  const email = text('email', 254)?.toLowerCase() ?? null;
   if (!fullName || !email || !EMAIL_RE.test(email)) {
     return fail(400, 'Name and a valid email are required.');
   }
 
   const id = randomUUID();
   const admin = createAdminClient();
+
+  // Throttle floods before storing anything, without keeping IP addresses: at
+  // most 3 applications per email per hour, and a site-wide ceiling per 10
+  // minutes. The form's Netlify copy still goes through, so a real applicant
+  // who trips this isn't lost.
+  const since = (ms: number) => new Date(Date.now() - ms).toISOString();
+  const [perEmail, siteWide] = await Promise.all([
+    admin
+      .from('job_applications')
+      .select('id', { count: 'exact', head: true })
+      .eq('email', email)
+      .gte('created_at', since(60 * 60 * 1000)),
+    admin
+      .from('job_applications')
+      .select('id', { count: 'exact', head: true })
+      .gte('created_at', since(10 * 60 * 1000)),
+  ]);
+  if ((perEmail.count ?? 0) >= 3 || (siteWide.count ?? 0) >= 30) {
+    return fail(429, 'Too many applications right now. Please try again later.');
+  }
 
   let resume = {};
   let resumePath: string | null = null;
