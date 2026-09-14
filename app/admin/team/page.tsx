@@ -14,7 +14,7 @@ interface ProfileRow {
 }
 
 export default async function TeamPage() {
-  const { supabase, user } = await requireOwner();
+  const { supabase, user, profile } = await requireOwner();
   const { data: profiles } = await supabase
     .from('profiles')
     .select('id, email, full_name, role, is_active, created_at')
@@ -29,7 +29,10 @@ export default async function TeamPage() {
       <p className="admin-hint">
         Invite people and control who can reach the admin. <strong>Admins</strong> share your full
         view (including team access); <strong>HR Managers</strong> manage postings and staff but not
-        team access. Newly invited people sign in at <code>/admin/login</code>.
+        team access. People sign in at <code>/admin/login</code> with <strong>Continue with Google</strong>,
+        so invite the email address of their Google account (Gmail or Google Workspace). After
+        inviting, send them the welcome message. It explains how to sign in and links to the
+        Getting Started guide.
       </p>
 
       <InviteForm />
@@ -38,7 +41,7 @@ export default async function TeamPage() {
         <h2>People</h2>
         <div className="admin-list">
           {people.map((p) => (
-            <UserRow key={p.id} person={p} selfId={user.id} />
+            <UserRow key={p.id} person={p} selfId={user.id} senderName={profile.full_name ?? null} />
           ))}
         </div>
       </section>

@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react';
 import { inviteUser, type InviteState } from './actions';
+import { WelcomeMessage } from './WelcomeMessage';
 
 export function InviteForm() {
   const [state, formAction, pending] = useActionState<InviteState, FormData>(inviteUser, null);
@@ -10,8 +11,8 @@ export function InviteForm() {
     <form action={formAction} className="admin-invite">
       <div className="admin-invite-fields">
         <label>
-          Email *
-          <input type="email" name="email" required placeholder="person@email.com" />
+          Google account email *
+          <input type="email" name="email" required placeholder="person@gmail.com" />
         </label>
         <label>
           Full name
@@ -31,6 +32,7 @@ export function InviteForm() {
       {state && (
         <p className={state.ok ? 'admin-template-msg' : 'admin-error'}>{state.message}</p>
       )}
+      {state?.invited && <WelcomeMessage {...state.invited} />}
     </form>
   );
 }
