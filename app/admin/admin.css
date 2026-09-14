@@ -437,3 +437,5 @@
 .admin-applicant-block .admin-list-row { background: var(--surface); }
 .admin-applicant-experience { white-space: pre-wrap; line-height: 1.7; overflow-wrap: anywhere; }
 .admin-notes-form { margin-top: 14px; }
+.admin-resume-upload { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 14px; }
+.admin-applicant-block .admin-error { flex-basis: 100%; }

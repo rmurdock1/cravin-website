@@ -9,6 +9,7 @@ import {
   HireButton,
   NotesForm,
   ResumeButton,
+  ResumeUpload,
 } from '@/app/admin/applicants/ApplicantControls';
 
 export const dynamic = 'force-dynamic';
@@ -108,10 +109,16 @@ export default async function ApplicantDetailPage({ params }: { params: Promise<
             </div>
             <div className="admin-list-actions">
               <ResumeButton id={id} />
+              <ResumeUpload id={id} replacing />
             </div>
           </div>
         ) : (
-          <p className="admin-hint">No resume attached.</p>
+          <>
+            <p className="admin-hint">No resume attached. If the applicant sends one later, upload it here.</p>
+            <div className="admin-resume-upload">
+              <ResumeUpload id={id} />
+            </div>
+          </>
         )}
       </section>
 
