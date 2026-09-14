@@ -77,6 +77,10 @@ export default async function AdminHome() {
             <p>Invite people, and activate, revoke, or change their access at any time.</p>
           </Link>
         )}
+        <Link href="/admin/guide" className="admin-card admin-card-link">
+          <h2>Getting Started →</h2>
+          <p>A step-by-step guide to postings, applicants, staff profiles and scanning documents.</p>
+        </Link>
       </div>
     </main>
   );

@@ -4,13 +4,11 @@ import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 export function LoginForm({ initialError }: { initialError?: string }) {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'google' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'google' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Primary path: one-click Google sign-in (staff already have Workspace/Gmail
-  // accounts). Supabase links the Google identity to the invited account with the
-  // same verified email, so the assigned role carries over.
+  // Google is the only way in. Supabase links the Google identity to the invited
+  // account with the same verified email, so the assigned role carries over.
   async function handleGoogle() {
     setStatus('google');
     setErrorMsg('');
@@ -26,39 +24,12 @@ export function LoginForm({ initialError }: { initialError?: string }) {
     // On success the browser navigates to Google; nothing else to do here.
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus('sending');
-    setErrorMsg('');
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-    });
-    if (error) {
-      setStatus('error');
-      setErrorMsg(error.message);
-    } else {
-      setStatus('sent');
-    }
-  }
-
-  if (status === 'sent') {
-    return (
-      <div className="admin-login-card">
-        <h1>Check your email</h1>
-        <p>
-          We sent a secure sign-in link to <strong>{email}</strong>. Click it to
-          access the admin — no password needed. The link expires shortly.
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="admin-login-card">
       <h1>Cravin Admin</h1>
-      <p>Sign in to manage job postings and staff.</p>
+      <p>
+        Sign in with the Google account for the email address you were invited with.
+      </p>
 
       {initialError && status === 'idle' && <p className="admin-error">{initialError}</p>}
 
@@ -72,26 +43,9 @@ export function LoginForm({ initialError }: { initialError?: string }) {
         {status === 'google' ? 'Redirecting…' : 'Continue with Google'}
       </button>
 
-      <div className="admin-login-divider"><span>or use an email link</span></div>
-
-      <form onSubmit={handleSubmit} className="admin-login-form">
-        <label htmlFor="admin-email">Email</label>
-        <input
-          id="admin-email"
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@cravinjc.com"
-          autoComplete="email"
-        />
-        <button type="submit" className="btn btn-warm" disabled={status === 'sending'}>
-          {status === 'sending' ? 'Sending…' : 'Send sign-in link'}
-        </button>
-        {status === 'error' && (
-          <p className="admin-error">{errorMsg || 'Something went wrong — please try again.'}</p>
-        )}
-      </form>
+      {status === 'error' && (
+        <p className="admin-error">{errorMsg || 'Something went wrong — please try again.'}</p>
+      )}
     </div>
   );
 }

@@ -19,10 +19,15 @@ async function logAudit(admin: any, actor: { id: string; email?: string }, actio
   });
 }
 
-export type InviteState = { ok: boolean; message: string } | null;
+export type InviteState = {
+  ok: boolean;
+  message: string;
+  /** Set on success so the form can show the welcome message to send. */
+  invited?: { email: string; fullName: string | null; role: Role; senderName: string | null };
+} | null;
 
 export async function inviteUser(_prev: InviteState, formData: FormData): Promise<InviteState> {
-  const { user: actor } = await requireOwner();
+  const { user: actor, profile: actorProfile } = await requireOwner();
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
   const role = asRole(formData.get('role'));
   const full_name = String(formData.get('full_name') ?? '').trim() || null;
@@ -60,7 +65,8 @@ export async function inviteUser(_prev: InviteState, formData: FormData): Promis
 
   return {
     ok: true,
-    message: `${email} can now sign in at /admin/login as ${role === 'owner' ? 'Admin' : 'HR Manager'}.`,
+    message: `${email} is set up as ${role === 'owner' ? 'Admin' : 'HR Manager'}. Invites don't send an email, so send them the welcome message below.`,
+    invited: { email, fullName: full_name, role, senderName: actorProfile.full_name ?? null },
   };
 }
 
