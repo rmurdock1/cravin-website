@@ -16,6 +16,8 @@ export default function Error({
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button onClick={reset} className="btn btn-warm">Try Again</button>
+            {/* A full page load on purpose: after an error, client-side state may be broken. */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a href="/" className="btn btn-outline-green">Back to Home</a>
           </div>
         </div>

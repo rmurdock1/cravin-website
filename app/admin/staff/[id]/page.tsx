@@ -74,6 +74,7 @@ export default async function StaffDetailPage({ params }: { params: Promise<{ id
         <Detail label="Address" value={person.address} />
         <Detail label="Emergency Contact" value={person.emergency_contact_name} />
         <Detail label="Emergency Phone" value={person.emergency_contact_phone} />
+        <Detail label="Emergency Relationship" value={person.emergency_contact_relationship} />
         <Detail label="Notes" value={person.notes} />
       </section>
 

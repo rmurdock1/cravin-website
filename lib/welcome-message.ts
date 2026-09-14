@@ -31,7 +31,7 @@ export function welcomeMessage({ email, fullName, role, senderName }: WelcomeInp
     'QUICK OVERVIEW',
     '- Job Postings: create openings for each location. Save a draft, then Publish to put it on the careers page. Save roles you post often as templates.',
     '- Applicants: everyone who applies on the careers page. Read resumes, keep notes, upload a resume someone sends later, and use Hire → Staff to turn an applicant into a staff profile.',
-    '- Staff: team profiles and private documents. Click Add Staff, upload a document such as an offer letter or onboarding form, then press Scan ✨ to fill in the name, job title, phone, address and emergency contact for you. Check the details and click Save Profile.',
+    '- Staff: team profiles and private documents. Click Add Staff, upload a document such as an offer letter or onboarding form, then press Scan ✨ to fill in their contact details, job title, start date, store and emergency contact for you. Check the details and click Save Profile.',
     ...(isAdmin ? ['- Team Access (Admins only): invite people and change or remove their access.'] : []),
     '',
     'Documents are stored privately, and every time one is opened it\'s logged. Scanning never pulls out Social Security numbers or dates of birth.',

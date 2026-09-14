@@ -14,9 +14,35 @@ export interface StaffRow {
   address: string | null;
   emergency_contact_name: string | null;
   emergency_contact_phone: string | null;
+  emergency_contact_relationship: string | null;
   hired_on: string | null;
   notes: string | null;
 }
+
+/** Profile details Scan ✨ can pull from an uploaded document: the same fields
+ *  the staff form captures. Deliberately an allow-list, with no SSN, date of
+ *  birth, license or bank field. Lives here (not in lib/parse-document) so
+ *  client components can use it without bundling the Anthropic SDK. */
+export interface ParsedFields {
+  full_name: string | null;
+  job_title: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  /** Start / hire date, YYYY-MM-DD. */
+  hired_on: string | null;
+  /** One of EMPLOYMENT_TYPES' values. */
+  employment_type: string | null;
+  /** LOCATIONS values; empty when the document doesn't name a store. */
+  locations: string[];
+  emergency_contact_name: string | null;
+  emergency_contact_phone: string | null;
+  emergency_contact_relationship: string | null;
+}
+
+/** True when a scan found something for this field. */
+export const hasParsedValue = (v: ParsedFields[keyof ParsedFields] | undefined) =>
+  Array.isArray(v) ? v.length > 0 : Boolean(v);
 
 export interface StaffDocumentRow {
   id: string;

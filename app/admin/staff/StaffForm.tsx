@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { PhoneInput } from '@/components/forms/PhoneInput';
 import { saveStaff } from './actions';
 import { DocumentManager } from './DocumentManager';
-import type { ParsedFields } from '@/lib/parse-document';
 import {
   LOCATIONS,
   EMPLOYMENT_TYPES,
   STAFF_STATUSES,
+  type ParsedFields,
   type StaffRow,
   type StaffDocumentRow,
 } from '@/lib/staff-data';
@@ -36,6 +36,7 @@ export function StaffForm({
     address: staff.address ?? '',
     emergency_contact_name: staff.emergency_contact_name ?? '',
     emergency_contact_phone: staff.emergency_contact_phone ?? '',
+    emergency_contact_relationship: staff.emergency_contact_relationship ?? '',
     notes: staff.notes ?? '',
   });
   const [locs, setLocs] = useState<Set<string>>(new Set(staff.locations ?? []));
@@ -44,20 +45,24 @@ export function StaffForm({
   function toggleLoc(v: string) {
     setLocs((prev) => {
       const next = new Set(prev);
-      next.has(v) ? next.delete(v) : next.add(v);
+      if (next.has(v)) next.delete(v);
+      else next.add(v);
       return next;
     });
   }
 
   // A scan fills only the fields it found; existing values in other fields stay.
+  // Scanned locations are added to any already ticked, never untick one.
   function applyScan(fields: Partial<ParsedFields>) {
+    const { locations, ...rest } = fields;
     setForm((p) => {
       const next = { ...p };
-      for (const [k, val] of Object.entries(fields)) {
-        if (typeof val === 'string' && val.trim()) next[k as keyof typeof form] = val.trim();
+      for (const [k, val] of Object.entries(rest)) {
+        if (k in next && typeof val === 'string' && val.trim()) next[k as keyof typeof form] = val.trim();
       }
       return next;
     });
+    if (locations?.length) setLocs((prev) => new Set([...prev, ...locations]));
   }
 
   return (
@@ -146,6 +151,12 @@ export function StaffForm({
             <label htmlFor="emergency_contact_phone">Emergency Phone</label>
             <PhoneInput id="emergency_contact_phone" name="emergency_contact_phone"
               value={form.emergency_contact_phone} onChange={(v) => set('emergency_contact_phone', v)} />
+          </div>
+          <div className="admin-field">
+            <label htmlFor="emergency_contact_relationship">Emergency Contact Relationship</label>
+            <input id="emergency_contact_relationship" name="emergency_contact_relationship"
+              value={form.emergency_contact_relationship} placeholder="e.g. Spouse, Parent"
+              onChange={(e) => set('emergency_contact_relationship', e.target.value)} />
           </div>
           <div className="admin-field full">
             <label htmlFor="notes">Notes</label>
