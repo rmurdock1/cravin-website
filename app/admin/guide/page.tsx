@@ -118,8 +118,9 @@ export default async function GuidePage() {
           </li>
           <li>
             Click <strong>Scan ✨</strong> next to the document. It reads the <strong>name, job title,
-            phone, address and emergency contact</strong>. Scanning works on PDFs and photos (JPG, PNG,
-            GIF, WebP), not Word files.
+            email, phone, address, start date, employment type, store and emergency contact (name,
+            phone and relationship)</strong>, whichever the document includes. Scanning works on PDFs
+            and photos (JPG, PNG, GIF, WebP), not Word files.
           </li>
           <li>
             Check what it found. Untick anything that&apos;s wrong, then click <strong>Apply</strong> to fill

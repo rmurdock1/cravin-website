@@ -4,9 +4,15 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { requireActiveStaff } from '@/lib/admin-auth';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { BUCKET } from '@/lib/staff-data';
+import {
+  BUCKET,
+  EMPLOYMENT_TYPES,
+  LOCATIONS,
+  hasParsedValue,
+  type ParsedFields,
+} from '@/lib/staff-data';
 import { canonicalJobTitle } from '@/lib/staff-titles';
-import { parseDocumentBytes, isParseable, type ParsedFields } from '@/lib/parse-document';
+import { parseDocumentBytes, isParseable } from '@/lib/parse-document';
 
 /** Audit writes go through the service role: `authenticated` has SELECT-only
  *  on audit_log so the trail can't be edited by the app's own session. */
@@ -70,6 +76,7 @@ export async function saveStaff(formData: FormData) {
     address: text(formData, 'address'),
     emergency_contact_name: text(formData, 'emergency_contact_name'),
     emergency_contact_phone: text(formData, 'emergency_contact_phone'),
+    emergency_contact_relationship: text(formData, 'emergency_contact_relationship'),
     hired_on: text(formData, 'hired_on'),
     notes: text(formData, 'notes'),
   };
@@ -203,7 +210,7 @@ export async function parseStaffDocument(documentId: string): Promise<ParseResul
     // Log only which fields were found — never the extracted values themselves.
     await logAudit(user, 'parse_document', doc.staff_id, {
       file_name: doc.file_name,
-      fields_found: Object.entries(fields).filter(([, v]) => v).map(([k]) => k),
+      fields_found: Object.entries(fields).filter(([, v]) => hasParsedValue(v)).map(([k]) => k),
     });
     return { ok: true, fields };
   } catch (e) {
@@ -211,16 +218,43 @@ export async function parseStaffDocument(documentId: string): Promise<ParseResul
   }
 }
 
+const SCANNED_TEXT_FIELDS = [
+  'full_name',
+  'job_title',
+  'email',
+  'phone',
+  'address',
+  'emergency_contact_name',
+  'emergency_contact_phone',
+  'emergency_contact_relationship',
+] as const;
+
 /** Apply reviewed fields to the profile. Only the keys the user kept are sent;
- *  each overwrites the current value. Runs after a human has looked at the draft. */
+ *  each overwrites the current value (locations are added to the existing
+ *  stores). Runs after a human has looked at the draft. The payload comes from
+ *  the browser, so only known columns with valid values are written. */
 export async function applyParsedFields(staffId: string, fields: Partial<ParsedFields>) {
   const { supabase, user } = await requireActiveStaff();
 
-  const update: Record<string, string> = {};
-  for (const [k, v] of Object.entries(fields)) {
-    if (typeof v === 'string' && v.trim()) update[k] = v.trim();
+  const update: Record<string, string | string[]> = {};
+  for (const key of SCANNED_TEXT_FIELDS) {
+    const v = fields[key];
+    if (typeof v === 'string' && v.trim()) update[key] = v.trim();
   }
-  if (update.job_title) {
+  if (typeof fields.hired_on === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(fields.hired_on)) {
+    update.hired_on = fields.hired_on;
+  }
+  if (EMPLOYMENT_TYPES.some((t) => t.value === fields.employment_type)) {
+    update.employment_type = fields.employment_type as string;
+  }
+  if (Array.isArray(fields.locations)) {
+    const scanned = fields.locations.filter((l) => LOCATIONS.some((x) => x.value === l));
+    if (scanned.length) {
+      const { data: current } = await supabase.from('staff').select('locations').eq('id', staffId).single();
+      update.locations = [...new Set([...((current?.locations as string[] | null) ?? []), ...scanned])];
+    }
+  }
+  if (typeof update.job_title === 'string') {
     update.job_title = (await canonicalJobTitle(supabase, update.job_title)) ?? update.job_title;
   }
   if (Object.keys(update).length === 0) return;

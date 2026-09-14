@@ -10,25 +10,40 @@ import {
   parseStaffDocument,
   applyParsedFields,
 } from './actions';
-import type { ParsedFields } from '@/lib/parse-document';
 import {
   BUCKET,
   DOC_TYPES,
+  EMPLOYMENT_TYPES,
   ACCEPTED_MIME,
   MAX_UPLOAD_BYTES,
   formatBytes,
+  hasParsedValue,
   labelFor,
+  locationsLabel,
+  type ParsedFields,
   type StaffDocumentRow,
 } from '@/lib/staff-data';
 
+// Review order matches the staff form.
 const FIELD_LABELS: Record<keyof ParsedFields, string> = {
   full_name: 'Full Name',
   job_title: 'Job Title',
+  locations: 'Locations',
+  employment_type: 'Employment Type',
+  hired_on: 'Start Date',
+  email: 'Email',
   phone: 'Phone',
   address: 'Address',
   emergency_contact_name: 'Emergency Contact',
   emergency_contact_phone: 'Emergency Phone',
+  emergency_contact_relationship: 'Relationship',
 };
+
+function displayValue(key: keyof ParsedFields, fields: ParsedFields) {
+  if (key === 'locations') return locationsLabel(fields.locations);
+  if (key === 'employment_type') return labelFor(EMPLOYMENT_TYPES, fields.employment_type);
+  return fields[key] as string;
+}
 
 export function DocumentManager({
   staffId,
@@ -45,7 +60,7 @@ export function DocumentManager({
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [pending, startTransition] = useTransition();
   const [scanningId, setScanningId] = useState<string | null>(null);
-  const [review, setReview] = useState<{ docId: string; fields: ParsedFields; include: Set<string> } | null>(null);
+  const [review, setReview] = useState<{ docId: string; fields: ParsedFields; include: Set<keyof ParsedFields> } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const typeRef = useRef<HTMLSelectElement>(null);
   const router = useRouter();
@@ -60,9 +75,11 @@ export function DocumentManager({
         setMsg({ ok: false, text: res.message });
         return;
       }
-      const present = Object.entries(res.fields).filter(([, v]) => v).map(([k]) => k);
+      const present = (Object.keys(FIELD_LABELS) as (keyof ParsedFields)[]).filter((k) =>
+        hasParsedValue(res.fields[k])
+      );
       if (present.length === 0) {
-        setMsg({ ok: false, text: 'No contact basics were found in that document.' });
+        setMsg({ ok: false, text: 'No profile details were found in that document.' });
         return;
       }
       setReview({ docId: id, fields: res.fields, include: new Set(present) });
@@ -71,11 +88,12 @@ export function DocumentManager({
     }
   }
 
-  function toggleField(key: string) {
+  function toggleField(key: keyof ParsedFields) {
     setReview((r) => {
       if (!r) return r;
       const include = new Set(r.include);
-      include.has(key) ? include.delete(key) : include.add(key);
+      if (include.has(key)) include.delete(key);
+      else include.add(key);
       return { ...r, include };
     });
   }
@@ -84,7 +102,7 @@ export function DocumentManager({
     if (!review) return;
     const selected: Partial<ParsedFields> = {};
     for (const key of review.include) {
-      selected[key as keyof ParsedFields] = review.fields[key as keyof ParsedFields];
+      (selected as Record<string, unknown>)[key] = review.fields[key];
     }
     if (onApply) {
       onApply(selected);
@@ -205,7 +223,7 @@ export function DocumentManager({
                       className="admin-mini"
                       disabled={scanningId === d.id}
                       onClick={() => handleScan(d.id)}
-                      title="Extract name, title, phone, address and emergency contact"
+                      title="Extract name, title, contact details, start date, employment type, locations and emergency contact"
                     >
                       {scanningId === d.id ? 'Scanning…' : 'Scan ✨'}
                     </button>
@@ -234,11 +252,11 @@ export function DocumentManager({
                   <p className="admin-hint">
                     Check what you want to apply
                     {onApply ? ' to the form' : ' — it overwrites the matching profile fields'}.
-                    Nothing is saved until you {onApply ? 'Save the profile' : 'click Apply'}. (SSNs
-                    and dates of birth are never extracted.)
+                    Nothing is saved until you {onApply ? 'Save the profile' : 'click Apply'}. (SSNs,
+                    dates of birth, license and bank numbers are never extracted.)
                   </p>
                   {(Object.keys(FIELD_LABELS) as (keyof ParsedFields)[])
-                    .filter((k) => review.fields[k])
+                    .filter((k) => hasParsedValue(review.fields[k]))
                     .map((k) => (
                       <label key={k} className="admin-scan-field">
                         <input
@@ -247,7 +265,7 @@ export function DocumentManager({
                           onChange={() => toggleField(k)}
                         />
                         <span className="admin-scan-label">{FIELD_LABELS[k]}</span>
-                        <span className="admin-scan-value">{review.fields[k]}</span>
+                        <span className="admin-scan-value">{displayValue(k, review.fields)}</span>
                       </label>
                     ))}
                   <div className="admin-form-actions">
