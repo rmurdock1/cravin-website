@@ -1,7 +1,18 @@
 'use client';
 
-import { useActionState, useState, useTransition } from 'react';
-import { deleteApplicant, getResumeUrl, hireApplicant, saveApplicantNotes } from './actions';
+import { useActionState, useRef, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+import { formatBytes } from '@/lib/staff-data';
+import { MAX_RESUME_BYTES, RESUME_BUCKET, resumeMimeFor } from '@/lib/applicants-data';
+import {
+  createResumeUpload,
+  deleteApplicant,
+  getResumeUrl,
+  hireApplicant,
+  recordResume,
+  saveApplicantNotes,
+} from './actions';
 
 export function HireButton({ id, name }: { id: string; name: string }) {
   const [pending, startTransition] = useTransition();
@@ -64,6 +75,75 @@ export function ResumeButton({ id }: { id: string }) {
         {busy ? 'Opening…' : 'View'}
       </button>
       {error && <p className="admin-error">{error}</p>}
+    </>
+  );
+}
+
+/** Attach a resume the applicant sent later, or replace the current one. The
+ *  file goes straight to private storage through a one-time signed upload URL
+ *  that the server only issues to active staff. */
+export function ResumeUpload({ id, replacing = false }: { id: string; replacing?: boolean }) {
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+
+  async function handleFile(file: File) {
+    if (!resumeMimeFor(file.name)) {
+      setMsg({ ok: false, text: 'Resume must be a PDF, DOC, or DOCX file.' });
+      return;
+    }
+    if (file.size > MAX_RESUME_BYTES) {
+      setMsg({ ok: false, text: `That file is ${formatBytes(file.size)}. Maximum is 5 MB.` });
+      return;
+    }
+    if (replacing && !confirm(`Replace the current resume with "${file.name}"? The old file will be deleted.`)) return;
+
+    setBusy(true);
+    setMsg(null);
+    try {
+      const start = await createResumeUpload(id, file.name, file.size);
+      if (!start.ok) {
+        setMsg({ ok: false, text: start.message });
+        return;
+      }
+      const { error } = await createClient()
+        .storage.from(RESUME_BUCKET)
+        .uploadToSignedUrl(start.path, start.token, file, { contentType: start.mime });
+      if (error) {
+        setMsg({ ok: false, text: error.message });
+        return;
+      }
+      const res = await recordResume(id, { path: start.path, fileName: file.name, size: file.size });
+      setMsg({ ok: res.ok, text: res.message });
+      if (res.ok) router.refresh();
+    } finally {
+      setBusy(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
+
+  return (
+    <>
+      <input
+        ref={fileRef}
+        type="file"
+        accept=".pdf,.doc,.docx"
+        hidden
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) void handleFile(file);
+        }}
+      />
+      <button
+        type="button"
+        className={replacing ? 'admin-mini' : 'btn btn-outline'}
+        disabled={busy}
+        onClick={() => fileRef.current?.click()}
+      >
+        {busy ? 'Uploading…' : replacing ? 'Replace' : 'Upload resume'}
+      </button>
+      {msg && <p className={msg.ok ? 'admin-template-msg' : 'admin-error'}>{msg.text}</p>}
     </>
   );
 }

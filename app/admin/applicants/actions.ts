@@ -7,7 +7,12 @@ import { requireActiveStaff } from '@/lib/admin-auth';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { canonicalJobTitle } from '@/lib/staff-titles';
 import { BUCKET as STAFF_BUCKET } from '@/lib/staff-data';
-import { RESUME_BUCKET, type ApplicationRow } from '@/lib/applicants-data';
+import {
+  MAX_RESUME_BYTES,
+  RESUME_BUCKET,
+  resumeMimeFor,
+  type ApplicationRow,
+} from '@/lib/applicants-data';
 
 /** Audit writes go through the service role: `authenticated` has SELECT-only
  *  on audit_log so the trail can't be edited by the app's own session. */
@@ -64,6 +69,79 @@ export async function getResumeUrl(applicationId: string) {
 
   await logAudit(user, 'view_resume', applicationId, { file_name: app.resume_file_name });
   return { ok: true as const, url: data.signedUrl };
+}
+
+/** Step 1 of attaching a resume from the admin (e.g. one the applicant emailed
+ *  later): validate, then mint a one-time signed upload URL for a server-chosen
+ *  path. The browser uploads straight to private storage, so the file skips the
+ *  serverless request body; the bucket still enforces its size and type limits.
+ *  Uses the service role because staff have no storage INSERT policy on this
+ *  bucket — the active-staff check above is the gate, and the URL covers only
+ *  this one path. */
+export async function createResumeUpload(applicationId: string, fileName: string, size: number) {
+  const { supabase } = await requireActiveStaff();
+  const mime = resumeMimeFor(fileName);
+  if (!mime) return { ok: false as const, message: 'Resume must be a PDF, DOC, or DOCX file.' };
+  if (size > MAX_RESUME_BYTES) return { ok: false as const, message: 'Resume must be 5 MB or smaller.' };
+
+  const { data: app } = await supabase
+    .from('job_applications')
+    .select('id')
+    .eq('id', applicationId)
+    .single();
+  if (!app) return { ok: false as const, message: 'Application not found.' };
+
+  const path = `${applicationId}/${randomUUID()}-${fileName.replace(/[^\w.\-]+/g, '_').slice(-120)}`;
+  const { data, error } = await createAdminClient()
+    .storage.from(RESUME_BUCKET)
+    .createSignedUploadUrl(path);
+  if (error || !data) return { ok: false as const, message: error?.message ?? 'Could not start the upload.' };
+
+  return { ok: true as const, path: data.path, token: data.token, mime };
+}
+
+/** Step 2: point the application at the uploaded file, deleting any resume it
+ *  replaces so old files aren't stranded in the bucket. */
+export async function recordResume(
+  applicationId: string,
+  input: { path: string; fileName: string; size: number }
+) {
+  const { supabase, user } = await requireActiveStaff();
+  const mime = resumeMimeFor(input.fileName);
+  // Only accept a path createResumeUpload could have issued for this application.
+  if (!mime || !input.path.startsWith(`${applicationId}/`) || input.path.includes('..')) {
+    return { ok: false, message: 'Invalid upload.' };
+  }
+
+  const { data: app } = await supabase
+    .from('job_applications')
+    .select('resume_path')
+    .eq('id', applicationId)
+    .single();
+  if (!app) return { ok: false, message: 'Application not found.' };
+
+  const { error } = await supabase
+    .from('job_applications')
+    .update({
+      resume_path: input.path,
+      resume_file_name: input.fileName.slice(0, 255),
+      resume_mime_type: mime,
+      resume_size_bytes: input.size,
+    })
+    .eq('id', applicationId);
+  if (error) {
+    await supabase.storage.from(RESUME_BUCKET).remove([input.path]); // don't strand the new file
+    return { ok: false, message: error.message };
+  }
+
+  if (app.resume_path && app.resume_path !== input.path) {
+    await supabase.storage.from(RESUME_BUCKET).remove([app.resume_path]);
+  }
+  await logAudit(user, app.resume_path ? 'replace_resume' : 'upload_resume', applicationId, {
+    file_name: input.fileName,
+  });
+  revalidatePath(`/admin/applicants/${applicationId}`);
+  return { ok: true, message: app.resume_path ? 'Resume replaced.' : 'Resume uploaded.' };
 }
 
 export async function deleteApplicant(id: string) {
