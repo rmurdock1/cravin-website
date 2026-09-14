@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { requireActiveStaff } from '@/lib/admin-auth';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { BUCKET } from '@/lib/staff-data';
+import { canonicalJobTitle } from '@/lib/staff-titles';
 import { parseDocumentBytes, isParseable, type ParsedFields } from '@/lib/parse-document';
 
 /** Audit writes go through the service role: `authenticated` has SELECT-only
@@ -30,30 +31,6 @@ const text = (fd: FormData, key: string) => {
   const v = String(fd.get(key) ?? '').trim();
   return v.length ? v : null;
 };
-
-/** Canonicalize a job title so "Chef", "chef" and "Chef " don't become three
- *  separate options. Collapses whitespace, then reuses the casing of any
- *  existing title that matches case-insensitively; otherwise saves the new one. */
-async function canonicalJobTitle(
-  supabase: Awaited<ReturnType<typeof requireActiveStaff>>['supabase'],
-  raw: string | null
-): Promise<string | null> {
-  if (!raw) return null;
-  const cleaned = raw.replace(/\s+/g, ' ').trim();
-  if (!cleaned) return null;
-
-  // Exact case-insensitive match against the existing list (escape LIKE metachars).
-  const escaped = cleaned.replace(/[\\%_]/g, '\\$&');
-  const { data: existing } = await supabase
-    .from('job_titles')
-    .select('title')
-    .ilike('title', escaped)
-    .limit(1);
-
-  if (existing && existing.length) return existing[0].title as string;
-  await supabase.from('job_titles').insert({ title: cleaned });
-  return cleaned;
-}
 
 /** "Add Staff" creates an empty draft row immediately and drops the user on the
  *  full editor — so they can upload a document and scan-to-prefill, or type

@@ -288,3 +288,72 @@ small numbers partly reflects casual exploration. **Recommend** (not done): make
 phone optional on catering forms, and use GA4's `form_id` breakdown on
 `form_start`/`form_submit` to pinpoint the worst-converting form before changing
 anything.
+
+---
+
+# Mid-September 2026 interim fixes
+
+Branch `sept-interim-fixes`. Addresses the 2026-09-14 interim hand-off. Several
+items were already resolved by earlier PRs — flagged below so nothing is
+"re-fixed" as a no-op.
+
+## Obj 1 — Catering `currency` / $0.00 revenue — NOT a code bug
+**Verified empirically** (local production build, real submit): `generate_lead`
+fires with `currency: "USD"` **and** `value` together (e.g. `{currency:"USD",
+value:1250, value_basis:"cart_total", ...}`). One dispatch path; `clean()` does
+not strip it; no consent gate. **Currency is being sent.**
+
+The $0.00 is GA4 metric semantics, not the site: **`generate_lead`'s `value`
+populates the "Event value" metric (the 3,166 the investigation saw), never
+"Total revenue".** Only purchase-type events feed Total revenue. Adding/confirming
+currency cannot change that — it is already correct.
+
+**To see catering lead value:** use **Event value**, or an Exploration summing
+`generate_lead`'s `value` (works today). If a true "Total revenue" figure is
+wanted, the only correct way is to fire a `purchase` event for *booked* catering
+orders — not recommended for leads, since a lead is not a completed sale.
+
+## Obj 3 — Per-location page indexing
+Pages were already 200 (no redirect), self-canonical, in the sitemap, and carry
+`Restaurant` JSON-LD. Added the missing piece: **internal links** from the
+homepage location cards (`Details` → `/ossining` etc.) and the footer Company
+column. Submitting the three URLs for indexing is a Manual step.
+
+## Obj 4 — Directions tracking
+Not a wiring gap: the click listener is **document-delegated (global)** and
+already covers the restored pages. **Verified**: on `/white-plains`,
+`directions_click`/`call_click`/`order_click` all fire with `location:"White
+Plains"`. The low count is user behaviour, not tracking. Lever is UX
+(prominence), not code.
+
+## Obj 5 — `/about:*Our`
+No internal source generates it (all `/about` links are clean). It already
+**404s**; it reached GA4 because the 404 page loads GA via the root layout.
+No code change.
+
+## Obj 6 — Keep /admin out of analytics
+**Fixed.** `GoogleAnalytics` + `AnalyticsProvider` are now wrapped in
+`HideOnAdmin`, so GA does not load on `/admin` at all (no page_view, no events —
+this stops `/admin/staff/<uuid>` internal ids reaching GA4). `/admin` added to
+`robots.txt` disallow; pages were already metadata `noindex` + auth-gated.
+
+## Obj 7 — UTM
+First-touch UTMs are captured on landing and stamped onto catering leads.
+**Verified**: landing on `/?utm_content=ossining` → `generate_lead` carried
+`utm_content:"ossining"`. GA4 also attributes the session natively from the
+landing page_view. `utm_content` reaches GA4 as an event param on leads.
+
+## Obj 8 — Was the per-location restore intended?
+**Yes.** `git` shows PR #3 (`restore-location-pages`) merged into `main` by
+`rmurdock1` (repo owner) on 2026-09-01. Owner-approved merge, not a stray branch.
+
+## Obj 2 — The single 404 (still open — needs Search Console)
+All 11 sitemap URLs return 200; all known retired URLs 301 correctly; `/cart` is
+fixed. The remaining 404 is a URL Google discovered historically that is not in
+our redirect map. **It cannot be identified from code** — it requires Search
+Console → Page indexing → Not found (404) → sample URLs (no GSC access in this
+session). Once RPM provides the URL, a one-line 301 fixes it.
+
+## Obj 9 — Per-head placeholder
+The `$25/guest` constant was **already removed** in PR #5 (2026-09-01,
+RPM-approved). Inquiry leads carry no value by design. Nothing to leave/flag.

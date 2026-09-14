@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { socialLinks } from '@/lib/site-data';
+import { socialLinks, locations } from '@/lib/site-data';
 
 export function Footer() {
   return (
@@ -33,6 +33,11 @@ export function Footer() {
             <h4>Company</h4>
             <Link href="/about">Our Story</Link>
             <Link href="/locations">Locations</Link>
+            {/* Direct links to each per-location page — internal links help
+                Google discover and index them. */}
+            {locations.map((loc) => (
+              <Link key={loc.id} href={`/${loc.id}`}>{loc.shortName}</Link>
+            ))}
             <Link href="/careers">Careers</Link>
             <Link href="/about#press">Press</Link>
           </div>

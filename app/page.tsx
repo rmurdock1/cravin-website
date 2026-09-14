@@ -197,7 +197,7 @@ export default function HomePage() {
                   </div>
                   <div className="location-actions">
                     <Link href="/order" className="btn btn-warm">Order</Link>
-                    <Link href={`/locations#${loc.id}`} className="btn btn-outline-green">Details</Link>
+                    <Link href={`/${loc.id}`} className="btn btn-outline-green">Details</Link>
                   </div>
                 </div>
               </div>

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { positionOptions, type JobListing } from '@/lib/careers-data';
 import { PhoneInput } from '@/components/forms/PhoneInput';
-import { submitNetlifyForm } from '@/lib/netlify-forms';
+import { submitCareersApplication } from '@/lib/netlify-forms';
 
 const LOCATION_ORDER = ['Ossining', 'White Plains', 'Mount Vernon', 'All Locations'];
 
@@ -242,7 +242,7 @@ export function CareersPageClient({ jobListings }: { jobListings: JobListing[] }
               data-netlify="true"
               netlify-honeypot="website"
               name="careers-application"
-              onSubmit={submitNetlifyForm}
+              onSubmit={submitCareersApplication}
             >
               <input type="hidden" name="form-name" value="careers-application" />
               {/* Honeypot */}

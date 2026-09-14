@@ -89,8 +89,13 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
-        <GoogleAnalytics />
-        <AnalyticsProvider />
+        {/* Analytics is hidden on /admin so staff activity and internal
+            /admin/staff/<uuid> paths never reach GA4 (no page_views, no events).
+            HideOnAdmin returns null on /admin routes. */}
+        <HideOnAdmin>
+          <GoogleAnalytics />
+          <AnalyticsProvider />
+        </HideOnAdmin>
         <ThemeProvider>
           <SkipLink />
           <HideOnAdmin><StickyOrderButton /></HideOnAdmin>
