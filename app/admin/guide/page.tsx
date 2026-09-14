@@ -139,6 +139,11 @@ export default async function GuidePage() {
         <ul>
           <li>Click anyone in the directory to see their profile, then <strong>Edit</strong> to change it.</li>
           <li>
+            Changed your mind while adding someone? <strong>Discard</strong> deletes the unsaved profile and
+            anything you uploaded. If you leave without saving, it waits under <strong>Unsaved drafts</strong>{' '}
+            on the Staff page, where you can <strong>Continue</strong> or <strong>Delete</strong> it.
+          </li>
+          <li>
             On a profile page you can upload more documents at any time. There, applying a scan updates
             the profile straight away.
           </li>

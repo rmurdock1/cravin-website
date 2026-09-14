@@ -3,6 +3,7 @@ import { requireActiveStaff } from '@/lib/admin-auth';
 import { AdminBreadcrumb } from '@/components/admin/AdminBreadcrumb';
 import { LOCATIONS, STAFF_STATUSES, labelFor, locationsLabel, type StaffRow } from '@/lib/staff-data';
 import { createDraftStaff } from './actions';
+import { DiscardDraftButton } from './DiscardDraftButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,11 +11,22 @@ export default async function StaffPage() {
   const { supabase } = await requireActiveStaff();
   const { data } = await supabase
     .from('staff')
-    .select('id, full_name, job_title, locations, status, email, phone')
+    .select('id, full_name, job_title, locations, status, email, phone, created_at')
     .order('full_name');
 
-  // Drop unsaved drafts (empty name) — they only appear once a name is saved.
-  const staff = (data ?? []).filter((p) => p.full_name) as StaffRow[];
+  const rows = (data ?? []) as (StaffRow & { created_at: string })[];
+  // Saved profiles have a name; nameless rows are Add Staff drafts that were
+  // never saved. Drafts stay out of the directory and counts, but are listed
+  // below so they (and anything uploaded to them) can be continued or deleted.
+  const staff = rows.filter((p) => p.full_name);
+  const drafts = rows
+    .filter((p) => !p.full_name)
+    .sort((a, b) => b.created_at.localeCompare(a.created_at));
+
+  const { data: draftDocs } = drafts.length
+    ? await supabase.from('staff_documents').select('staff_id').in('staff_id', drafts.map((d) => d.id))
+    : { data: [] as { staff_id: string }[] };
+  const docCount = (id: string) => (draftDocs ?? []).filter((d) => d.staff_id === id).length;
 
   // Buckets for both the headcount summary and the grouped directory below.
   // Current team only (exclude 'former'); single-store staff count at their store,
@@ -60,6 +72,45 @@ export default async function StaffPage() {
               {current.filter((p) => (p.locations ?? []).length >= 2).length}
             </span>
             <span className="admin-stat-label">Floating</span>
+          </div>
+        </section>
+      )}
+
+      {drafts.length > 0 && (
+        <section className="admin-drafts" aria-label="Unsaved drafts">
+          <h2 className="admin-group-heading">
+            Unsaved drafts <span className="admin-group-count">{drafts.length}</span>
+          </h2>
+          <p className="admin-hint">
+            Add Staff profiles that were never saved. Continue one, or delete it along with anything
+            uploaded to it.
+          </p>
+          <div className="admin-list">
+            {drafts.map((d) => {
+              const count = docCount(d.id);
+              return (
+                <div key={d.id} className="admin-list-row">
+                  <div className="admin-list-main">
+                    <div className="admin-list-title">Unsaved profile</div>
+                    <div className="admin-list-meta">
+                      Started{' '}
+                      {new Date(d.created_at).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                        timeZone: 'America/New_York',
+                      })}
+                      {' · '}
+                      {count === 0 ? 'No documents' : count === 1 ? '1 document' : `${count} documents`}
+                    </div>
+                  </div>
+                  <div className="admin-list-actions">
+                    <Link href={`/admin/staff/${d.id}/edit`} className="admin-mini">Continue</Link>
+                    <DiscardDraftButton id={d.id} documentCount={count} compact />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
       )}

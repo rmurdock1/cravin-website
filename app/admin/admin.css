@@ -248,6 +248,14 @@
 }
 .admin-field.is-scanned .admin-checkbox:has(input:checked) { border-color: var(--warm); }
 
+/* ---- Unsaved Add Staff drafts + save errors ---- */
+.admin-drafts {
+  margin-bottom: 32px; padding: 18px 20px;
+  border: 1px dashed rgba(212, 160, 74, 0.5); border-radius: var(--radius-lg);
+}
+.admin-drafts .admin-hint { margin: -4px 0 14px; }
+.admin-form-actions .admin-save-error { flex-basis: 100%; text-align: right; margin: 0; }
+
 /* ---- AI document scan review ---- */
 .admin-scan-review {
   margin-top: 18px; padding: 20px; border-radius: var(--radius-lg);

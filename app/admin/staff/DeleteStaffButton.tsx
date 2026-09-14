@@ -17,7 +17,10 @@ export function DeleteStaffButton({ id, name }: { id: string; name: string }) {
           )
         )
           return;
-        startTransition(() => deleteStaff(id));
+        startTransition(async () => {
+          const res = await deleteStaff(id);
+          if (res && !res.ok) alert(res.message);
+        });
       }}
     >
       {pending ? 'Deleting…' : 'Delete'}
