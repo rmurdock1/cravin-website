@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import { brand } from '@/lib/site-data';
 
 // Supabase redirects here with a `code` after Google or email-link sign-in;
 // exchange it for a session (sets the auth cookies) and forward to the admin.
@@ -32,7 +33,14 @@ function messageFor(error: { name: string; code?: string; message: string }) {
 }
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams, origin: requestOrigin } = new URL(request.url);
+  // On Netlify, request.url carries the internal deploy host
+  // (<deploy-id>--cravinjc.netlify.app), not the domain the browser used. The
+  // session cookies belong to www, and middleware on the netlify.app host runs
+  // before the canonical-host redirect, so redirecting there bounced a
+  // just-signed-in user back to the login page. Always return to the public
+  // site; the request origin is only right for local dev.
+  const origin = process.env.NODE_ENV === 'production' ? brand.domain : requestOrigin;
   const code = searchParams.get('code');
   const next = safeNext(searchParams.get('next'));
 
