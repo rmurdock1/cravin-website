@@ -24,14 +24,14 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/success'],
+        disallow: ['/success', '/admin'],
       },
       // Explicitly allow AI crawlers full access (documents intent; default
       // would already allow them, but this makes inclusion deliberate).
       {
         userAgent: aiCrawlers,
         allow: '/',
-        disallow: ['/success'],
+        disallow: ['/success', '/admin'],
       },
     ],
     sitemap: `${brand.domain}/sitemap.xml`,
