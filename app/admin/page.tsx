@@ -35,6 +35,13 @@ export default async function AdminHome() {
     );
   }
 
+  // Applications HR hasn't opened yet. A failed query just means no badge.
+  const { count: newApplicants } = await supabase
+    .from('job_applications')
+    .select('id', { count: 'exact', head: true })
+    .is('viewed_at', null)
+    .is('staff_id', null);
+
   return (
     <main className="admin-wrap">
       <header className="admin-header">
@@ -52,6 +59,13 @@ export default async function AdminHome() {
         <Link href="/admin/postings" className="admin-card admin-card-link">
           <h2>Job Postings →</h2>
           <p>Create and manage location-specific openings that publish straight to the public careers page.</p>
+        </Link>
+        <Link href="/admin/applicants" className="admin-card admin-card-link">
+          <h2>
+            Applicants →
+            {newApplicants ? <span className="admin-card-count">{newApplicants} new</span> : null}
+          </h2>
+          <p>Everyone who applies on the careers page. Read resumes, keep notes, and hire straight into Staff.</p>
         </Link>
         <Link href="/admin/staff" className="admin-card admin-card-link">
           <h2>Staff →</h2>

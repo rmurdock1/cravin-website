@@ -59,6 +59,7 @@ export const DOC_TYPES = [
   { value: 'offer_letter', label: 'Offer Letter' },
   { value: 'certification', label: 'Certification' },
   { value: 'id', label: 'ID Document' },
+  { value: 'resume', label: 'Resume' },
   { value: 'other', label: 'Other' },
 ];
 

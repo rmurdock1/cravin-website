@@ -417,3 +417,23 @@
 }
 .admin-pending h1 { font-size: 26px; margin-bottom: 12px; }
 .admin-pending p { color: var(--text-muted); line-height: 1.7; margin-bottom: 24px; }
+
+/* ---- Applicants ---- */
+.admin-badge.new { color: var(--warm); background: rgba(212,160,74,0.15); }
+.admin-card-count {
+  display: inline-flex; align-items: center; margin-left: 10px; vertical-align: middle;
+  padding: 3px 10px; border-radius: 999px; background: rgba(212,160,74,0.15); color: var(--warm);
+  font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.admin-detail-value a { color: var(--warm); text-decoration: none; }
+.admin-detail-value a:hover { text-decoration: underline; }
+.admin-applicant-block {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px;
+}
+.admin-applicant-block h2 { font-size: 18px; margin-bottom: 10px; }
+.admin-applicant-block .admin-hint { margin-bottom: 0; }
+.admin-applicant-block .admin-list-row { background: var(--surface); }
+.admin-applicant-experience { white-space: pre-wrap; line-height: 1.7; overflow-wrap: anywhere; }
+.admin-notes-form { margin-top: 14px; }
