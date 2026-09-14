@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useActionState, useState } from 'react';
 import Link from 'next/link';
 import { PhoneInput } from '@/components/forms/PhoneInput';
-import { saveStaff } from './actions';
+import { saveStaff, type SaveStaffState } from './actions';
 import { DocumentManager } from './DocumentManager';
+import { DiscardDraftButton } from './DiscardDraftButton';
 import {
   LOCATIONS,
   EMPLOYMENT_TYPES,
@@ -26,7 +27,9 @@ export function StaffForm({
   // An unsaved draft has no name yet: that's Add Staff, where scanning a
   // document comes first because it's the fastest way to fill the profile.
   const isNew = !staff.full_name;
-  const [saving, setSaving] = useState(false);
+  // A failed save returns its error here; success redirects to the profile.
+  // `saving` resets on failure, so the button never sticks on "Saving…".
+  const [saveState, formAction, saving] = useActionState<SaveStaffState, FormData>(saveStaff, null);
   // Controlled so a document scan can pre-fill fields without wiping manual edits.
   const [form, setForm] = useState({
     full_name: staff.full_name ?? '',
@@ -234,7 +237,7 @@ export function StaffForm({
 
   return (
     <>
-      <form action={saveStaff} onSubmit={() => setSaving(true)} className="admin-form">
+      <form action={formAction} className="admin-form">
         <input type="hidden" name="id" value={staff.id} />
 
         {/* Documents live inside the editor so adding someone is a single page.
@@ -254,9 +257,17 @@ export function StaffForm({
         )}
 
         <div className="admin-form-actions">
-          <Link href={staff.full_name ? `/admin/staff/${staff.id}` : '/admin/staff'} className="btn btn-outline">
-            Cancel
-          </Link>
+          {saveState && !saving && (
+            <p className="admin-error admin-save-error" role="alert">{saveState.message}</p>
+          )}
+          {/* An unsaved draft is discarded (with its uploads) rather than left behind. */}
+          {isNew ? (
+            <DiscardDraftButton id={staff.id} documentCount={documents.length} />
+          ) : (
+            <Link href={`/admin/staff/${staff.id}`} className="btn btn-outline">
+              Cancel
+            </Link>
+          )}
           <button type="submit" className="btn btn-warm" disabled={saving}>
             {saving ? 'Saving…' : 'Save Profile'}
           </button>

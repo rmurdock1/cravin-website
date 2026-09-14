@@ -38,11 +38,14 @@ const text = (fd: FormData, key: string) => {
   return v.length ? v : null;
 };
 
+type Supabase = Awaited<ReturnType<typeof requireActiveStaff>>['supabase'];
+type ActionError = { ok: false; message: string };
+
 /** "Add Staff" creates an empty draft row immediately and drops the user on the
  *  full editor — so they can upload a document and scan-to-prefill, or type
  *  fields, and attach documents, all on one page. The draft has an empty name
- *  until saved; saveStaff requires a name, so an abandoned draft stays nameless
- *  and can be deleted from the list. */
+ *  until saved; saveStaff requires a name. An abandoned draft stays nameless:
+ *  the Staff list shows it under "Unsaved drafts" to continue or delete. */
 export async function createDraftStaff() {
   const { supabase, user } = await requireActiveStaff();
   const { data } = await supabase
@@ -53,16 +56,19 @@ export async function createDraftStaff() {
   redirect(data ? `/admin/staff/${data.id}/edit` : '/admin/staff');
 }
 
-export async function saveStaff(formData: FormData) {
+export type SaveStaffState = ActionError | null;
+
+export async function saveStaff(_prev: SaveStaffState, formData: FormData): Promise<SaveStaffState> {
   const { supabase, user } = await requireActiveStaff();
   const id = text(formData, 'id');
-  const jobTitle = await canonicalJobTitle(supabase, text(formData, 'job_title'));
+  const fullName = String(formData.get('full_name') ?? '').trim();
+  if (!fullName) return { ok: false, message: 'Full name is required.' };
 
   // NOTE: deliberately no SSN / date-of-birth fields. Those live only inside
   // uploaded documents, never as queryable columns.
   const payload = {
-    full_name: String(formData.get('full_name') ?? '').trim(),
-    job_title: jobTitle,
+    full_name: fullName,
+    job_title: await canonicalJobTitle(supabase, text(formData, 'job_title')),
     // Checkboxes → text[]. Keep only known store values so a tampered form
     // can't inject arbitrary strings.
     locations: formData
@@ -81,40 +87,77 @@ export async function saveStaff(formData: FormData) {
     notes: text(formData, 'notes'),
   };
 
-  if (!payload.full_name) return;
-
+  // Failures come back to the form instead of redirecting as if the save worked.
   let staffId = id;
   if (id) {
-    await supabase.from('staff').update(payload).eq('id', id);
+    // .select() so an update that matched no row (deleted profile, lost access)
+    // counts as a failure, not a silent no-op.
+    const { data, error } = await supabase.from('staff').update(payload).eq('id', id).select('id');
+    if (error) return { ok: false, message: `Couldn't save the profile: ${error.message}` };
+    if (!data?.length) return { ok: false, message: "Couldn't save: this profile no longer exists or you no longer have access." };
     await logAudit(user, 'update_staff', id, { full_name: payload.full_name });
   } else {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('staff')
       .insert({ ...payload, created_by: user.id })
       .select('id')
       .single();
-    staffId = data?.id ?? null;
-    if (staffId) await logAudit(user, 'create_staff', staffId, { full_name: payload.full_name });
+    if (error || !data) return { ok: false, message: `Couldn't save the profile: ${error?.message ?? 'no row returned'}` };
+    staffId = data.id as string;
+    await logAudit(user, 'create_staff', staffId, { full_name: payload.full_name });
   }
 
   revalidatePath('/admin/staff');
-  redirect(staffId ? `/admin/staff/${staffId}` : '/admin/staff');
+  redirect(`/admin/staff/${staffId}`);
 }
 
-export async function deleteStaff(id: string) {
-  const { supabase, user } = await requireActiveStaff();
-
-  // Remove the stored files too — deleting only the rows would strand private
-  // documents in the bucket with nothing pointing at them.
+/** Delete a staff row and its stored documents. The row goes first (document
+ *  rows cascade) so a failed delete never leaves a profile whose files are gone;
+ *  the files are removed after, so they aren't stranded in the bucket.
+ *  `draftOnly` makes the delete match only an unsaved (nameless) draft. */
+async function removeStaffAndFiles(supabase: Supabase, id: string, draftOnly: boolean) {
   const { data: docs } = await supabase
     .from('staff_documents')
     .select('storage_path')
     .eq('staff_id', id);
-  const paths = (docs ?? []).map((d) => d.storage_path);
-  if (paths.length) await supabase.storage.from(BUCKET).remove(paths);
+  const paths = (docs ?? []).map((d) => d.storage_path as string);
 
-  await supabase.from('staff').delete().eq('id', id); // rows cascade
-  await logAudit(user, 'delete_staff', id, { removed_documents: paths.length });
+  let query = supabase.from('staff').delete().eq('id', id);
+  if (draftOnly) query = query.eq('full_name', '');
+  const { data, error } = await query.select('id');
+  if (error) return { ok: false as const, message: error.message };
+  if (!data?.length) return { ok: false as const, message: 'Nothing was deleted.' };
+
+  if (paths.length) await supabase.storage.from(BUCKET).remove(paths);
+  return { ok: true as const, removedDocuments: paths.length };
+}
+
+export async function deleteStaff(id: string): Promise<ActionError | void> {
+  const { supabase, user } = await requireActiveStaff();
+  const res = await removeStaffAndFiles(supabase, id, false);
+  if (!res.ok) return { ok: false, message: `Couldn't delete the profile: ${res.message}` };
+
+  await logAudit(user, 'delete_staff', id, { removed_documents: res.removedDocuments });
+  revalidatePath('/admin/staff');
+  redirect('/admin/staff');
+}
+
+/** Throw away an unsaved Add Staff draft and anything uploaded to it. Only ever
+ *  deletes a nameless draft, never a saved profile. */
+export async function discardDraft(id: string): Promise<ActionError | void> {
+  const { supabase, user } = await requireActiveStaff();
+  const res = await removeStaffAndFiles(supabase, id, true);
+  if (!res.ok) {
+    return {
+      ok: false,
+      message:
+        res.message === 'Nothing was deleted.'
+          ? "This isn't an unsaved draft (it may already be saved or deleted)."
+          : `Couldn't discard the draft: ${res.message}`,
+    };
+  }
+
+  await logAudit(user, 'discard_draft', id, { removed_documents: res.removedDocuments });
   revalidatePath('/admin/staff');
   redirect('/admin/staff');
 }
@@ -235,7 +278,10 @@ const SCANNED_TEXT_FIELDS = [
  *  each overwrites the current value (locations are added to the existing
  *  stores). Runs after a human has looked at the draft. The payload comes from
  *  the browser, so only known columns with valid values are written. */
-export async function applyParsedFields(staffId: string, fields: Partial<ParsedFields>) {
+export async function applyParsedFields(
+  staffId: string,
+  fields: Partial<ParsedFields>
+): Promise<{ ok: boolean; message: string }> {
   const { supabase, user } = await requireActiveStaff();
 
   const update: Record<string, string | string[]> = {};
@@ -259,9 +305,13 @@ export async function applyParsedFields(staffId: string, fields: Partial<ParsedF
   if (typeof update.job_title === 'string') {
     update.job_title = (await canonicalJobTitle(supabase, update.job_title)) ?? update.job_title;
   }
-  if (Object.keys(update).length === 0) return;
+  if (Object.keys(update).length === 0) return { ok: false, message: 'None of those values could be applied.' };
 
-  await supabase.from('staff').update(update).eq('id', staffId);
+  const { data, error } = await supabase.from('staff').update(update).eq('id', staffId).select('id');
+  if (error) return { ok: false, message: `Couldn't update the profile: ${error.message}` };
+  if (!data?.length) return { ok: false, message: "Couldn't update: this profile no longer exists or you no longer have access." };
+
   await logAudit(user, 'apply_parsed', staffId, { applied: Object.keys(update) });
   revalidatePath(`/admin/staff/${staffId}`);
+  return { ok: true, message: 'Profile updated from the document.' };
 }

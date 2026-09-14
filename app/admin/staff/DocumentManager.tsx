@@ -122,10 +122,13 @@ export function DocumentManager({
       return;
     }
     startTransition(async () => {
-      await applyParsedFields(staffId, selected);
-      setReview(null);
-      setMsg({ ok: true, text: 'Profile updated from the document.' });
-      router.refresh();
+      const res = await applyParsedFields(staffId, selected);
+      setMsg({ ok: res.ok, text: res.message });
+      // On failure the review stays open so nothing has to be picked again.
+      if (res.ok) {
+        setReview(null);
+        router.refresh();
+      }
     });
   }
 
