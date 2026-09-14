@@ -112,19 +112,19 @@ export default async function GuidePage() {
         <ol>
           <li>Open <Link href="/admin/staff">Staff</Link> and click <strong>Add Staff</strong>.</li>
           <li>
-            In <strong>Documents</strong>, choose the document type (I-9, W-4, offer letter, certification,
-            ID, resume or other), choose the file and click <strong>Upload</strong>. PDF, JPG, PNG, HEIC
-            and Word files up to 10 MB are accepted.
+            Under <strong>Start with a document</strong>, choose the document type (I-9, W-4, offer letter,
+            certification, ID, resume or other), choose the file and click <strong>Upload</strong>. PDF, JPG,
+            PNG, HEIC and Word files up to 10 MB are accepted.
           </li>
           <li>
-            Click <strong>Scan ✨</strong> next to the document. It reads the <strong>name, job title,
-            email, phone, address, start date, employment type, store and emergency contact (name,
-            phone and relationship)</strong>, whichever the document includes. Scanning works on PDFs
-            and photos (JPG, PNG, GIF, WebP), not Word files.
+            PDFs and photos (JPG, PNG, GIF, WebP) are <strong>scanned automatically</strong> after upload. The
+            scan reads the <strong>name, job title, email, phone, address, start date, employment type, store
+            and emergency contact (name, phone and relationship)</strong>, whichever the document includes.
+            Word files can&apos;t be scanned.
           </li>
           <li>
             Check what it found. Untick anything that&apos;s wrong, then click <strong>Apply</strong> to fill
-            in the form.
+            in the details. Fields filled this way are marked <strong>✨ from scan</strong>.
           </li>
           <li>
             Finish the rest: tick every <strong>location</strong> they work at, then set employment type,

@@ -41,8 +41,8 @@ export default async function EditStaffPage({ params }: { params: Promise<{ id: 
       <h1>{isNew ? 'Add Staff' : 'Edit Profile'}</h1>
       {isNew && (
         <p className="admin-hint">
-          Upload a document below and press <strong>Scan ✨</strong> to pre-fill from it, or just
-          type the details in. Everything saves together.
+          Two steps: start with a document to fill in most of the profile for you, then check the
+          details and save. Everything saves together.
         </p>
       )}
       <StaffForm
