@@ -52,7 +52,18 @@ export default async function AdminHome() {
             <span className="admin-role">{profile.role === 'owner' ? 'Admin' : 'HR Manager'}</span>
           </p>
         </div>
-        <SignOutButton />
+        {/* Help lives in the header, apart from the section cards, so it reads as a guide rather than a dashboard area. */}
+        <div className="admin-header-actions">
+          <Link href="/admin/guide" className="admin-help-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            Getting Started guide
+          </Link>
+          <SignOutButton />
+        </div>
       </header>
 
       <div className="admin-cards">
@@ -77,10 +88,6 @@ export default async function AdminHome() {
             <p>Invite people, and activate, revoke, or change their access at any time.</p>
           </Link>
         )}
-        <Link href="/admin/guide" className="admin-card admin-card-link">
-          <h2>Getting Started →</h2>
-          <p>A step-by-step guide to postings, applicants, staff profiles and scanning documents.</p>
-        </Link>
       </div>
     </main>
   );

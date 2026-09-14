@@ -55,6 +55,7 @@ const SYSTEM_PROMPT = `You extract details from a scanned HR document (onboardin
 
 Extract only the fields in the schema: full name, job title, email, phone, home address, start or hire date, employment type, work location, and the emergency contact's name, phone and relationship.
 
+- Copy values exactly as printed, including ones that look like samples or test data (for example email addresses at example.com).
 - hired_on: the start or hire date, converted to YYYY-MM-DD.
 - employment_type: full-time, part-time or seasonal, only when the document says which.
 - locations: Cravin's stores are Ossining (ossining), White Plains (white-plains) and Mount Vernon (mount-vernon). Include a store only when the document names it as where the employee will work. Never infer a store from the employee's home address.
