@@ -1,15 +1,40 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
-// Supabase magic-link redirects here with a `code`; exchange it for a session
-// (sets the auth cookies) and forward to the admin.
+// Supabase redirects here with a `code` after Google or email-link sign-in;
+// exchange it for a session (sets the auth cookies) and forward to the admin.
 const fail = (origin: string, message: string) =>
   NextResponse.redirect(`${origin}/admin/login?error=${encodeURIComponent(message)}`);
+
+// `next` comes from the URL, so only allow same-site paths: "@evil.com" or
+// "//evil.com" appended to the origin would send the user to another host.
+const safeNext = (next: string | null) =>
+  next && next.startsWith('/') && !next.startsWith('//') ? next : '/admin';
+
+// Plain-language reason for each way a PKCE sign-in can fail. These used to be
+// lumped into one "already used or expired" message, which hid the real cause.
+function messageFor(error: { name: string; code?: string; message: string }) {
+  // The browser that finished sign-in never started it (no verifier cookie):
+  // e.g. Google opened inside another app, or an email link opened elsewhere.
+  if (error.name === 'AuthPKCECodeVerifierMissingError') {
+    return 'Sign-in has to finish in the same browser it started in. Open www.cravinjc.com/admin in Safari or Chrome directly (not inside another app like Gmail or Slack) and try again.';
+  }
+  switch (error.code) {
+    case 'bad_code_verifier':
+      return 'Sign-in was started more than once, so this attempt was cancelled. Please sign in again from a single tab.';
+    case 'flow_state_expired':
+      return 'That sign-in took too long and expired. Please try again.';
+    case 'flow_state_not_found':
+      return 'That sign-in link was already used. Please sign in again.';
+    default:
+      return error.message;
+  }
+}
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/admin';
+  const next = safeNext(searchParams.get('next'));
 
   // The provider can hand back its own failure (consent denied, bad config…).
   const providerError = searchParams.get('error_description') ?? searchParams.get('error');
@@ -19,17 +44,18 @@ export async function GET(request: Request) {
 
   const supabase = await createClient();
   const { error } = await supabase.auth.exchangeCodeForSession(code);
-  if (error) {
-    // Sign-in codes are single-use, so a refresh or a second click on the same
-    // link lands here even though the first attempt worked. Say so plainly —
-    // an opaque error here is expensive to debug later.
-    const reused = /code verifier|invalid request|expired|already/i.test(error.message);
-    return fail(
-      origin,
-      reused
-        ? 'That sign-in link was already used or has expired. Please sign in again.'
-        : error.message
-    );
-  }
-  return NextResponse.redirect(`${origin}${next}`);
+  if (!error) return NextResponse.redirect(`${origin}${next}`);
+
+  // Record the real cause (never the code) so it shows in the Netlify function logs.
+  console.error('auth callback: code exchange failed:', error.name, error.code ?? '-', error.message);
+
+  // Codes are single-use, so a refresh, the back button, or a repeated request
+  // for this callback fails even when the first attempt signed the user in.
+  // If a session already exists, carry on instead of showing an error.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) return NextResponse.redirect(`${origin}${next}`);
+
+  return fail(origin, messageFor(error));
 }
