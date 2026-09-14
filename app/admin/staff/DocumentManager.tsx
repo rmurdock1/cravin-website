@@ -24,6 +24,9 @@ import {
   type StaffDocumentRow,
 } from '@/lib/staff-data';
 
+// Formats Scan ✨ can read (see isParseable in lib/parse-document).
+const SCANNABLE_MIME = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
 // Review order matches the staff form.
 const FIELD_LABELS: Record<keyof ParsedFields, string> = {
   full_name: 'Full Name',
@@ -49,12 +52,20 @@ export function DocumentManager({
   staffId,
   documents,
   onApply,
+  heading = 'Documents',
+  intro,
+  autoScan = false,
 }: {
   staffId: string;
   documents: StaffDocumentRow[];
   /** When provided (add/edit form), applying a scan fills the form instead of
    *  writing straight to the profile. Omitted on the read-only detail page. */
   onApply?: (fields: Partial<ParsedFields>) => void;
+  heading?: React.ReactNode;
+  /** Replaces the default explanation under the heading. */
+  intro?: React.ReactNode;
+  /** Scan PDFs and photos as soon as they're uploaded (Add Staff). */
+  autoScan?: boolean;
 }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -160,6 +171,8 @@ export function DocumentManager({
       if (res.ok) {
         if (fileRef.current) fileRef.current.value = '';
         router.refresh(); // reflect the new file in the list on any page
+        // The review appears under the document once the refreshed list includes it.
+        if (autoScan && SCANNABLE_MIME.includes(file.type)) void handleScan(res.id);
       }
     } finally {
       setBusy(false);
@@ -174,11 +187,15 @@ export function DocumentManager({
 
   return (
     <section className="admin-docs">
-      <h2>Documents</h2>
+      <h2>{heading}</h2>
       <p className="admin-hint">
-        I-9s, W-4s, offer letters, certifications. Stored privately — links expire after
-        60 seconds and every view is logged.{' '}
-        {onApply && 'Upload a document and press Scan ✨ to pre-fill the profile.'}
+        {intro ?? (
+          <>
+            I-9s, W-4s, offer letters, certifications. Stored privately — links expire after
+            60 seconds and every view is logged.{' '}
+            {onApply && 'Upload a document and press Scan ✨ to pre-fill the profile.'}
+          </>
+        )}
       </p>
 
       <div className="admin-upload">
@@ -192,11 +209,12 @@ export function DocumentManager({
           className="admin-file-input"
           aria-label="Choose file"
         />
-        <button type="button" className="btn btn-warm" disabled={busy} onClick={handleUpload}>
+        <button type="button" className="btn btn-warm" disabled={busy || scanningId !== null} onClick={handleUpload}>
           {busy ? 'Uploading…' : 'Upload'}
         </button>
       </div>
-      {msg && <p className={msg.ok ? 'admin-template-msg' : 'admin-error'}>{msg.text}</p>}
+      {scanningId && <p className="admin-scan-status">Scanning for profile details…</p>}
+      {msg && !scanningId && <p className={msg.ok ? 'admin-template-msg' : 'admin-error'}>{msg.text}</p>}
 
       {documents.length === 0 ? (
         <p className="admin-hint">No documents uploaded yet.</p>
@@ -215,9 +233,7 @@ export function DocumentManager({
                 </div>
                 <div className="admin-list-actions">
                   <button type="button" className="admin-mini" onClick={() => openDoc(d.id)}>View</button>
-                  {['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(
-                    d.mime_type ?? ''
-                  ) && (
+                  {SCANNABLE_MIME.includes(d.mime_type ?? '') && (
                     <button
                       type="button"
                       className="admin-mini"

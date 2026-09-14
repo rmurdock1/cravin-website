@@ -131,18 +131,20 @@ export async function recordDocument(input: {
   size_bytes: number | null;
 }) {
   const { supabase, user } = await requireActiveStaff();
-  const { error } = await supabase.from('staff_documents').insert({
-    ...input,
-    uploaded_by: user.id,
-  });
-  if (error) return { ok: false, message: error.message };
+  const { data, error } = await supabase
+    .from('staff_documents')
+    .insert({ ...input, uploaded_by: user.id })
+    .select('id')
+    .single();
+  if (error || !data) return { ok: false as const, message: error?.message ?? 'Could not record the upload.' };
 
   await logAudit(user, 'upload_document', input.staff_id, {
     file_name: input.file_name,
     doc_type: input.doc_type,
   });
   revalidatePath(`/admin/staff/${input.staff_id}`);
-  return { ok: true, message: 'Uploaded.' };
+  // The id lets Add Staff scan the new document straight away.
+  return { ok: true as const, message: 'Uploaded.', id: data.id as string };
 }
 
 /** Mints a short-lived signed URL. The bucket is private, so this is the only

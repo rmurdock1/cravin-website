@@ -221,6 +221,33 @@
 /* Documents section embedded inside the staff editor form. */
 .admin-form-docs { margin: 8px 0 4px; padding-top: 24px; border-top: 1px solid var(--border); }
 
+/* ---- Add Staff: document first, then details ---- */
+.admin-form-docs.is-first {
+  margin: 0; padding: 22px; border: 1px solid rgba(212, 160, 74, 0.45);
+  border-radius: var(--radius-lg); background: var(--bg-card);
+}
+.admin-form-docs.is-first .admin-upload { background: var(--surface); margin-bottom: 14px; }
+.admin-form-docs.is-first .admin-hint a { color: var(--warm); }
+.admin-docs h2, .admin-step-heading { display: flex; align-items: center; gap: 10px; }
+.admin-step-heading { font-size: 20px; margin: 10px 0 14px; }
+.admin-step-num {
+  display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--warm); color: #1a1a1a;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700;
+}
+#staff-details { scroll-margin-top: 24px; }
+.admin-scan-status { color: var(--warm); font-size: 14px; font-weight: 600; margin: 0 0 14px; }
+.admin-scan-tag {
+  margin-left: 6px; font-size: 11px; font-weight: 700; color: var(--warm);
+  text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;
+}
+.admin-form .admin-field.is-scanned input:not([type="checkbox"]),
+.admin-form .admin-field.is-scanned select {
+  border-color: rgba(212, 160, 74, 0.75); background-color: rgba(212, 160, 74, 0.07);
+}
+.admin-field.is-scanned .admin-checkbox:has(input:checked) { border-color: var(--warm); }
+
 /* ---- AI document scan review ---- */
 .admin-scan-review {
   margin-top: 18px; padding: 20px; border-radius: var(--radius-lg);
