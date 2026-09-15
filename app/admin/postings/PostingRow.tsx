@@ -25,7 +25,12 @@ export function PostingRow({ posting }: { posting: JobPostingRow }) {
         <button
           className="admin-mini"
           disabled={pending}
-          onClick={() => startTransition(() => togglePosting(posting.id, !posting.is_active))}
+          onClick={() =>
+            startTransition(async () => {
+              const res = await togglePosting(posting.id, !posting.is_active);
+              if (!res.ok) alert(res.message);
+            })
+          }
         >
           {posting.is_active ? 'Unpublish' : 'Publish'}
         </button>
@@ -35,7 +40,10 @@ export function PostingRow({ posting }: { posting: JobPostingRow }) {
           disabled={pending}
           onClick={() => {
             if (confirm(`Delete "${posting.title}"? This can't be undone.`)) {
-              startTransition(() => deletePosting(posting.id));
+              startTransition(async () => {
+                const res = await deletePosting(posting.id);
+                if (!res.ok) alert(res.message);
+              });
             }
           }}
         >

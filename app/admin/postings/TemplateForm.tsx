@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useRef, useState, useTransition } from 'react';
 import { updateTemplate } from './actions';
 import { BulletListInput } from '@/components/admin/BulletListInput';
 import { JOB_LOCATIONS, EMPLOYMENT_TYPES, type JobTemplateRow } from '@/lib/job-postings';
@@ -14,17 +14,31 @@ const TYPE_LABELS: Record<string, string> = {
 
 export function TemplateForm({ template }: { template: JobTemplateRow }) {
   const formRef = useRef<HTMLFormElement>(null);
-  const [saving, setSaving] = useState(false);
+  const [saving, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
+  // Submitted from code (not <form action>) so a failed save keeps the edits;
+  // see PostingForm. Success redirects back to Job Postings.
   function save() {
     const form = formRef.current;
-    if (!form) return;
-    setSaving(true);
-    form.requestSubmit();
+    if (!form || !form.reportValidity()) return;
+    const fd = new FormData(form);
+    setError(null);
+    startTransition(async () => {
+      const res = await updateTemplate(fd);
+      if (res && !res.ok) setError(res.message);
+    });
   }
 
   return (
-    <form ref={formRef} action={updateTemplate} className="admin-form">
+    <form
+      ref={formRef}
+      className="admin-form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        save();
+      }}
+    >
       <input type="hidden" name="id" value={template.id} />
 
       <label>
@@ -65,6 +79,7 @@ export function TemplateForm({ template }: { template: JobTemplateRow }) {
       <BulletListInput name="perks" label="Perks" hint="(optional)" initial={template.perks} />
 
       <div className="admin-form-actions">
+        {error && !saving && <p className="admin-error admin-save-error" role="alert">{error}</p>}
         <Link href="/admin/postings" className="btn btn-outline">Cancel</Link>
         <button type="button" className="btn btn-warm" onClick={save} disabled={saving}>
           {saving ? 'Saving…' : 'Save template'}

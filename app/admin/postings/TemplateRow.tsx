@@ -19,7 +19,10 @@ export function TemplateRow({ template }: { template: { id: string; name: string
           disabled={pending}
           onClick={() => {
             if (confirm(`Delete template "${template.name}"? This can't be undone.`)) {
-              startTransition(() => deleteTemplate(template.id));
+              startTransition(async () => {
+                const res = await deleteTemplate(template.id);
+                if (!res.ok) alert(res.message);
+              });
             }
           }}
         >
