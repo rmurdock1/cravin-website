@@ -43,9 +43,13 @@ const nextConfig: NextConfig = {
       // Canonical host: force every *.netlify.app host (bare subdomain + per-deploy
       // permalinks) to www.cravinjc.com. Prevents auth sessions landing on the wrong
       // host and stops search engines indexing the netlify.app duplicate.
+      // Pull-request deploy previews (deploy-preview-N--cravinjc.netlify.app) are
+      // exempt so changes can be reviewed before merging. Netlify serves them with
+      // X-Robots-Tag: noindex, and sign-in no longer relies on this redirect (the
+      // auth callback always returns to brand.domain).
       {
         source: '/:path*',
-        has: [{ type: 'host', value: '.*\\.netlify\\.app' }],
+        has: [{ type: 'host', value: '(?!deploy-preview-).*\\.netlify\\.app' }],
         destination: 'https://www.cravinjc.com/:path*',
         statusCode: 301,
       },
