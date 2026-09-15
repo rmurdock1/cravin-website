@@ -91,7 +91,7 @@
   }
 }
 
-html { scroll-behavior: smooth; scroll-padding-top: 160px; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(160px + var(--announce-h, 0px)); }
 
 /* Screen reader only — visually hidden but accessible */
 .sr-only {
@@ -271,6 +271,98 @@ ul { list-style: none; }
 /* Mobile theme toggle — hidden on desktop, shown next to hamburger on mobile */
 .mobile-theme-toggle { display: none; }
 
+/* ========== ANNOUNCEMENT BAR ==========
+   Fixed above the nav. --announce-h is its height while it's on the page and
+   not closed; every rule that clears the fixed nav adds it. */
+:root { --announce-h: 0px; --announce-bar-h: 40px; }
+html:has(.announcement-bar) { --announce-h: var(--announce-bar-h); }
+html[data-announcement-dismissed] { --announce-h: 0px; }
+
+/* Hidden unless :has() works. Browsers without it (e.g. Firefox ESR 115,
+   Safari < 15.4) drop the rule below, so they keep the bar hidden and the
+   layout unchanged instead of drawing a broken bar over the nav. */
+.announcement-bar {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: calc(var(--announce-bar-h) + var(--safe-top));
+  padding: var(--safe-top) var(--safe-right) 0 var(--safe-left);
+  background: var(--warm);
+  color: #1a1a1a;
+}
+html:has(.announcement-bar):not([data-announcement-dismissed]) .announcement-bar { display: block; }
+/* The open mobile menu covers the bar, so it can't navigate from under the menu. */
+html:has(.mobile-menu.open) .announcement-bar { z-index: 97; }
+/* The bar covers the notch area, so the nav sits below it without its own safe-top. */
+html:has(.announcement-bar):not([data-announcement-dismissed]) nav {
+  top: calc(var(--announce-h) + var(--safe-top));
+  padding-top: 18px;
+}
+.announcement-inner {
+  position: relative;
+  height: var(--announce-bar-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 52px;
+}
+.announcement-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: #1a1a1a;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.announcement-text { overflow: hidden; text-overflow: ellipsis; }
+.announcement-text-short { display: none; }
+.announcement-badge {
+  flex: 0 0 auto;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #1a1a1a;
+  color: var(--warm);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.announcement-cta { flex: 0 0 auto; text-decoration: underline; text-underline-offset: 3px; }
+.announcement-link:hover .announcement-cta,
+.announcement-link:focus-visible .announcement-cta { text-decoration-thickness: 2px; }
+.announcement-link:focus-visible { outline: 2px solid #1a1a1a; outline-offset: 3px; border-radius: 4px; }
+.announcement-dismiss {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #1a1a1a;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.announcement-dismiss:hover { background: rgba(0, 0, 0, 0.1); }
+.announcement-dismiss:focus-visible { outline: 2px solid #1a1a1a; outline-offset: 1px; }
+@media (max-width: 720px) {
+  .announcement-inner { padding: 0 46px 0 14px; justify-content: flex-start; }
+  .announcement-link { font-size: 13px; gap: 8px; }
+  .announcement-text-full { display: none; }
+  .announcement-text-short { display: inline; }
+  /* The whole bar is the link, so the arrow alone is enough and the news fits on 320px phones. */
+  .announcement-cta-label { display: none; }
+}
+
 /* ========== NAV ========== */
 nav {
   position: fixed;
@@ -349,7 +441,7 @@ nav .container {
   top: 0; left: 0; right: 0; bottom: 0;
   z-index: 98;
   background: var(--bg);
-  padding: calc(100px + var(--safe-top)) 24px calc(40px + var(--safe-bottom));
+  padding: calc(100px + var(--safe-top) + var(--announce-h, 0px)) 24px calc(40px + var(--safe-bottom));
   flex-direction: column;
   gap: 8px;
 }
@@ -373,7 +465,7 @@ nav .container {
 
 /* ========== PAGE HERO (interior pages) ========== */
 .page-hero {
-  padding: calc(140px + var(--safe-top)) 0 60px;
+  padding: calc(140px + var(--safe-top) + var(--announce-h, 0px)) 0 60px;
   background: var(--bg-elevated);
   text-align: center;
   transition: background-color 0.3s ease;
@@ -424,6 +516,10 @@ nav .container {
   display: flex;
   align-items: flex-end;
   overflow: hidden;
+  /* Content is bottom-aligned; this keeps its top clear of the fixed header
+     (and announcement bar) on short desktop screens. Mobile clears it via
+     .hero-content instead. */
+  padding-top: calc(107px + var(--safe-top) + var(--announce-h, 0px));
 }
 
 .hero-bg { position: absolute; inset: 0; }
@@ -665,7 +761,8 @@ nav .container {
 .location-actions { display: flex; gap: 16px; margin-top: 20px; }
 .location-actions .btn { flex: 1; justify-content: center; padding: 11px 16px; font-size: 13px; }
 
-.location-detail-actions { display: flex; gap: 16px; margin-top: 24px; }
+/* Wraps so three CTAs never force the page wider than a phone screen. */
+.location-detail-actions { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
 
 /* ========== CATERING -- SPLIT LAYOUT ========== */
 .catering {
@@ -1167,7 +1264,7 @@ footer {
   border-bottom: 1px solid var(--border);
   padding: 16px 0;
   position: sticky;
-  top: 107px;
+  top: calc(107px + var(--announce-h, 0px));
   z-index: 90;
   transition: background-color 0.3s ease;
 }
@@ -1253,6 +1350,71 @@ footer {
 }
 .location-map-embed iframe { width: 100%; height: 100%; border: 0; }
 
+/* ========== COMING SOON (Locations page, homepage card, footer) ========== */
+.location-detail-section.location-coming-soon { background: var(--bg-elevated); }
+.coming-soon-card {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 48px 32px;
+  text-align: center;
+  background: var(--bg-card);
+  border: 1px dashed var(--border-light);
+  border-radius: var(--radius-lg);
+}
+.coming-soon-card h2 { font-size: clamp(28px, 3.5vw, 40px); margin: 14px 0 6px; }
+.coming-soon-card .location-tagline { margin-bottom: 14px; }
+.coming-soon-blurb {
+  max-width: 520px;
+  margin: 0 auto;
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1.7;
+}
+.coming-soon-card .location-detail-actions { justify-content: center; flex-wrap: wrap; }
+.coming-soon-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(212, 160, 74, 0.15);
+  color: var(--warm);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.quicklink-badge {
+  margin-left: 2px;
+  color: var(--warm);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.quicklink:hover .quicklink-badge { color: #fff; }
+
+.location-card.location-card-soon {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 28px;
+  border-style: dashed;
+  color: inherit;
+}
+.location-card-soon-body { flex: 1; min-width: 0; }
+.location-card-soon h3 { font-size: 20px; margin-bottom: 4px; }
+.location-card-soon p { margin: 0; color: var(--text-muted); font-size: 14px; line-height: 1.6; }
+.location-card-soon-cta { color: var(--warm); font-size: 14px; font-weight: 600; white-space: nowrap; }
+.location-card-soon:hover .location-card-soon-cta { text-decoration: underline; text-underline-offset: 3px; }
+
+.footer-soon { color: var(--text-dim); font-size: 12px; }
+
+/* Gold text on light-theme white needs a darker gold to reach WCAG AA contrast. */
+[data-theme="light"] .coming-soon-badge,
+[data-theme="light"] .quicklink-badge,
+[data-theme="light"] .location-card-soon-cta { color: #7A5A1E; }
+[data-theme="light"] .quicklink:hover .quicklink-badge { color: #fff; }
+
 /* ========== ABOUT PAGE ========== */
 
 /* Full-bleed hero with background image */
@@ -1262,7 +1424,7 @@ footer {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 120px 0 56px;
+  padding: calc(120px + var(--announce-h, 0px)) 0 56px;
   overflow: hidden;
 }
 .about-hero-bg {
@@ -1403,7 +1565,7 @@ footer {
 /* Quick links nav bar */
 .about-quicklinks {
   position: sticky;
-  top: calc(72px + var(--safe-top));
+  top: calc(72px + var(--safe-top) + var(--announce-h, 0px));
   z-index: 40;
   background: var(--bg-elevated);
   border-bottom: 1px solid var(--border);
@@ -1752,8 +1914,8 @@ footer {
   /* Hero content is taller than the viewport on phones; top-align it and clear
      the fixed nav so the title never hides behind the header (was bottom-aligned,
      which pushed the h1 up under the nav on short viewports like Brave). */
-  .hero { align-items: flex-start; }
-  .hero-content { padding-top: calc(120px + var(--safe-top)); }
+  .hero { align-items: flex-start; padding-top: 0; }
+  .hero-content { padding-top: calc(120px + var(--safe-top) + var(--announce-h, 0px)); }
   .hero h1 { max-width: 100%; }
   .hero-stats { gap: 24px; flex-wrap: wrap; }
   .hero-top-proof { flex-wrap: wrap; gap: 12px; }
@@ -1777,15 +1939,32 @@ footer {
   .press-articles { grid-template-columns: 1fr; }
   .community-grid { grid-template-columns: 1fr; }
   .community-awards { grid-template-columns: 1fr; gap: 24px; padding: 24px; }
-  .about-hero-full { min-height: 320px; padding: 100px 0 40px; }
-  .about-quicklinks { top: calc(60px + var(--safe-top)); }
+  .about-hero-full { min-height: 320px; padding: calc(100px + var(--announce-h, 0px)) 0 40px; }
+  .about-quicklinks { top: calc(60px + var(--safe-top) + var(--announce-h, 0px)); }
   .about-quicklinks .quicklink { padding: 6px 14px; font-size: 12px; }
   .form-grid { grid-template-columns: 1fr; }
   .form-group.full { grid-column: auto; }
   .catering-form-card { padding: 28px 20px; }
-  .page-hero { padding: calc(120px + var(--safe-top)) 0 48px; }
-  .location-quicklinks .container { gap: 10px; }
+  .page-hero { padding: calc(120px + var(--safe-top) + var(--announce-h, 0px)) 0 48px; }
+  /* One row that scrolls sideways, so the sticky bar stays one row tall and
+     anchor jumps don't land underneath it. Vertical padding sits inside the
+     scroll container so keyboard focus rings aren't clipped (same total
+     height), and the auto margins keep the row centred whenever it fits. */
+  .location-quicklinks { padding: 12px 0; }
+  .location-quicklinks .container {
+    gap: 10px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-block: 4px;
+  }
+  .location-quicklinks .container::-webkit-scrollbar { display: none; }
+  .location-quicklinks .quicklink { flex: 0 0 auto; white-space: nowrap; }
+  .location-quicklinks .quicklink:first-child { margin-left: auto; }
+  .location-quicklinks .quicklink:last-child { margin-right: auto; }
   .quicklink { padding: 8px 16px; font-size: 13px; }
+  .location-card.location-card-soon { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .coming-soon-card { padding: 36px 20px; }
 }
 
 @media (max-width: 480px) {
@@ -1808,7 +1987,7 @@ footer {
    SUCCESS PAGE
    ============================== */
 .success-section {
-  padding: 160px 0 120px;
+  padding: calc(160px + var(--announce-h, 0px)) 0 120px;
   text-align: center;
   min-height: 60vh;
   display: flex;

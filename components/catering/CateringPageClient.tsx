@@ -208,7 +208,9 @@ export function CateringPageClient() {
     setActiveCategory(catId);
     // Scroll tabs bar into view if user is scrolled past it (prevents jump on short categories)
     if (tabsBarRef.current) {
-      const tabsTop = tabsBarRef.current.getBoundingClientRect().top + window.scrollY - 107;
+      // Use the bar's live sticky offset: the header height, plus the announcement bar while it shows.
+      const stickyTop = parseFloat(getComputedStyle(tabsBarRef.current).top) || 0;
+      const tabsTop = tabsBarRef.current.getBoundingClientRect().top + window.scrollY - stickyTop;
       if (window.scrollY > tabsTop) {
         window.scrollTo({ top: tabsTop, behavior: 'instant' });
       }

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { socialLinks, locations } from '@/lib/site-data';
+import { socialLinks, locations, comingSoonLocations } from '@/lib/site-data';
 
 export function Footer() {
   return (
@@ -37,6 +37,11 @@ export function Footer() {
                 Google discover and index them. */}
             {locations.map((loc) => (
               <Link key={loc.id} href={`/${loc.id}`}>{loc.shortName}</Link>
+            ))}
+            {comingSoonLocations.map((loc) => (
+              <Link key={loc.id} href={`/locations#${loc.id}`}>
+                {loc.shortName} <span className="footer-soon">(coming soon)</span>
+              </Link>
             ))}
             <Link href="/careers">Careers</Link>
             <Link href="/about#press">Press</Link>
