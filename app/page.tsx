@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { locations, brand } from '@/lib/site-data';
+import { comingSoonLocations, locations, brand } from '@/lib/site-data';
 import { getRestaurantJsonLd } from '@/lib/json-ld';
 
 export const metadata: Metadata = {
@@ -201,6 +201,19 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
+            ))}
+            {/* Coming soon: a full-width card under the open stores, with no order or phone links. */}
+            {comingSoonLocations.map((loc) => (
+              <Link key={loc.id} href={`/locations#${loc.id}`} className="location-card location-card-soon">
+                <span className="coming-soon-badge">Coming soon</span>
+                <div className="location-card-soon-body">
+                  <h3>Cravin {loc.shortName}</h3>
+                  <p>{loc.area}. Opening date to be announced.</p>
+                </div>
+                <span className="location-card-soon-cta">
+                  Learn more <span aria-hidden="true">&rarr;</span>
+                </span>
+              </Link>
             ))}
           </div>
         </div>

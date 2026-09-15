@@ -4,6 +4,8 @@ import { ThemeProvider } from '@/lib/theme-context';
 import { SkipLink } from '@/components/layout/SkipLink';
 import { StickyOrderButton } from '@/components/layout/StickyOrderButton';
 import { Navbar } from '@/components/layout/Navbar';
+import { AnnouncementBar } from '@/components/layout/AnnouncementBar';
+import { announcement, ANNOUNCEMENT_DISMISS_KEY } from '@/lib/site-data';
 import { Footer } from '@/components/layout/Footer';
 import { HideOnAdmin } from '@/components/layout/HideOnAdmin';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
@@ -78,6 +80,12 @@ const themeScript = `
 })();
 `;
 
+// Inline script so a visitor who closed the current announcement never sees it
+// flash: marks <html> before paint, and CSS hides the bar and its offset.
+const announcementScript = announcement
+  ? `(function(){try{if(localStorage.getItem(${JSON.stringify(ANNOUNCEMENT_DISMISS_KEY)})===${JSON.stringify(announcement.id)})document.documentElement.setAttribute('data-announcement-dismissed','');}catch(e){}})();`
+  : null;
+
 export default function RootLayout({
   children,
 }: {
@@ -87,6 +95,7 @@ export default function RootLayout({
     <html lang="en" data-theme="dark" className={`${dmSans.variable} ${dmSerifDisplay.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {announcementScript && <script dangerouslySetInnerHTML={{ __html: announcementScript }} />}
       </head>
       <body>
         {/* Analytics is hidden on /admin so staff activity and internal
@@ -99,6 +108,7 @@ export default function RootLayout({
         <ThemeProvider>
           <SkipLink />
           <HideOnAdmin><StickyOrderButton /></HideOnAdmin>
+          <HideOnAdmin><AnnouncementBar /></HideOnAdmin>
           <HideOnAdmin><Navbar /></HideOnAdmin>
           {children}
           <HideOnAdmin><Footer /></HideOnAdmin>

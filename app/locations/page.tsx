@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { locations } from '@/lib/site-data';
+import { comingSoonLocations, locations } from '@/lib/site-data';
 import { getLocationsJsonLd, getFaqJsonLd } from '@/lib/json-ld';
 import { mapEmbeds } from '@/lib/location-embeds';
 import { FaqSection } from '@/components/layout/FaqSection';
@@ -40,7 +40,7 @@ export default function LocationsPage() {
       <section className="page-hero" id="main-content">
         <div className="container">
           <h1>Our Locations</h1>
-          <p>Three restaurants across Westchester County, New York.</p>
+          <p>Three restaurants across Westchester County, New York, with the South Bronx coming soon.</p>
         </div>
       </section>
 
@@ -49,6 +49,13 @@ export default function LocationsPage() {
         <div className="container">
           {locations.map((loc) => (
             <a key={loc.id} href={`#${loc.id}`} className="quicklink">{loc.shortName}</a>
+          ))}
+          {comingSoonLocations.map((loc) => (
+            <a key={loc.id} href={`#${loc.id}`} className="quicklink quicklink-soon">
+              {loc.shortName}{' '}
+              <span className="quicklink-soon-sep" aria-hidden="true">&middot;</span>{' '}
+              <span className="quicklink-soon-label">Coming soon</span>
+            </a>
           ))}
         </div>
       </div>
@@ -120,6 +127,21 @@ export default function LocationsPage() {
                 referrerPolicy="no-referrer-when-downgrade"
                 title={`Map of Cravin Jamaican Cuisine ${loc.shortName} location`}
               />
+            </div>
+          </div>
+        </section>
+      ))}
+
+      {/* COMING SOON — no address, phone, hours, directions or ordering until
+          it opens, and no LocalBusiness schema (it isn't in `locations`). */}
+      {comingSoonLocations.map((loc) => (
+        <section key={loc.id} className="location-detail-section location-coming-soon" id={loc.id}>
+          <div className="container">
+            <div className="coming-soon-card">
+              <span className="coming-soon-badge">Coming soon</span>
+              <h2>{loc.shortName}</h2>
+              <p className="location-tagline">{loc.area}</p>
+              <p className="coming-soon-blurb">{loc.blurb}</p>
             </div>
           </div>
         </section>

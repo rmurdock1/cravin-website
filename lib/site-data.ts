@@ -155,3 +155,44 @@ export const navLinks = [
   { href: '/locations', label: 'Locations' },
   { href: '/contact', label: 'Contact' },
 ];
+
+/** Restaurants that haven't opened yet. Deliberately separate from `locations`
+ *  so they never get order links, phone numbers, hours, analytics location
+ *  matching or LocalBusiness schema before they open. No street address until
+ *  the owners want it public (this repo is public). */
+export interface ComingSoonLocation {
+  id: string;
+  shortName: string;
+  area: string;
+  blurb: string;
+}
+
+export const comingSoonLocations: ComingSoonLocation[] = [
+  {
+    id: 'south-bronx',
+    shortName: 'South Bronx',
+    area: 'Mott Haven, Bronx, NY',
+    blurb: 'Cravin is coming to Mott Haven in the South Bronx. Opening date to be announced.',
+  },
+];
+
+/** Site-wide announcement bar (public pages only). Set to null to remove it.
+ *  Change `id` for a new message so visitors who closed the old one see it. */
+export const announcement: {
+  id: string;
+  /** Optional pill before the message, e.g. "Coming soon" or "Now open". */
+  badge?: string;
+  message: string;
+  /** Shown on narrow screens instead of `message`. */
+  shortMessage: string;
+  href: string;
+} | null = {
+  id: 'south-bronx-coming-soon',
+  badge: 'Opening soon',
+  message: 'Cravin South Bronx is on the way to Mott Haven.',
+  shortMessage: 'Cravin South Bronx',
+  href: '/locations#south-bronx',
+};
+
+/** localStorage key holding the id of the announcement a visitor closed. */
+export const ANNOUNCEMENT_DISMISS_KEY = 'cravin-announcement-dismissed';
