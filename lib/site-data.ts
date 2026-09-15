@@ -188,7 +188,7 @@ export const announcement: {
   href: string;
 } | null = {
   id: 'south-bronx-coming-soon',
-  badge: 'Coming soon',
+  badge: 'Opening soon',
   message: 'Cravin South Bronx is on the way to Mott Haven.',
   shortMessage: 'Cravin South Bronx',
   href: '/locations#south-bronx',

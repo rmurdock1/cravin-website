@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { comingSoonLocations, locations, socialLinks } from '@/lib/site-data';
+import { comingSoonLocations, locations } from '@/lib/site-data';
 import { getLocationsJsonLd, getFaqJsonLd } from '@/lib/json-ld';
 import { mapEmbeds } from '@/lib/location-embeds';
 import { FaqSection } from '@/components/layout/FaqSection';
@@ -51,9 +51,10 @@ export default function LocationsPage() {
             <a key={loc.id} href={`#${loc.id}`} className="quicklink">{loc.shortName}</a>
           ))}
           {comingSoonLocations.map((loc) => (
-            <a key={loc.id} href={`#${loc.id}`} className="quicklink">
+            <a key={loc.id} href={`#${loc.id}`} className="quicklink quicklink-soon">
               {loc.shortName}{' '}
-              <span className="quicklink-badge">Soon</span>
+              <span className="quicklink-soon-sep" aria-hidden="true">&middot;</span>{' '}
+              <span className="quicklink-soon-label">Coming soon</span>
             </a>
           ))}
         </div>
@@ -141,18 +142,6 @@ export default function LocationsPage() {
               <h2>{loc.shortName}</h2>
               <p className="location-tagline">{loc.area}</p>
               <p className="coming-soon-blurb">{loc.blurb}</p>
-              <div className="location-detail-actions">
-                <a
-                  href={socialLinks.instagram}
-                  className="btn btn-warm"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Follow Us on Instagram (opens in new tab)"
-                >
-                  Follow Us on Instagram
-                </a>
-                <Link href="/menu" className="btn btn-outline-green">Explore the Menu</Link>
-              </div>
             </div>
           </div>
         </section>

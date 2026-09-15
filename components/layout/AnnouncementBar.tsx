@@ -53,7 +53,12 @@ export function AnnouncementBar() {
         >
           {current.badge && (
             <>
-              <span className="announcement-badge">{current.badge}</span>{' '}
+              <span className="announcement-badge">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path fill="currentColor" d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z" />
+                </svg>
+                {current.badge}
+              </span>{' '}
             </>
           )}
           <span className="announcement-text announcement-text-full">{current.message}</span>{' '}
