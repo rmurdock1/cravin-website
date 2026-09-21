@@ -14,6 +14,8 @@ import {
 // without per-button wiring. Handles left-click plus auxclick/cmd-click, which
 // is how users open external order/directions links in a new tab.
 function handleLinkClick(e: MouseEvent) {
+  // auxclick also fires for right-clicks. Only a middle-click opens the link.
+  if (e.type === 'auxclick' && e.button !== 1) return;
   const target = e.target as HTMLElement | null;
   const anchor = target?.closest?.('a');
   if (!anchor) return;

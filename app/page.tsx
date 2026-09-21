@@ -185,7 +185,7 @@ export default function HomePage() {
                   <h3>{loc.shortName}</h3>
                   <div className="location-detail">
                     <span className="icon" aria-hidden="true">&#128205;</span>
-                    <span>{loc.fullAddress}</span>
+                    <a href={loc.googleMapsUrl} target="_blank" rel="noopener noreferrer" aria-label={`Directions to ${loc.fullAddress} (opens Google Maps in a new tab)`}>{loc.fullAddress}</a>
                   </div>
                   <div className="location-detail">
                     <span className="icon" aria-hidden="true">&#128222;</span>
