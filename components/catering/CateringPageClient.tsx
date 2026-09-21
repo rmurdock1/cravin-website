@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { cateringCategories, cateringItems, type CateringItem, formatPrice } from '@/lib/catering-data';
-import { brand } from '@/lib/site-data';
+import { brand, locations } from '@/lib/site-data';
 import { useCateringCart, formatCurrency, sizeLabel, type CartItem } from '@/hooks/useCateringCart';
 import { PhoneInput } from '@/components/forms/PhoneInput';
 import { submitNetlifyForm } from '@/lib/netlify-forms';
@@ -14,6 +14,27 @@ import '@/app/catering.css';
 // ==============================
 function Toast({ message }: { message: string }) {
   return <div className="cart-toast">{message}</div>;
+}
+
+// ==============================
+// PREFERRED LOCATION (optional)
+// ==============================
+/** Which restaurant the customer wants to order from. Optional for now. Lists
+ *  open stores only (coming-soon ones aren't in `locations`). The value is the
+ *  store's short name, so Netlify emails read "White Plains", and it becomes the
+ *  lead's GA4 `location` param (lib/analytics.ts). */
+function PreferredLocationField({ id }: { id: string }) {
+  return (
+    <div className="form-group full">
+      <label htmlFor={id}>Preferred Cravin Location</label>
+      <select id={id} name="location" defaultValue="">
+        <option value="">No preference</option>
+        {locations.map((loc) => (
+          <option key={loc.id} value={loc.shortName}>{loc.shortName}</option>
+        ))}
+      </select>
+    </div>
+  );
 }
 
 // ==============================
@@ -442,6 +463,7 @@ export function CateringPageClient() {
                     <label htmlFor="bo-company">Company or Organization</label>
                     <input type="text" id="bo-company" name="company" placeholder="Leave blank if personal" />
                   </div>
+                  <PreferredLocationField id="bo-location" />
                   <div className="form-group">
                     <label htmlFor="bo-date">Event Date</label>
                     <input type="date" id="bo-date" name="event_date" />
@@ -504,6 +526,7 @@ export function CateringPageClient() {
                     <label htmlFor="qi-company">Company or Organization</label>
                     <input type="text" id="qi-company" name="company" placeholder="Leave blank if personal" />
                   </div>
+                  <PreferredLocationField id="qi-location" />
                   <div className="form-group">
                     <label htmlFor="qi-date">Approximate Event Date</label>
                     <input type="date" id="qi-date" name="event_date" />
