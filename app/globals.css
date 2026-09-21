@@ -7,6 +7,10 @@
 
 /* ========== DARK MODE (DEFAULT) ========== */
 :root {
+  /* Tells the browser which theme is showing, so its own UI matches: open
+     <select> lists, date pickers, scrollbars and autofill. Without it, Chrome
+     and Edge on Windows draw dark-theme dropdown text on a white menu. */
+  color-scheme: dark;
   /* iOS safe-area insets (0 on non-notched devices / desktop) */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -40,6 +44,7 @@
 
 /* ========== LIGHT MODE ========== */
 [data-theme="light"] {
+  color-scheme: light;
   --bg: #FEFCF9;
   --bg-elevated: #FAF7F2;
   --bg-card: #FFFFFF;
@@ -66,6 +71,7 @@
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
+    color-scheme: light;
     --bg: #FEFCF9;
     --bg-elevated: #FAF7F2;
     --bg-card: #FFFFFF;
@@ -1234,6 +1240,10 @@ footer {
    inputs otherwise) */
 .form-group input,
 .form-group select { height: 50px; }
+/* Open dropdown lists. Some browsers draw options with the page's colors, and
+   --input-bg is see-through in dark mode, so give options a solid themed
+   background. Applies to every select (public forms, careers, admin). */
+option, optgroup { background-color: var(--bg-elevated); color: var(--text); }
 .form-group textarea { resize: vertical; min-height: 100px; }
 
 .form-submit { text-align: center; margin-top: 32px; grid-column: 1 / -1; }
