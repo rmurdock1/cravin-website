@@ -522,7 +522,7 @@
 .qty-btn:focus-visible,
 .cart-confirm-add:focus-visible,
 .cart-cancel-add:focus-visible,
-.floating-pill:focus-visible {
+.floating-cart-pill:focus-visible {
   outline: 2px solid var(--warm);
   outline-offset: 2px;
 }
