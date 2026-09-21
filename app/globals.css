@@ -2438,7 +2438,9 @@ footer {
 [data-theme="light"] .careers-form-group input,
 [data-theme="light"] .careers-form-group select,
 [data-theme="light"] .careers-form-group textarea {
-  background: #f7f5f0;
+  /* background-color, not the shorthand: the shorthand would also clear the
+     select's dropdown-arrow background-image. */
+  background-color: #f7f5f0;
 }
 
 /* Responsive */
