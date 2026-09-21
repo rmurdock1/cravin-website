@@ -25,7 +25,7 @@ time, so **every current and future link is covered** with no per-button wiring.
 | `catering_request` + `generate_lead` | Successful catering form submit (see §2) | `value`, `currency`, `location`… |
 | `email_click` | Any `mailto:` tap (e.g. catering@) — bonus, not required | `email`, `page_path` |
 | `form_submit` | Successful non-catering form (contact, careers) | `form_name`, `page_path` |
-| `page_view` (SPA) | Every client-side route change after the first load | `page_path`, `page_location`, `page_title` |
+| `page_view` (SPA) | Every client-side route change. **Since 2026-09-21 this comes from GA4 Enhanced measurement, not site code** (see the 2026-09-21 section) | `page_location`, `page_referrer`, `page_title` |
 
 Notes:
 - **`order_click` = the outbound provider click** (the real "leaving to order"
@@ -38,6 +38,11 @@ Notes:
   restaurant (Ossining / White Plains / Mount Vernon) wherever the link appears.
 
 ### SPA page views (why this matters)
+> **Superseded 2026-09-21.** The premise below was wrong for this property: GA4
+> Enhanced measurement "page changes based on browser history events" is on, so
+> `<Link>` navigations already sent a page_view. The manual one doubled them. It
+> was removed; see "2026-09-21 revised interim hand-off" at the end of this file.
+
 Previously only ONE `page_view` fired per full page load; Next.js `<Link>`
 navigations sent nothing, so internal pages were undercounted and funnels
 couldn't be built. `AnalyticsProvider` now sends a `page_view` on each route
@@ -139,7 +144,7 @@ so `trackEvent` uses its dataLayer fallback):
 - `menu_view` — on `/menu` load
 - `generate_lead` + `catering_request` — `value: 480`, `value_basis: cart_total`,
   plus `event_type` / `guest_count` / `event_date` / `page_path`
-- `page_view` — on SPA route change, no double-count on initial load
+- `page_view` — on SPA route change, from GA4 Enhanced measurement (exactly one per navigation since 2026-09-21)
 
 > ⚠️ Dev-mode note: `npm run dev` breaks hydration locally because Next's
 > eval-based HMR is blocked by the site's CSP (no `unsafe-eval`). Verify against
@@ -357,3 +362,206 @@ session). Once RPM provides the URL, a one-line 301 fixes it.
 ## Obj 9 — Per-head placeholder
 The `$25/guest` constant was **already removed** in PR #5 (2026-09-01,
 RPM-approved). Inquiry leads carry no value by design. Nothing to leave/flag.
+
+---
+
+# 2026-09-21 revised interim hand-off
+
+Branch `analytics-sept-interim`. Covers the mid-September interim hand-off as
+revised on 2026-09-21. Each objective was audited against the code, git
+history, the live site and Google's docs before anything changed. Several
+premises in the hand-off didn't hold, so each objective below says what is true.
+
+| Commit | Obj | Change |
+|---|---|---|
+| `ae09540` | 7 | Removed the manual SPA page_view (it double-counted every in-site navigation) |
+| `3963fc6` | 6 | GA4 hits blocked on `/admin` even when gtag is already loaded |
+| `1a1fc5b` | 3 | Location JSON-LD fixes; Contact "Details" links go to the location pages |
+| `864e395` | 4 | Addresses on the homepage, `/contact` and `/order` link to directions; right-clicks no longer count |
+
+## Obj 1: catering `currency` is already sent; the pass/fail metric can't move
+- **Payload, re-checked 2026-09-21** (localhost, Netlify POST stubbed, no real
+  lead): `generate_lead` = `{currency: "USD", value: 95, value_basis:
+  "cart_total", form_type: "build-order", location: "Ossining", …}`. The live
+  bundle has the same code. `currency` has gone out with every valued lead
+  since `generate_lead` first reached `main` (PR #1, 2026-09-01 16:08 EDT). No
+  wrapper strips it; `clean()` only drops empty values.
+- **Why Total revenue is $0.00:** GA4's Total revenue is purchases + in-app
+  purchases + subscriptions + ad revenue
+  ([9143382](https://support.google.com/analytics/answer/9143382)). "Only events
+  about purchases, in-app purchases, subscriptions, and ad revenue can have
+  total revenue"
+  ([12926615](https://support.google.com/analytics/answer/12926615)). A lead
+  never feeds it, so the success line "Total revenue no longer $0.00 for
+  generate_lead" cannot pass. Don't add a `purchase` event to force it; a lead
+  isn't a sale.
+- **The right check:** Reports → Engagement → Events → customize → add the
+  **Event value** metric, filter to `generate_lead`. It should equal the sum of
+  build-order cart totals in Netlify Forms for the same dates (the 3,166 already
+  seen is this). Per-key-event value: Admin → Data display → Events → Key events.
+- No code change.
+
+## Obj 7: page views were double-counted since 2026-09-01 (fixed)
+- **Seen live on 2026-09-21** by capturing the GA4 hits on www.cravinjc.com:
+  `/about` → `/locations` → `/menu` through nav links sent **two** `page_view`
+  hits per navigation. One came from `AnalyticsProvider`'s manual page_view, the
+  other from gtag's Enhanced measurement history listener. That listener is on
+  in the live G-RQE3YPW3DM config. `menu_view` fired once. The manual page_view
+  is removed; GA4's own history page_view is kept (Google's recommended SPA
+  setup).
+- **Reporting impact:** Views, views per session and events per session are
+  inflated for in-site navigations from 2026-09-01 until this deploys. The
+  hand-off's "page views +34%" and "events per session 4.50 → 6.05" compare Sep
+  1–9 with Aug 1–9, which is before the manual page_view reached `main`, so part
+  of that growth is this artifact. Sessions, users, key events and attribution
+  are unaffected. **Expect Views to drop at deploy.**
+- **UTMs across navigation:** nothing to fix. A GA4 session keeps the landing
+  hit's source, medium, campaign and ad content
+  ([11242841](https://support.google.com/analytics/answer/11242841)), so later
+  page views without UTMs don't change it. `captureFirstTouchUtms` still stamps
+  `utm_*` onto catering leads.
+- **`utm_content` custom dimension:** only `generate_lead` and
+  `catering_request` carry a `utm_content` event parameter, so the event-scoped
+  dimension reads "(not set)" on everything else. The built-in **Session manual
+  ad content** dimension already applies `utm_content` to every event in the
+  session; use that. If the custom dimension must fill on every event, a
+  one-line `gtag('config', ID, { utm_content })` from the stored first-touch
+  UTMs would do it (not done).
+- **FYI, not changed:** Enhanced measurement form interactions send their own
+  `form_submit`, and the site's success event for contact and careers forms is
+  also called `form_submit`, so GA4's `form_submit` count mixes both. Rename the
+  site's event (e.g. `form_success`) if form reporting matters.
+
+## Obj 6: `/admin`
+- **noindex:** already on every admin route (`app/admin/layout.tsx`); live on
+  `/admin/login`.
+- **Auth:** checked live on 2026-09-21. `/admin`, `/admin/staff`,
+  `/admin/postings`, `/admin/applicants` and `/admin/team` all 307 to
+  `/admin/login` without a session (GET and HEAD). Admin pages and server
+  actions check auth again on the server. There are no admin API routes.
+- **Leak fixed:** `HideOnAdmin` stops GA loading when `/admin` is the first page,
+  but `next/script` never unloads gtag. The path admin → public page (e.g.
+  Postings' "careers page" link) → Back returned to `/admin` with gtag running.
+  Its history page_views would record `/admin/staff/<uuid>`, and its
+  outbound-click events would record the Team page's "Open in Gmail" link, which
+  contains the invitee's email address. `GoogleAnalytics.tsx` now defines
+  `window['ga-disable-G-RQE3YPW3DM']` as a getter that is true on `/admin` paths.
+  That is GA's official opt-out flag, and the live gtag.js checks it on every
+  hit.
+- **robots.txt `Disallow: /admin` kept.** Note: Google only obeys a noindex it's
+  allowed to crawl, so an externally linked admin URL could still show as a bare
+  URL. Admin URLs aren't linked publicly and all redirect to login, so the risk
+  is small; dropping `/admin` from the disallow list is the textbook option.
+
+## Obj 3: location pages
+- **Already correct:** all three return 200, have self-canonical URLs and are in
+  the sitemap. They're linked from the homepage cards, the `/locations` hub, the
+  footer on every page and each other's pages. No redirect, canonical or sitemap
+  change.
+- **Fixed in the JSON-LD:**
+  - `dayOfWeek` was `"Mo"`, `"Tu"`… Google accepts only `"Monday"` or
+    `https://schema.org/Monday`
+    ([docs](https://developers.google.com/search/docs/appearance/structured-data/local-business)),
+    so the hours could be ignored.
+  - Sunday is now marked closed with `00:00`/`00:00`.
+  - `telephone` has `+1-`.
+  - Each location's `url` and `@id` are its own page on `/locations` and the
+    homepage too.
+  - `acceptsReservations` is a boolean.
+- The Contact page "Details" buttons now link to `/ossining`, `/white-plains`
+  and `/mount-vernon`.
+- The real fix for indexing is Request Indexing (manual step).
+
+## Obj 4: directions
+- Tracking is correct and document-delegated. It covers every page, including
+  the restored ones, with `location` set.
+- The gaps were missing places to click. Only `/locations` and the three
+  location pages had a directions link. Taps inside the embedded Google Maps
+  iframes can't be seen by the site, so treat `directions_click` as a lower
+  bound.
+- The address on the homepage, `/contact` and `/order` now links to directions
+  and fires `directions_click` with the right `location`. It's styled like the
+  phone link next to it.
+- The listener no longer counts right-clicks (only a middle-click opens a link).
+- `order_click`, `call_click` and `menu_view` fire on the restored pages.
+- Cross-check: GA4's automatic outbound `click` events to google.com/maps.
+
+## Obj 5: `/about:*Our`
+Nothing in the repo produces it. `public/llms.txt` writes "Our story:
+https://www.cravinjc.com/about". Live, `/about:*Our` returns 404 with noindex.
+The most likely source is an outside page or chat where "about: *Our Story*"
+text got auto-linked. The 404 page loads GA, so human visits record the path.
+No change.
+
+## Obj 2: the Search Console 404 (closed)
+`https://www.cravinjc.com/&opi=79508299&sa=U&ved=0ahUKEwiWgsSF9OeTAxWUgv0HHc98MDcQ61gIFygQ&usg=AOvVaw2w_67LXIHm04mc6Em3F0xd`
+is Google's own result-click tracking glued onto the path. It returns 404 with
+noindex, which is correct. No redirect.
+
+## Obj 8: how the per-location restore reached production (facts only)
+- One commit, `b90e75c` (2026-09-01 15:44 EDT, branch `restore-location-pages`),
+  created all three pages and `LocationPageContent`. It also removed the three
+  `/<slug>` → `/locations#<slug>` redirects added in `a3a1153` (2026-07-06).
+- It went in through **GitHub PR #3**, titled "[PENDING APPROVAL] Restore
+  per-location pages (obj 5)", whose body opens "PENDING RPM APPROVAL — DO NOT
+  MERGE YET". PR #2's body also listed it as "unmerged, pending RPM approval".
+- The GitHub timeline shows the `rmurdock1` account changed PR #3's base from
+  `sept-2026-traffic-fixes` to `main` at 20:31:59Z on 2026-09-01. The same
+  account merged it 28 seconds later, at 20:32:27Z (merge `68d137a`). There were
+  no reviews, comments or deploy preview.
+- Production builds from `main` automatically, so it most likely went live at
+  about 16:32 EDT that day.
+- The 2026-09-14 section above called this "owner-approved". What the record
+  actually shows is a merge by the owner's account. Whether that was a
+  deliberate approval is RPM's call. Nothing was reverted.
+
+## Obj 9: per-head placeholder
+There's nothing to flag. The `$25/guest` constant (`CATERING_VALUE_PER_GUEST_USD`)
+was removed in `a5a2ea4`, which reached `main` via PR #5 on 2026-09-01 "Per
+RPM". Build-order leads carry the real cart total; quick inquiries carry no
+value by design.
+
+## Redirect and indexing audit (live, 2026-09-21)
+| URL | Status | Destination | Canonical | In sitemap | Action |
+|---|---|---|---|---|---|
+| `/index.html` | 301 | `/` | `/` | dest yes | none |
+| `/menu.html`, `/catering.html`, `/order.html`, `/locations.html`, `/about.html`, `/contact.html` | 301 | clean path | self | dest yes | none |
+| `/success.html` | 301 | `/success` (noindex, robots-disallowed) | none | no (correct) | none |
+| `/home`, `/about-us`, `/contact-us`, `/order-online`, `/menu-2` | 301 | `/`, `/about`, `/contact`, `/order`, `/menu` | self | dest yes | none |
+| `/cart` | 301 | `/catering` | self | dest yes | none |
+| `https://cravinjc.netlify.app/`, `https://cravinjc.com/` | 301 | `https://www.cravinjc.com/` | `/` | n/a | none |
+| `http://cravinjc.com/` | 301 → 301 | `https://cravinjc.com/` → www (2 hops, Netlify domain level) | `/` | n/a | optional |
+| `/`, `/menu`, `/catering`, `/order`, `/about`, `/careers` | 200 | none | self | yes | none |
+| `/locations` | 200 | none | self | yes | JSON-LD fixed (`1a1fc5b`) |
+| `/contact` | 200 | none | self | yes | Details → location pages (`1a1fc5b`) |
+| `/ossining` | 200 | none | self | yes | JSON-LD fixed; already indexed |
+| `/white-plains` | 200 | none | self | yes | JSON-LD fixed; **Request Indexing** |
+| `/mount-vernon` | 200 | none | self | yes | JSON-LD fixed; **Request Indexing** |
+| `/&opi=79508299&sa=U&ved=…&usg=…` | **404** (noindex) | none | none | no | none (see Obj 2) |
+
+## Manual steps for RPM
+- [ ] **Request Indexing** (Search Console → URL Inspection) for
+      `https://www.cravinjc.com/white-plains` and
+      `https://www.cravinjc.com/mount-vernon`. This is the fix for the
+      location-page gap. It takes about two minutes.
+- [ ] **Change the revenue check:** measure catering value with **Event value**
+      on `generate_lead`, not Total revenue (Obj 1).
+- [ ] **Add a GA4 annotation on the deploy date:** "Removed duplicate SPA
+      page_view; Views drop expected." Keep Enhanced measurement → Page views →
+      "Page changes based on browser history events" **on**, because it is now
+      the only source of in-site page views.
+- [ ] After deploy, check with Tag Assistant or DebugView that one internal
+      click sends **one** page_view.
+- [ ] Authorise one real build-order test submission (`?debug_mode=1`) if you
+      want DebugView proof of `currency=USD`. Staff will receive that lead.
+- [ ] Use **Session manual ad content** for `utm_content` reporting (Obj 7).
+- [ ] Paste the tagged links into the Ossining and White Plains Google Business
+      Profiles (Contact → Website), and confirm Mount Vernon's pending edit was
+      accepted:
+      - Ossining: `https://www.cravinjc.com/?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=ossining`
+      - White Plains: `https://www.cravinjc.com/?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=white-plains`
+- [ ] Run Google's Rich Results Test on `/white-plains` from the deploy preview
+      or production.
+- [ ] Answer Obj 8: was the PR #3 merge intended?
+- [ ] Optional: say whether to remove `/admin` from the robots.txt disallow
+      (Obj 6) and whether to rename the site's `form_submit` event (Obj 7).
