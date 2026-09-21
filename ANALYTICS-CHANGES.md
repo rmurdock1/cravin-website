@@ -447,7 +447,14 @@ premises in the hand-off didn't hold, so each objective below says what is true.
   contains the invitee's email address. `GoogleAnalytics.tsx` now defines
   `window['ga-disable-G-RQE3YPW3DM']` as a getter that is true on `/admin` paths.
   That is GA's official opt-out flag, and the live gtag.js checks it on every
-  hit.
+  hit. Verified on the PR #20 deploy preview with the real tag: while on
+  `/admin/login`, neither gtag's history page_view nor a direct `gtag('event')`
+  was sent. Back on a public path, both were sent.
+- **Referrer (pre-existing, reduced):** the first public page view after leaving
+  admin can carry the admin URL as `page_referrer`. The Postings page's link to
+  the careers page, the one admin → public link, now opens in a new tab with
+  `rel="noreferrer"`, so it doesn't do this. Back/Forward from an admin page to a
+  public page still can; that's rare, and it only exposes the referrer.
 - **robots.txt `Disallow: /admin` kept.** Note: Google only obeys a noindex it's
   allowed to crawl, so an externally linked admin URL could still show as a bare
   URL. Admin URLs aren't linked publicly and all redirect to login, so the risk
