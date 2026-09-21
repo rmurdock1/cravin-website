@@ -130,10 +130,9 @@
 }
 .admin-checkbox:has(input:checked) { border-color: var(--warm); background: var(--surface); }
 
-/* Native date field's picker icon is dark — lighten it for the dark form. */
-.admin-form input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.85); opacity: 0.85; cursor: pointer;
-}
+/* The picker icon follows the theme on its own via `color-scheme` (globals.css).
+   Inverting it here would turn it dark again on the dark form. */
+.admin-form input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; }
 .admin-stat-row {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 12px; margin-bottom: 32px;
