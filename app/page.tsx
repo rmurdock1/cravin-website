@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { comingSoonLocations, locations, brand } from '@/lib/site-data';
+import { photos, storefrontPhotos } from '@/lib/images';
 import { getRestaurantJsonLd } from '@/lib/json-ld';
 
 export const metadata: Metadata = {
@@ -27,7 +28,9 @@ export default function HomePage() {
       {/* HERO */}
       <section className="hero" id="main-content">
         <div className="hero-bg">
-          <Image src="/img/food-spread.jpeg" alt="Authentic Jamaican food spread featuring jerk chicken, rice and peas, and plantain" fill priority style={{ objectFit: 'cover' }} />
+          {/* Blur placeholder paints instantly, so the hero never shows bare dark
+              background. Quality 60 is invisible under the dark gradient. */}
+          <Image src={photos.foodSpread} alt="Authentic Jamaican food spread featuring jerk chicken, rice and peas, and plantain" fill sizes="100vw" priority fetchPriority="high" quality={60} placeholder="blur" style={{ objectFit: 'cover' }} />
         </div>
         <div className="container">
           <div className="hero-content">
@@ -74,7 +77,7 @@ export default function HomePage() {
           <div className="featured-grid">
             <div className="featured-card featured-card-hero">
               <div className="featured-img">
-                <Image src="/img/food/CravinJamaican_JerkChickenCombo.jpeg" alt="Jerk Chicken plate with rice and peas and fried plantain" width={600} height={400} />
+                <Image src={photos.jerkChickenCombo} alt="Jerk Chicken plate with rice and peas and fried plantain" width={600} height={400} placeholder="blur" />
                 <span className="featured-tag">Most Popular</span>
               </div>
               <div className="featured-info">
@@ -88,7 +91,7 @@ export default function HomePage() {
             </div>
             <div className="featured-card">
               <div className="featured-img">
-                <Image src="/img/food/CravinJamaican_OxTailCombo.jpeg" alt="Oxtail Stew in rich savory gravy" width={400} height={300} />
+                <Image src={photos.oxtailCombo} alt="Oxtail Stew in rich savory gravy" width={400} height={300} placeholder="blur" />
                 <span className="featured-tag featured-tag-green">Chef&apos;s Pick</span>
               </div>
               <div className="featured-info">
@@ -102,7 +105,7 @@ export default function HomePage() {
             </div>
             <div className="featured-card">
               <div className="featured-img">
-                <Image src="/img/ackee-saltfish.jpg" alt="Callaloo and Salt Fish with fried plantain" width={400} height={300} />
+                <Image src={photos.ackeeSaltfish} alt="Callaloo and Salt Fish with fried plantain" width={400} height={300} placeholder="blur" />
               </div>
               <div className="featured-info">
                 <h3>Callaloo &amp; Salt Fish</h3>
@@ -120,7 +123,7 @@ export default function HomePage() {
       {/* STORY */}
       <section className="story">
         <div className="story-bg" aria-hidden="true">
-          <Image src="/img/jerk-chicken-close.jpg" alt="" fill sizes="100vw" quality={75} />
+          <Image src={photos.jerkChickenClose} alt="" fill sizes="100vw" quality={50} placeholder="blur" />
         </div>
         <div className="container">
           <div className="story-content">
@@ -179,7 +182,7 @@ export default function HomePage() {
             {locations.map((loc) => (
               <div key={loc.id} className="location-card">
                 <div className="location-map">
-                  <Image src={loc.storefrontImage} alt={`Cravin Jamaican Cuisine ${loc.shortName} storefront`} width={400} height={250} />
+                  <Image src={storefrontPhotos[loc.id]} alt={`Cravin Jamaican Cuisine ${loc.shortName} storefront`} width={400} height={250} placeholder="blur" />
                 </div>
                 <div className="location-info">
                   <h3>{loc.shortName}</h3>
@@ -224,7 +227,7 @@ export default function HomePage() {
         <div className="container">
           <div className="catering-card">
             <div className="catering-img" role="img" aria-label="Jamaican catering spread">
-              <Image src="/img/jerk-chicken-plate.jpg" alt="" fill sizes="50vw" quality={75} />
+              <Image src={photos.jerkChickenPlate} alt="" fill sizes="(max-width: 1024px) 100vw, 600px" placeholder="blur" />
             </div>
             <div className="catering-content">
               <span className="section-label">Catering</span>

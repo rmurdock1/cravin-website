@@ -91,9 +91,17 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // Image optimization
+  // Image optimization. On Netlify, /_next/image is served by Netlify Image
+  // CDN, which only receives url, w and q and picks WebP itself, so `formats`
+  // has no effect there. deviceSizes and qualities still shape the srcset.
   images: {
     formats: ['image/avif', 'image/webp'],
+    // Largest width 2560 instead of 3840. The only full-width photos sit under
+    // dark gradients, so a retina desktop doesn't need a 3840px file.
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 2560],
+    // Qualities in use: 50 story background, 60 homepage hero, 65 About hero,
+    // 75 default. Next 16 will require this list.
+    qualities: [50, 60, 65, 75],
   },
 };
 

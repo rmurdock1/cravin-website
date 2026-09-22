@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { locations, brand } from '@/lib/site-data';
+import { photos } from '@/lib/images';
 
 export const metadata: Metadata = {
   title: 'Order Online',
@@ -75,7 +76,7 @@ export default function OrderPage() {
         <div className="container">
           <div className="catering-card">
             <div className="catering-img" role="img" aria-label="Jamaican catering spread">
-              <Image src="/img/jerk-chicken-plate.jpg" alt="" fill sizes="50vw" quality={75} />
+              <Image src={photos.jerkChickenPlate} alt="" fill sizes="(max-width: 1024px) 100vw, 600px" placeholder="blur" />
             </div>
             <div className="catering-content">
               <span className="section-label">Large Orders?</span>

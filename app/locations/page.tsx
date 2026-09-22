@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { comingSoonLocations, locations } from '@/lib/site-data';
+import { storefrontPhotos } from '@/lib/images';
 import { getLocationsJsonLd, getFaqJsonLd } from '@/lib/json-ld';
 import { mapEmbeds } from '@/lib/location-embeds';
 import { FaqSection } from '@/components/layout/FaqSection';
@@ -109,10 +110,12 @@ export default function LocationsPage() {
               </div>
               <div className="location-storefront-block">
                 <Image
-                  src={loc.storefrontImage}
+                  src={storefrontPhotos[loc.id]}
                   alt={`Cravin Jamaican Cuisine ${loc.shortName} storefront`}
                   width={600}
                   height={400}
+                  placeholder="blur"
+                  loading={i === 0 ? 'eager' : 'lazy'}
                 />
               </div>
             </div>
