@@ -627,11 +627,26 @@ real gtag.js and G-RQE3YPW3DM (hits blocked) before choosing this:
 - Putting `page_location` in `config` instead is wrong. It sticks, and a
   later event on `/menu` reported the landing URL.
 
+**Verified on the PR #22 deploy preview** (same harness, hits blocked):
+
+| Visitor | gtag.js load | First hit of the session | Attributed |
+|---|---|---|---|
+| Taps after 5 s | normal | `dl=/?utm_…` | ✅ one page_view per page, events carry the current page |
+| **Taps as soon as interactive** | **held 2 s** | **`dl=/?utm_…content=ossining`** | ✅ **fixed** (was Direct) |
+| Taps before interactive | normal or held 2 s | `dl=/menu`, internal referrer | ❌ unchanged |
+
+**Trade-off in the race case:** the landing page gets the one page_view, and
+the page the visitor moved to gets none. gtag's history listener wasn't
+attached yet when the URL changed, and `menu_view` still fires. Before, that
+single page_view went to `/menu` and the attribution was lost, so the page
+view count doesn't change.
+
 **Remaining gap (accepted):** a tap *before* hydration triggers a full page
-load. If gtag.js hasn't arrived by then, the landing page's queued hit is
-discarded along with the page. That needs a tap within the first ~0.5–1 s on a
-slow connection, and can't be fixed without hand-sending hits, which the
-"one analytics install" rule rules out.
+load. If gtag.js hasn't sent the landing hit by then, the hit is discarded
+along with the page. This was timing-dependent on production too. It needs a
+tap within the first ~0.3–0.8 s, and on phones the nav links sit behind the
+menu button, which can't open until hydration. Fixing it would mean
+hand-sending hits, which the "one analytics install" rule rules out.
 
 **Also checked:** the apex domain, `cravinjc.netlify.app` and `http://`
 redirects all keep the full UTM query string.
