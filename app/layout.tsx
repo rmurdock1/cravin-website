@@ -80,6 +80,12 @@ const themeScript = `
 })();
 `;
 
+// The URL this page load started on, captured while <head> parses. GA's first
+// page_view uses it (components/analytics/GoogleAnalytics.tsx), so a visitor
+// who taps a nav link before gtag.js finishes loading still reports the landing
+// URL with its UTM tags instead of the page they moved to.
+const landingScript = `window.__landingHref=location.href;`;
+
 // Inline script so a visitor who closed the current announcement never sees it
 // flash: marks <html> before paint, and CSS hides the bar and its offset.
 const announcementScript = announcement
@@ -95,6 +101,7 @@ export default function RootLayout({
     <html lang="en" data-theme="dark" className={`${dmSans.variable} ${dmSerifDisplay.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: landingScript }} />
         {announcementScript && <script dangerouslySetInnerHTML={{ __html: announcementScript }} />}
       </head>
       <body>

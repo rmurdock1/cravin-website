@@ -581,3 +581,77 @@ value by design.
 - [ ] If any GA4 exploration or custom report counts contact or careers
       successes with `form_submit`, switch it to `form_success` (renamed
       2026-09-21). No key event uses it.
+
+---
+
+# 2026-09-21 hand-off, second revision (RPM's measurement decisions)
+
+The re-revised hand-off closes Obj 1 (catering value is read with **Event
+value**; the payload stays as it is) and narrows Obj 7 to one item: UTM
+survival through client-side routing. The standing decisions live in
+`reporting-conventions.md`, which is not in this repo. Everything else was
+already shipped in PR #20 (see the section above).
+
+## Obj 7: UTM survival through client-side routing
+**Method (nothing sent to GA4):** headless Chrome with phone emulation (fast
+4G, CPU slowed 4x) landed on
+`/?utm_source=google&utm_medium=organic&utm_campaign=gbp&utm_content=ossining`
+and tapped Menu. Every GA4 hit gtag.js tried to send was intercepted,
+recorded and blocked, so no fake "gbp / ossining" session reached the
+property.
+
+**Result on production before this fix:**
+
+| Visitor | gtag.js load | First hit of the session (`_ss`) | Attributed |
+|---|---|---|---|
+| Taps Menu after 5 s | normal | `dl=/?utm_…content=ossining` | ✅ gbp / ossining |
+| Taps as soon as the page is interactive | normal | `dl=/?utm_…` (sent just before the URL changed) | ✅ |
+| Taps before the page is interactive | normal | `dl=/?utm_…` | ✅ |
+| **Taps as soon as interactive** | **held 2 s (slow network)** | **`dl=/menu`, no UTMs, no referrer** | ❌ **Direct** |
+| **Taps before interactive** | **held 2 s** | **`dl=/menu`, referrer internal** | ❌ **Direct** |
+
+In the normal cases the tags survive: every later hit shares the session ID,
+and GA4 keeps the landing campaign for the whole session. The URL losing its
+query string after the first click doesn't matter. What loses attribution is
+a race. gtag.js reads the page URL when it *processes* its queued `config`,
+not when the site queued it. If gtag.js arrives after a fast tap, the
+session's first hit reports the page the visitor moved to.
+
+**Fix (this branch):** `app/layout.tsx` records `window.__landingHref` while
+`<head>` parses. `GoogleAnalytics.tsx` now runs `config` with
+`send_page_view: false` and sends the first `page_view` explicitly with
+`page_location` set to that landing URL. Two things were checked with the
+real gtag.js and G-RQE3YPW3DM (hits blocked) before choosing this:
+- Enhanced measurement history page_views still fire with
+  `send_page_view: false`. Later events report the current page.
+- Putting `page_location` in `config` instead is wrong. It sticks, and a
+  later event on `/menu` reported the landing URL.
+
+**Remaining gap (accepted):** a tap *before* hydration triggers a full page
+load. If gtag.js hasn't arrived by then, the landing page's queued hit is
+discarded along with the page. That needs a tap within the first ~0.5–1 s on a
+slow connection, and can't be fixed without hand-sending hits, which the
+"one analytics install" rule rules out.
+
+**Also checked:** the apex domain, `cravinjc.netlify.app` and `http://`
+redirects all keep the full UTM query string.
+
+## Decisions carried out
+- **Obj 1:** payload unchanged. It already sends `value` plus
+  `currency: "USD"` on build-order leads; nothing was added or removed.
+- **Obj 7:** nothing is wired to the custom `utm_content` dimension. The
+  built-in **Session manual ad content** reads standard UTMs from the session's
+  first hit, and this fix protects that hit.
+- **Obj 9:** there's still no `$25/guest` constant to keep (removed in PR #5,
+  2026-09-01, per RPM), so there's nothing to flag.
+
+## Manual steps for RPM (updated)
+- [x] Request Indexing for `/white-plains` and `/mount-vernon`: done
+      2026-09-21.
+- [x] Tagged links on all three Google Business Profiles: done 2026-09-21.
+      Spot-check that Ossining's and White Plains' pending edits went live.
+- [ ] After this deploys, confirm **Session manual ad content** starts showing
+      `ossining`, `white-plains` and `mount-vernon` (Explore → free form,
+      filter Session campaign = `gbp`).
+- [ ] Answer Obj 8: was the PR #3 merge intended?
+- [ ] Optional: remove `/admin` from the robots.txt disallow (see Obj 6 above).
