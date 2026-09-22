@@ -24,7 +24,7 @@ time, so **every current and future link is covered** with no per-button wiring.
 | `menu_view` | `/menu` page load (initial or client nav) — `components/analytics/MenuViewTracker.tsx` | `page_path` |
 | `catering_request` + `generate_lead` | Successful catering form submit (see §2) | `value`, `currency`, `location`… |
 | `email_click` | Any `mailto:` tap (e.g. catering@) — bonus, not required | `email`, `page_path` |
-| `form_submit` | Successful non-catering form (contact, careers) | `form_name`, `page_path` |
+| `form_success` | Successful non-catering form (contact, careers). Was `form_submit` until 2026-09-21 | `form_name`, `page_path` |
 | `page_view` (SPA) | Every client-side route change. **Since 2026-09-21 this comes from GA4 Enhanced measurement, not site code** (see the 2026-09-21 section) | `page_location`, `page_referrer`, `page_title` |
 
 Notes:
@@ -427,10 +427,16 @@ premises in the hand-off didn't hold, so each objective below says what is true.
   session; use that. If the custom dimension must fill on every event, a
   one-line `gtag('config', ID, { utm_content })` from the stored first-touch
   UTMs would do it (not done).
-- **FYI, not changed:** Enhanced measurement form interactions send their own
-  `form_submit`, and the site's success event for contact and careers forms is
-  also called `form_submit`, so GA4's `form_submit` count mixes both. Rename the
-  site's event (e.g. `form_success`) if form reporting matters.
+- **Renamed `form_submit` → `form_success`** (RPM's call, 2026-09-21).
+  Enhanced measurement form interactions send their own `form_submit`, and the
+  site's success event for contact and careers forms had the same name, so
+  GA4's `form_submit` count mixed the two. Now:
+  - `form_submit` is GA4's automatic event: a submit attempt on any form,
+    including catering, with `form_id` and `form_name`.
+  - `form_success` is the site's event: a contact or careers form that actually
+    reached Netlify and landed on `/success`, with `form_name` `contact` or
+    `careers-application`.
+  - `form_submit` counts before the deploy date include both.
 
 ## Obj 6: `/admin`
 - **noindex:** already on every admin route (`app/admin/layout.tsx`); live on
@@ -571,4 +577,7 @@ value by design.
       or production.
 - [ ] Answer Obj 8: was the PR #3 merge intended?
 - [ ] Optional: say whether to remove `/admin` from the robots.txt disallow
-      (Obj 6) and whether to rename the site's `form_submit` event (Obj 7).
+      (Obj 6).
+- [ ] If any GA4 exploration or custom report counts contact or careers
+      successes with `form_submit`, switch it to `form_success` (renamed
+      2026-09-21). No key event uses it.

@@ -164,7 +164,8 @@ interface PendingEvent {
  * Build (but do not fire) the GA4 events for a submitted form. Catering forms
  * produce GA4's recommended `generate_lead` (with value/currency) plus a
  * `catering_request` alias for report clarity; other forms produce a generic
- * `form_submit`.
+ * `form_success`. (Not `form_submit`: GA4 Enhanced measurement sends its own
+ * form_submit on every submit attempt, and the two would merge in reports.)
  */
 function buildFormEvents(get: (key: string) => string | null): PendingEvent[] {
   const formName = get('form-name') || 'unknown';
@@ -192,7 +193,7 @@ function buildFormEvents(get: (key: string) => string | null): PendingEvent[] {
       { name: 'catering_request', params },
     ];
   }
-  return [{ name: 'form_submit', params: { form_name: formName, page_path: pagePath } }];
+  return [{ name: 'form_success', params: { form_name: formName, page_path: pagePath } }];
 }
 
 /**
