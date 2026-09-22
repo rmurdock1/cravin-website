@@ -7,27 +7,30 @@ function centsToPrice(cents: number): string {
   return (cents / 100).toFixed(2);
 }
 
+// Google accepts full day names ("Monday") for dayOfWeek, not the two-letter
+// "Mo" form, and marks a closed day with opens and closes both "00:00".
 function formatHoursForSchema(hours: { day: string; hours: string }[]) {
-  const dayMap: Record<string, string> = {
-    Monday: 'Mo', Tuesday: 'Tu', Wednesday: 'We',
-    Thursday: 'Th', Friday: 'Fr', Saturday: 'Sa', Sunday: 'Su',
-  };
-
   return hours
-    .filter((h) => h.hours !== 'Closed')
     .map((h) => {
+      if (h.hours === 'Closed') {
+        return { '@type': 'OpeningHoursSpecification', dayOfWeek: h.day, opens: '00:00', closes: '00:00' };
+      }
       const match = h.hours.match(/(\d+:\d+ [AP]M)\s*[–-]\s*(\d+:\d+ [AP]M)/);
       if (!match) return null;
-      const open = to24h(match[1]);
-      const close = to24h(match[2]);
       return {
         '@type': 'OpeningHoursSpecification',
-        dayOfWeek: dayMap[h.day],
-        opens: open,
-        closes: close,
+        dayOfWeek: h.day,
+        opens: to24h(match[1]),
+        closes: to24h(match[2]),
       };
     })
     .filter(Boolean);
+}
+
+/** Phone with country code, e.g. "+1-914-432-7776" (Google asks for it). */
+function schemaPhone(phone: string): string {
+  const d = phone.replace(/\D/g, '').replace(/^1(?=\d{10}$)/, '');
+  return `+1-${d.slice(0, 3)}-${d.slice(3, 6)}-${d.slice(6)}`;
 }
 
 function to24h(time12: string): string {
@@ -42,9 +45,10 @@ function to24h(time12: string): string {
 function buildLocationSchema(loc: typeof locations[number]) {
   return {
     '@type': 'Restaurant',
+    '@id': `${brand.domain}/${loc.id}#restaurant`,
     name: loc.name,
     image: `${brand.domain}${loc.storefrontImage}`,
-    telephone: loc.phoneFormatted,
+    telephone: schemaPhone(loc.phone),
     email: loc.email,
     address: {
       '@type': 'PostalAddress',
@@ -60,11 +64,12 @@ function buildLocationSchema(loc: typeof locations[number]) {
       longitude: loc.geo.lng,
     },
     hasMap: loc.googleMapsUrl,
-    url: `${brand.domain}/locations#${loc.id}`,
+    // The location's own page (Google wants the specific location's URL).
+    url: `${brand.domain}/${loc.id}`,
     openingHoursSpecification: formatHoursForSchema(loc.hours),
     servesCuisine: brand.cuisine,
     priceRange: brand.priceRange,
-    acceptsReservations: 'false',
+    acceptsReservations: false,
   };
 }
 
@@ -78,7 +83,7 @@ export function getRestaurantJsonLd() {
     image: `${brand.domain}/img/food-spread.jpeg`,
     logo: `${brand.domain}/icon-512.png`,
     url: brand.domain,
-    telephone: locations[0].phoneFormatted,
+    telephone: schemaPhone(locations[0].phone),
     email: locations[0].email,
     foundingDate: '2015',
     founder: {
@@ -87,7 +92,7 @@ export function getRestaurantJsonLd() {
     },
     servesCuisine: brand.cuisine,
     priceRange: brand.priceRange,
-    acceptsReservations: 'false',
+    acceptsReservations: false,
     address: {
       '@type': 'PostalAddress',
       streetAddress: locations[0].address,
@@ -114,15 +119,14 @@ export function getLocationsJsonLd() {
   }));
 }
 
-// Single Restaurant schema for a standalone per-location page (self-referential
-// URL at /<id>, with a hasMenu link).
+// Single Restaurant schema for a standalone per-location page, with a hasMenu
+// link. Its url and @id already point at /<id>.
 export function getLocationJsonLd(id: string) {
   const loc = locations.find((l) => l.id === id);
   if (!loc) return null;
   return {
     '@context': 'https://schema.org',
     ...buildLocationSchema(loc),
-    url: `${brand.domain}/${loc.id}`,
     hasMenu: `${brand.domain}/menu`,
   };
 }
@@ -136,7 +140,7 @@ export function getCateringJsonLd() {
     description: 'Jamaican catering for corporate events, weddings, birthdays. 10 to 500 guests. Rated 4.9/5 on ezCater.',
     image: `${brand.domain}/img/jerk-chicken-plate.jpg`,
     url: `${brand.domain}/catering`,
-    telephone: locations[0].phoneFormatted,
+    telephone: schemaPhone(locations[0].phone),
     email: locations[0].email,
     servesCuisine: brand.cuisine,
     priceRange: brand.priceRange,

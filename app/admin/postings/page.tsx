@@ -29,7 +29,10 @@ export default async function PostingsPage() {
       </div>
       <h1>Job Postings</h1>
       <p className="admin-hint">
-        Active postings appear on the public <Link href="/careers">careers page</Link>. Drafts stay
+        Active postings appear on the public{' '}
+        {/* A plain link in a new tab, not <Link>: no client-side hop from /admin into
+            the tracked site, and no admin URL sent as the referrer. */}
+        <a href="/careers" target="_blank" rel="noreferrer">careers page</a>. Drafts stay
         hidden until you publish them.
       </p>
 

@@ -1062,6 +1062,8 @@ footer {
 }
 .order-card-header h3 { font-size: 26px; margin-bottom: 8px; }
 .order-card-header p { font-size: 13px; color: var(--text-muted); }
+.order-card-header a { color: inherit; transition: color 0.2s; }
+.order-card-header a:hover { color: var(--warm); }
 
 .order-card-body { padding: 28px; }
 

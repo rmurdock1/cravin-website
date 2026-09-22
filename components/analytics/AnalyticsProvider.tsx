@@ -1,7 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useRef } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 import {
   trackEvent,
   locationFromHref,
@@ -15,6 +14,8 @@ import {
 // without per-button wiring. Handles left-click plus auxclick/cmd-click, which
 // is how users open external order/directions links in a new tab.
 function handleLinkClick(e: MouseEvent) {
+  // auxclick also fires for right-clicks. Only a middle-click opens the link.
+  if (e.type === 'auxclick' && e.button !== 1) return;
   const target = e.target as HTMLElement | null;
   const anchor = target?.closest?.('a');
   if (!anchor) return;
@@ -42,32 +43,11 @@ function handleLinkClick(e: MouseEvent) {
   }
 }
 
-// Sends a GA4 page_view on client-side (SPA) route changes. The initial page
-// view is already sent by gtag('config') on load, so we skip the first render
-// to avoid double-counting. Keeps every internal page measurable and preserves
-// session/UTM attribution across <Link> navigation.
-function PageViewTracker() {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const firstRun = useRef(true);
-
-  useEffect(() => {
-    if (firstRun.current) {
-      firstRun.current = false;
-      return;
-    }
-    const qs = searchParams?.toString();
-    const path = qs ? `${pathname}?${qs}` : pathname;
-    trackEvent('page_view', {
-      page_path: path,
-      page_location: window.location.href,
-      page_title: document.title,
-    });
-  }, [pathname, searchParams]);
-
-  return null;
-}
-
+// No manual page_view here. GA4 Enhanced measurement ("page changes based on
+// browser history events", on for G-RQE3YPW3DM) already sends a page_view for
+// every client-side <Link> navigation. A manual one on top of it counted every
+// in-site navigation twice (seen live on 2026-09-21). UTM attribution doesn't
+// need it either: GA4 keeps the landing hit's campaign for the whole session.
 export function AnalyticsProvider() {
   useEffect(() => {
     // Stash the landing UTMs once per session (before any internal navigation
@@ -81,10 +61,5 @@ export function AnalyticsProvider() {
     };
   }, []);
 
-  // useSearchParams requires a Suspense boundary in the App Router.
-  return (
-    <Suspense fallback={null}>
-      <PageViewTracker />
-    </Suspense>
-  );
+  return null;
 }

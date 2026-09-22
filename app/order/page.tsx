@@ -37,7 +37,9 @@ export default function OrderPage() {
               <div key={loc.id} className="order-card">
                 <div className="order-card-header">
                   <h3>{loc.shortName}</h3>
-                  <p>{loc.fullAddress}</p>
+                  <p>
+                    <a href={loc.googleMapsUrl} target="_blank" rel="noopener noreferrer" aria-label={`Directions to ${loc.fullAddress} (opens Google Maps in a new tab)`}>{loc.fullAddress}</a>
+                  </p>
                 </div>
                 <div className="order-card-body">
                   <a href={`tel:${loc.phone}`} className="order-platform order-platform-primary" aria-label={`Call ${loc.shortName} at ${loc.phoneFormatted} to order pickup`}>
