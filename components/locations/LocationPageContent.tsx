@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { locations, type Location } from '@/lib/site-data';
+import { storefrontPhotos } from '@/lib/images';
 import { mapEmbeds } from '@/lib/location-embeds';
 
 // Full standalone page for a single restaurant location. Restores the
@@ -65,10 +66,12 @@ export function LocationPageContent({
             </div>
             <div className="location-storefront-block">
               <Image
-                src={loc.storefrontImage}
+                src={storefrontPhotos[loc.id]}
                 alt={`Cravin Jamaican Cuisine ${loc.shortName} storefront`}
                 width={600}
                 height={400}
+                placeholder="blur"
+                loading="eager"
               />
             </div>
           </div>

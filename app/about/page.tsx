@@ -3,6 +3,7 @@ import Script from 'next/script';
 import Image from 'next/image';
 import Link from 'next/link';
 import { socialLinks } from '@/lib/site-data';
+import { photos } from '@/lib/images';
 
 export const metadata: Metadata = {
   title: 'Our Story',
@@ -21,7 +22,7 @@ export default function AboutPage() {
       {/* PAGE HERO — Grand Opening Crowd Photo */}
       <section className="about-hero-full" id="main-content">
         <div className="about-hero-bg" aria-hidden="true">
-          <Image src="/img/our_story/grand-opening-crowd.jpg" alt="" fill sizes="100vw" quality={80} priority />
+          <Image src={photos.grandOpeningCrowd} alt="" fill sizes="100vw" quality={65} priority fetchPriority="high" placeholder="blur" />
         </div>
         <div className="about-hero-overlay" />
         <div className="container about-hero-content">
@@ -42,7 +43,7 @@ export default function AboutPage() {
               <p className="about-attribution">- Peter Murdock, Owner</p>
             </div>
             <div className="about-image">
-              <Image src="/img/our_story/wp-grand-opening-storefront.jpg" alt="Cravin Jamaican Cuisine White Plains grand opening with crowd outside the storefront" width={600} height={400} />
+              <Image src={photos.wpGrandOpeningStorefront} alt="Cravin Jamaican Cuisine White Plains grand opening with crowd outside the storefront" width={600} height={400} placeholder="blur" />
             </div>
           </div>
         </div>
@@ -102,7 +103,8 @@ export default function AboutPage() {
           {/* Proclamations Photo */}
           <div className="community-awards" id="awards">
             <div className="community-awards-image">
-              <Image src="/img/our_story/proclamations.jpg" alt="Cravin Jamaican Cuisine proclamations and Business Excellence Award" width={800} height={500} />
+              {/* Portrait photo: size from the import (3:4), so no layout shift. */}
+              <Image src={photos.proclamations} alt="Cravin Jamaican Cuisine proclamations and Business Excellence Award" sizes="(max-width: 1024px) 100vw, 560px" placeholder="blur" />
             </div>
             <div className="community-awards-text">
               <div className="awards-trophy-icon" aria-hidden="true">
@@ -248,7 +250,7 @@ export default function AboutPage() {
       {/* MILESTONES PARALLAX */}
       <section className="story" id="milestones">
         <div className="story-bg" aria-hidden="true">
-          <Image src="/img/jerk-chicken-close.jpg" alt="" fill sizes="100vw" quality={75} />
+          <Image src={photos.jerkChickenClose} alt="" fill sizes="100vw" quality={50} placeholder="blur" />
         </div>
         <div className="container">
           <div className="story-content">

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import logo from '@/public/img/logo-nav.png';
 import { socialLinks, locations, comingSoonLocations } from '@/lib/site-data';
 
 export function Footer() {
@@ -9,7 +10,7 @@ export function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <span className="footer-logo">
-              <Image src="/img/logo-nav.png" alt="Cravin Jamaican Cuisine" width={120} height={63} />
+              <Image src={logo} alt="Cravin Jamaican Cuisine" width={55} height={63} />
             </span>
             <p>
               Authentic Jamaican cuisine made with love. Three locations

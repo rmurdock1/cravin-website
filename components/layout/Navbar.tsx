@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import logo from '@/public/img/logo-nav.png';
 import { usePathname } from 'next/navigation';
 import { navLinks } from '@/lib/site-data';
 import { ThemeToggle } from './ThemeToggle';
@@ -17,7 +18,8 @@ export function Navbar() {
       <nav aria-label="Main navigation">
         <div className="container">
           <Link href="/" className="nav-logo">
-            <Image src="/img/logo-nav.png" alt="Cravin Jamaican Cuisine" width={140} height={70} priority />
+            {/* Eager but not preloaded, so it doesn't queue ahead of the hero photo. */}
+            <Image src={logo} alt="Cravin Jamaican Cuisine" width={62} height={70} loading="eager" />
           </Link>
           <div className="nav-links">
             {navLinks.map((link) => (

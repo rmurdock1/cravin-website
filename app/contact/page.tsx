@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { locations, socialLinks } from '@/lib/site-data';
+import { storefrontPhotos } from '@/lib/images';
 import { ContactForm } from '@/components/forms/ContactForm';
 
 export const metadata: Metadata = {
@@ -91,7 +92,7 @@ export default function ContactPage() {
             {locations.map((loc) => (
               <div key={loc.id} className="location-card">
                 <div className="location-map">
-                  <Image src={loc.storefrontImage} alt={`Cravin Jamaican Cuisine ${loc.shortName} storefront`} width={400} height={250} />
+                  <Image src={storefrontPhotos[loc.id]} alt={`Cravin Jamaican Cuisine ${loc.shortName} storefront`} width={400} height={250} placeholder="blur" />
                 </div>
                 <div className="location-info">
                   <h3>{loc.shortName}</h3>
