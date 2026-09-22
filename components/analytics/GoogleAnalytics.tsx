@@ -27,7 +27,14 @@ export function GoogleAnalytics() {
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', '${GA_ID}');
+          // First page_view with the landing URL from <head>, not the URL when
+          // gtag.js gets around to processing it. On a slow connection a quick
+          // tap on a nav link could change the URL first, and the session would
+          // lose its UTM tags (reported as Direct). Set per event, not in
+          // config: a config page_location sticks to every later event.
+          // Enhanced measurement still sends the in-site history page_views.
+          gtag('config', '${GA_ID}', { send_page_view: false });
+          gtag('event', 'page_view', { page_location: window.__landingHref || location.href });
         `}
       </Script>
     </>
