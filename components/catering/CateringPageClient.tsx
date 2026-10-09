@@ -24,10 +24,25 @@ function Toast({ message }: { message: string }) {
  *  store's short name, so Netlify emails read "White Plains", and it becomes the
  *  lead's GA4 `location` param (lib/analytics.ts). */
 function PreferredLocationField({ id }: { id: string }) {
+  const [value, setValue] = useState('');
+
+  // Pre-select from a ?location=<shortName> query param (set by the per-location
+  // pages' "Catering Quote" link) so a lead that started on a town page is
+  // attributed to that restaurant instead of falling back to 'unspecified'.
+  // Read client-side so /catering stays statically rendered.
+  useEffect(() => {
+    try {
+      const q = new URLSearchParams(window.location.search).get('location');
+      if (q && locations.some((loc) => loc.shortName === q)) setValue(q);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   return (
     <div className="form-group full">
       <label htmlFor={id}>Preferred Cravin Location</label>
-      <select id={id} name="location" defaultValue="">
+      <select id={id} name="location" value={value} onChange={(e) => setValue(e.target.value)}>
         <option value="">No preference</option>
         {locations.map((loc) => (
           <option key={loc.id} value={loc.shortName}>{loc.shortName}</option>
