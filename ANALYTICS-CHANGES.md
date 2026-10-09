@@ -670,3 +670,73 @@ redirects all keep the full UTM query string.
       filter Session campaign = `gbp`).
 - [ ] Answer Obj 8: was the PR #3 merge intended?
 - [ ] Optional: remove `/admin` from the robots.txt disallow (see Obj 6 above).
+
+---
+
+# September 2026 month-end fixes
+
+Branch `oct-sept-review` (worktree, off `main`). Addresses the 2026-10-04 month-end
+hand-off. Verified on a local production build via `dataLayer` (the gtag shim fires
+events even without a GA id locally). No `currency` added; no sitemap/canonical/
+redirect touched for the three location pages.
+
+## Obj 1 — Catering `location` on every lead (NEW, highest value)
+**Was:** 6 of 8 September leads reported `location` "(not set)" — the catering form's
+Preferred Location select defaults to "No preference" (`value=""`), and
+`buildFormEvents` did `location: get('location') || undefined`, so an empty pick was
+stripped by `clean()`.
+
+**Now:**
+- `location` is **always present** on `generate_lead` **and** `catering_request`.
+  A real pick wins; otherwise the explicit sentinel **`unspecified`** is sent — so
+  "customer didn't choose" is distinguishable from the param being absent / old data.
+- **Journey attribution:** the per-location pages' "Catering Quote" link now carries
+  `?location=<shortName>`, and `PreferredLocationField` pre-selects from that query
+  param (read client-side, so `/catering` stays static). A lead that started on a
+  town page is attributed to that town instead of `unspecified`.
+- `value`, `currency` (for build-order), and `form_type` are unchanged.
+
+**Verified locally:** "No preference" → `location:"unspecified"` (value intact);
+`/catering?location=White%20Plains` → field pre-selects → `generate_lead
+location:"White Plains"`. Both `generate_lead` and `catering_request` carry it.
+
+## Obj 2 — Directions tracking (THIRD MONTH) — instrumentation is complete; the gap is traffic
+No code change. The click listener is **document-delegated** (attached once in
+`AnalyticsProvider`, survives client-side routing) and already covers the restored
+pages. Full inventory — every directions CTA is an `<a href={loc.googleMapsUrl}>`,
+caught by the listener, with `location` resolved from the href:
+
+| Page | Directions element | Handler | `location` sent |
+|---|---|---|---|
+| `/` (homepage) | address link per location card | delegated ✅ | resolved |
+| `/order` | address link per location | delegated ✅ | resolved |
+| `/contact` | address link per location | delegated ✅ | resolved |
+| `/locations` (hub) | "Get Directions" button per location | delegated ✅ | resolved |
+| `/ossining`,`/white-plains`,`/mount-vernon` | "Get Directions" button | delegated ✅ **(verified fires)** | resolved |
+| `/locations` + per-location pages | embedded map `<iframe>` | not trackable (cross-origin) | — |
+
+**Verified on `/ossining`** (the "0 key events / 30 views" page): clicking its
+phone, Uber Eats and directions links fires `call_click`, `order_click` and
+`directions_click`, each with `location:"Ossining"`. The September count (17) is
+behavioural — location pages drew 29–36 views at 7–22s attention — not a wiring gap.
+The lever is CTA prominence/traffic, not instrumentation.
+
+## Obj 3 — Keep `/admin` out of GA4 collection (SECOND MONTH)
+Primary exclusion already shipped in PR #6 (Sep 14): `GoogleAnalytics` +
+`AnalyticsProvider` are wrapped in `HideOnAdmin`, so gtag never loads on a direct
+`/admin` load, and there are **no in-app links from the public site into `/admin`**
+(confirmed) — so the 7 September `/admin/login` views predate that deploy.
+
+Added belt-and-braces as the hand-off asked — an explicit path check **before the
+tag fires**, surviving client-side navigation: `AdminAnalyticsGate` sets gtag's
+standard opt-out flag `window['ga-disable-G-RQE3YPW3DM']` whenever the path is under
+`/admin` (covers `/admin/login` and every `/admin/staff/<uuid>`), mounted outside
+`HideOnAdmin` so it runs on all routes. `noindex` meta (`app/admin/layout.tsx`) and
+`robots.txt` Disallow `/admin` were already in place; middleware still guards all
+`/admin` routes behind auth.
+
+## Obj 4 — `/about:*Our` (verification only)
+Not a site bug. No internal code emits that path, it returns **404** (so Google
+can't index it), and no git change touched about-routing in the Sep window — the 3
+views were transient external/bot hits on the 404 page (which records via the
+root-layout GA tag). No new occurrences since ~Sep 10. No change needed.

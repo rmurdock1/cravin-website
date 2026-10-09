@@ -10,6 +10,7 @@ import { Footer } from '@/components/layout/Footer';
 import { HideOnAdmin } from '@/components/layout/HideOnAdmin';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
+import { AdminAnalyticsGate } from '@/components/analytics/AdminAnalyticsGate';
 import './globals.css';
 
 const dmSans = DM_Sans({
@@ -112,6 +113,9 @@ export default function RootLayout({
           <GoogleAnalytics />
           <AnalyticsProvider />
         </HideOnAdmin>
+        {/* Outside HideOnAdmin: runs on every route to toggle the gtag opt-out
+            flag so /admin never collects, even via client-side navigation. */}
+        <AdminAnalyticsGate />
         <ThemeProvider>
           <SkipLink />
           <HideOnAdmin><StickyOrderButton /></HideOnAdmin>
