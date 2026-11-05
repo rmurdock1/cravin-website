@@ -91,7 +91,8 @@ export function LocationPageContent({
           {/* Internal links: menu / catering + sibling locations */}
           <div className="location-detail-actions" style={{ marginTop: 24 }}>
             <Link href="/menu" className="btn btn-outline-green">View Menu</Link>
-            <Link href="/catering" className="btn btn-outline-warm">Catering Quote</Link>
+            {/* Carry the location so the catering lead is attributed to this town */}
+            <Link href={`/catering?location=${encodeURIComponent(loc.shortName)}`} className="btn btn-outline-warm">Catering Quote</Link>
           </div>
           <p style={{ marginTop: 20 }}>
             Our other Westchester locations:{' '}

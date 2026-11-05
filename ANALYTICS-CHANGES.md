@@ -670,3 +670,93 @@ redirects all keep the full UTM query string.
       filter Session campaign = `gbp`).
 - [ ] Answer Obj 8: was the PR #3 merge intended?
 - [ ] Optional: remove `/admin` from the robots.txt disallow (see Obj 6 above).
+
+---
+
+# October 2026 month-end fixes (branch `oct-month-end`)
+
+Addresses the 2026-11-05 month-end hand-off. Verified on a local production build.
+No `currency` change; browser-history `page_view` behaviour untouched; the three
+town pages' content/sitemap/canonicals untouched.
+
+## Obj 1 — Surface the arrival's location to GBP homepage visitors (NEW)
+All three Google Business Profile links land on `/` with `?utm_content=<id>`
+(`mount-vernon` | `white-plains` | `ossining`), and GBP is now ~40% of key events —
+but the homepage showed everyone the same generic content. Added
+`components/home/LocationWelcome.tsx`, rendered right after the hero:
+- Reads `utm_content` from the URL (falls back to the stashed first-touch UTM) and,
+  when it matches a location, shows that restaurant's name, address, **today's**
+  hours, a Call link, a Get Directions link, and a link through to its town page.
+- **Progressive enhancement:** with no/!matching `utm_content` it renders `null`, so
+  the homepage is byte-identical for everyone else. Injected client-side after
+  mount, so SSR output is unchanged (no hydration mismatch) and `/` stays static.
+- Placed after the hero so the hero's order/menu CTAs are never pushed down (mobile).
+- The Call and Directions links are picked up by the existing delegated listener
+  (`call_click` / `directions_click` with `location`).
+- Persistent paths to the town pages already exist (homepage location-card "Details"
+  buttons and the footer list all three).
+
+## Obj 2 — Directions tracking diagnosis (FOURTH MONTH) — ceiling is structural, not a code bug
+
+Inventory of every directions affordance:
+
+| Page | Element | Type | Handler fires `directions_click`? | reaches GA4 |
+|---|---|---|---|---|
+| `/` | address link per card → `googleMapsUrl` | `<a target=_blank>` | yes (delegated) | yes |
+| `/order` | address link per location | `<a target=_blank>` | yes (delegated) | yes |
+| `/contact` | address link per location | `<a target=_blank>` | yes (delegated) | yes |
+| `/locations` | "Get Directions" button ×3 | `<a target=_blank>` | yes (delegated) | yes |
+| `/ossining` `/white-plains` `/mount-vernon` | "Get Directions" button | `<a target=_blank>` | yes (delegated, verified) | yes |
+| `/locations` + each town page | **embedded Google Map `<iframe>`** | cross-origin iframe | **NO — impossible to instrument** | no |
+
+**Diagnosis — the metric cannot be made "right" in code:**
+1. Every tracked directions link is an `<a href={googleMapsUrl}>` caught by the
+   document-delegated listener (attached once; survives client-side routing). Verified
+   firing from the town pages and `/locations`, with `location` resolved.
+2. **It is not a lost-beacon problem.** `call_click` fires on the same mobile native
+   handoff (`tel:`) and recorded **166** times in October — if the beacon didn't
+   survive the handoff, call_click would be suppressed too. So transport is fine.
+3. The primary directions affordance on the location pages is the **embedded Google
+   Map iframe**, and taps inside it (the natural "open in Maps" gesture on mobile)
+   are cross-origin and **cannot be instrumented at all**. That is the ceiling:
+   directions_click counts only the secondary text/button links, so a low number is
+   expected and will persist regardless of code.
+
+**Recommendation (UI, for RPM — not changed here, per "keep town pages' content
+unchanged"):** if an accurate directions count matters, make the tracked
+"Get Directions" button the primary affordance (e.g. above/around the map) rather
+than relying on the iframe. No code change will move the metric otherwise.
+
+## Obj 3 — Finish the catering `location` parameter (COMPLETES the partial fix)
+October still had 2 of 6 leads at "(not set)" (one build-order worth 205, one
+quick-inquiry) because the Preferred Location select defaults to "No preference"
+(`""`) and `buildFormEvents` emitted `location: get('location') || undefined`, which
+`clean()` stripped. Now:
+- `location` is **always sent** on `generate_lead` AND `catering_request` — a real
+  pick, else the explicit sentinel **`unspecified`**. Applies to **both** forms
+  (`bo-location` and `qi-location` both use `PreferredLocationField`), so the
+  quick-inquiry gap is closed too.
+- The town pages' "Catering Quote" link carries `?location=<shortName>` and the field
+  pre-selects from it, attributing town-originated leads instead of `unspecified`.
+- `value` unchanged; no `value` added to quick-inquiry (left per RPM's open decision).
+
+## Obj 4 — Form event rename (form_submit → form_success): reconciliation entry
+**2026-09-21, commit `c388170`** renamed the site's own `form_submit` →
+**`form_success`** (params unchanged: `form_name`, `page_path`). Reason: GA4 Enhanced
+measurement sends its *own* automatic `form_submit` on every submit attempt, so the
+site's duplicate merged into one count. No key event used the old name. (This WAS
+recorded in this file at the time; re-stating here with the funnel for clarity.)
+
+Funnel reconciliation — the three events span different form populations:
+- **`form_start`** (35, Oct): GA4 Enhanced-measurement automatic, fires on *any* form
+  (catering build-order, catering quick-inquiry, contact, careers). Carries the
+  form's `form_name`/`form_id` from the element, so it can be filtered per form.
+- **`form_success`** (21): the site's own success event, fired on `/success` for the
+  **contact and careers** forms only — carries `form_name` to tell them apart.
+- **`generate_lead`** + **`catering_request`** (6 each): the **catering** forms'
+  success path. Catering does NOT fire `form_success`.
+
+So the catering funnel reads `form_start` (filtered to the catering form names) →
+`generate_lead`; the contact/careers funnel reads `form_start` → `form_success`
+(filtered by `form_name`). No live `form_submit` reference remains in the code.
+Going forward, any event-name change gets an entry here in the same commit.

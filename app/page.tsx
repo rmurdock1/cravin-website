@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { comingSoonLocations, locations, brand } from '@/lib/site-data';
 import { photos, storefrontPhotos } from '@/lib/images';
 import { getRestaurantJsonLd } from '@/lib/json-ld';
+import { LocationWelcome } from '@/components/home/LocationWelcome';
 
 export const metadata: Metadata = {
   // Absolute title (bypasses the "| Cravin…" template) tuned for local intent —
@@ -62,6 +63,11 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* GBP-arrival location block (renders only when ?utm_content matches a
+          location; homepage is unchanged for everyone else). Placed after the
+          hero so the hero's order/menu CTAs are never pushed down. */}
+      <LocationWelcome />
 
       {/* FEATURED DISHES */}
       <section className="featured" id="menu-preview">
