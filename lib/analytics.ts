@@ -182,7 +182,12 @@ function buildFormEvents(get: (key: string) => string | null): PendingEvent[] {
       ...(lead ? { currency: 'USD', value: lead.value, value_basis: lead.basis } : {}),
       form_name: formName,
       form_type: get('form_type') || formName,
-      location: get('location') || undefined,
+      // Always send a location so it is never "(not set)" in GA4. A real pick
+      // from the Preferred Location field wins; 'unspecified' is the explicit
+      // sentinel for "customer did not choose" (distinct from the param being
+      // absent). Applies to build-order AND quick-inquiry, and to the
+      // catering_request alias below.
+      location: get('location') || 'unspecified',
       event_type: get('event_type') || undefined,
       guest_count: Number.isFinite(guests) ? guests : undefined,
       event_date: get('event_date') || undefined,
