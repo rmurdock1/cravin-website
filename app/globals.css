@@ -2575,3 +2575,54 @@ option, optgroup { background-color: var(--bg-elevated); color: var(--text); }
     transition: none;
   }
 }
+
+/* ==============================
+   LOCATION WELCOME (GBP arrivals — homepage progressive enhancement)
+   Shown only when ?utm_content matches a location; hidden otherwise.
+   ============================== */
+.location-welcome {
+  background: var(--warm-dim);
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+}
+.location-welcome-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-block: 20px;
+}
+.location-welcome-eyebrow {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--warm);
+  font-weight: 600;
+}
+.location-welcome-title {
+  font-size: 24px;
+  line-height: 1.1;
+  margin: 2px 0 4px;
+  color: var(--text);
+}
+.location-welcome-meta {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0;
+}
+.location-welcome-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+@media (max-width: 640px) {
+  .location-welcome-actions {
+    width: 100%;
+  }
+  .location-welcome-actions .btn {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+}
