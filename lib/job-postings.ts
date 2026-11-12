@@ -1,7 +1,7 @@
 import type { JobListing } from '@/lib/careers-data';
 import { createPublicClient } from '@/lib/supabase/public';
 
-export const JOB_LOCATIONS = ['Ossining', 'White Plains', 'Mount Vernon', 'All Locations'] as const;
+export const JOB_LOCATIONS = ['Ossining', 'White Plains', 'Mount Vernon', 'South Bronx', 'All Locations'] as const;
 export const EMPLOYMENT_TYPES = ['full-time', 'part-time', 'flexible'] as const;
 
 export interface JobPostingRow {
