@@ -114,6 +114,7 @@ const LOCATION_VALUES: Record<string, string> = {
   Ossining: 'ossining',
   'White Plains': 'white-plains',
   'Mount Vernon': 'mount-vernon',
+  'South Bronx': 'south-bronx',
 };
 
 export function CareersPageClient({ jobListings }: { jobListings: JobListing[] }) {
@@ -316,6 +317,7 @@ export function CareersPageClient({ jobListings }: { jobListings: JobListing[] }
                     <option value="ossining">Ossining</option>
                     <option value="white-plains">White Plains</option>
                     <option value="mount-vernon">Mount Vernon</option>
+                    <option value="south-bronx">South Bronx</option>
                   </select>
                 </div>
                 <div className="careers-form-group">
