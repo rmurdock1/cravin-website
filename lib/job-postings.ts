@@ -13,6 +13,7 @@ export interface JobPostingRow {
   responsibilities: string[];
   requirements: string[];
   perks: string[];
+  pay_range: string | null;
   is_active: boolean;
   sort_order: number;
   created_at: string;
@@ -30,6 +31,7 @@ export function rowToListing(r: JobPostingRow): JobListing {
     responsibilities: r.responsibilities ?? [],
     requirements: r.requirements ?? [],
     perks: r.perks ?? [],
+    pay: r.pay_range ?? null,
   };
 }
 
@@ -43,6 +45,7 @@ export interface JobTemplateRow {
   responsibilities: string[];
   requirements: string[];
   perks: string[];
+  pay_range: string | null;
 }
 
 /** Public: active postings only (RLS also enforces this), newest first. */

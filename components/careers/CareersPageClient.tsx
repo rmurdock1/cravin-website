@@ -45,6 +45,7 @@ function JobCard({
         <div className="careers-job-titles">
           <h3>{job.title}</h3>
           <span className="careers-tag careers-tag-type">{TYPE_LABELS[job.type] ?? job.type}</span>
+          {job.pay && <span className="careers-tag careers-tag-pay">{job.pay}</span>}
         </div>
         <div className="careers-job-actions">
           <button
