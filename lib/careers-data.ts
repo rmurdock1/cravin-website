@@ -9,6 +9,7 @@ export interface JobListing {
   responsibilities: string[];
   requirements: string[];
   perks?: string[];
+  pay?: string | null; // e.g. "$20/hour" or "$23–$25/hour"; shown on the card
 }
 
 // No active openings right now. Add JobListing objects here to re-open roles;

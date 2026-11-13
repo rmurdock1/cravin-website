@@ -20,6 +20,7 @@ function fieldsFrom(formData: FormData) {
     responsibilities: list(formData, 'responsibilities'),
     requirements: list(formData, 'requirements'),
     perks: list(formData, 'perks'),
+    pay_range: String(formData.get('pay_range') ?? '').trim() || null,
   };
 }
 

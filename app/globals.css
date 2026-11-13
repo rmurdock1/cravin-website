@@ -2626,3 +2626,10 @@ option, optgroup { background-color: var(--bg-elevated); color: var(--text); }
     text-align: center;
   }
 }
+
+/* Pay / compensation tag on careers job cards */
+.careers-tag-pay {
+  background: rgba(74, 157, 110, 0.18);
+  color: var(--green-light);
+  font-weight: 600;
+}

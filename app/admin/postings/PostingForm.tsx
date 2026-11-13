@@ -100,6 +100,11 @@ export function PostingForm({
       </div>
 
       <label>
+        Pay / Compensation <span className="admin-form-hint">(optional — shown on the posting)</span>
+        <input name="pay_range" defaultValue={initial?.pay_range ?? ''} placeholder="e.g. $20/hour or $23–$25/hour" />
+      </label>
+
+      <label>
         Short description *
         <textarea name="description" rows={3} required defaultValue={initial?.description ?? ''} placeholder="One or two sentences about the role." />
       </label>
