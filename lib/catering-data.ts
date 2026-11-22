@@ -39,7 +39,7 @@ export const cateringItems: CateringItem[] = [
   { id: 'stew-peas', name: 'Stew Peas', category: 'entrees', priceHalfCents: 13000, priceFullCents: null, priceSingleCents: null },
 
   // ==================== SIDES ====================
-  { id: 'mac-n-cheese', name: 'Mac N Cheese', category: 'sides', priceHalfCents: 7000, priceFullCents: 11000, priceSingleCents: null },
+  { id: 'mac-n-cheese', name: 'Mac N Cheese', category: 'sides', priceHalfCents: 7000, priceFullCents: 12500, priceSingleCents: null },
   { id: 'rice-and-peas', name: 'Rice & Peas', category: 'sides', priceHalfCents: 5500, priceFullCents: 9500, priceSingleCents: null },
   { id: 'white-rice', name: 'White Rice', category: 'sides', priceHalfCents: 4000, priceFullCents: 6500, priceSingleCents: null },
   { id: 'plantains', name: 'Plantains', category: 'sides', priceHalfCents: 4500, priceFullCents: 6500, priceSingleCents: null },
