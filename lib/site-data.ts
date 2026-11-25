@@ -187,12 +187,23 @@ export const announcement: {
   shortMessage: string;
   href: string;
 } | null = {
-  id: 'south-bronx-coming-soon',
-  badge: 'Opening soon',
-  message: 'Cravin South Bronx is on the way to Mott Haven.',
-  shortMessage: 'Cravin South Bronx',
-  href: '/locations#south-bronx',
+  // TEMPORARY — Thanksgiving 2026 closure. Revert to the South Bronx banner
+  // below after Fri Nov 27, 2026 (just swap which object is assigned).
+  id: 'thanksgiving-2026-closed',
+  badge: 'Holiday Hours',
+  message: 'Cravin is closed Thursday 11/26 and Friday 11/27 for Thanksgiving. We reopen Saturday — Happy Thanksgiving!',
+  shortMessage: 'Closed Thu 11/26 & Fri 11/27 for Thanksgiving',
+  href: '/locations',
 };
+
+// Restore after the holiday:
+// export const announcement = {
+//   id: 'south-bronx-coming-soon',
+//   badge: 'Opening soon',
+//   message: 'Cravin South Bronx is on the way to Mott Haven.',
+//   shortMessage: 'Cravin South Bronx',
+//   href: '/locations#south-bronx',
+// };
 
 /** localStorage key holding the id of the announcement a visitor closed. */
 export const ANNOUNCEMENT_DISMISS_KEY = 'cravin-announcement-dismissed';
